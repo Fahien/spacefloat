@@ -7,6 +7,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
+import me.fahien.spacefloat.game.SpaceFloatGame;
+
 /**
  * Space Float {@link Screen}
  *
@@ -17,6 +19,7 @@ public class SpaceFloatScreen implements Screen {
 	protected static final int HEIGHT = 270;
 
 	private boolean initialized;
+	private SpaceFloatGame game;
 	private AssetManager assetManager;
 	private BitmapFont font;
 	private Engine engine;
@@ -33,6 +36,20 @@ public class SpaceFloatScreen implements Screen {
 	 */
 	public void setInitialized(boolean initialized) {
 		this.initialized = initialized;
+	}
+
+	/**
+	 * Returns the {@link SpaceFloatGame}
+	 */
+	public SpaceFloatGame getGame() {
+		return game;
+	}
+
+	/**
+	 * Sets the {@link SpaceFloatGame}
+	 */
+	public void setGame(SpaceFloatGame game) {
+		this.game = game;
 	}
 
 	/**

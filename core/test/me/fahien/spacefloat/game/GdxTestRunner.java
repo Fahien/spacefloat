@@ -1,4 +1,4 @@
-package me.fahien.spacefloat;
+package me.fahien.spacefloat.game;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;

@@ -3,7 +3,7 @@ package me.fahien.spacefloat.screen;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import me.fahien.spacefloat.GdxTestRunner;
+import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -28,5 +28,10 @@ public class ScreenEnumeratorTest {
 	@Test
 	public void couldGetTheMainScreen() {
 		assertNotNull("The main screen is null", ScreenEnumerator.MAIN.getScreen());
+	}
+
+	@Test
+	public void couldGetTheLoadingScreen() {
+		assertNotNull("The loading screen is null", ScreenEnumerator.LOADING.getScreen());
 	}
 }

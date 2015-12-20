@@ -9,8 +9,11 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static me.fahien.spacefloat.GdxTestRunner.logger;
+import me.fahien.spacefloat.game.GdxTestRunner;
+
+import static me.fahien.spacefloat.game.GdxTestRunner.logger;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -19,6 +22,7 @@ import static org.junit.Assert.assertNull;
  *
  * @author Fahien
  */
+@RunWith(GdxTestRunner.class)
 public class ShowcaseScreenTest {
 	protected static final String MODEL = "player";
 

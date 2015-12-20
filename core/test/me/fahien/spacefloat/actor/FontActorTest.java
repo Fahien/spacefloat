@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,6 +16,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Fahien
  */
+@RunWith(GdxTestRunner.class)
 public class FontActorTest {
 	private static final String TEST_TEXT = "Test";
 	private static final String ANOTHER_TEXT = "Another";

@@ -72,6 +72,7 @@ public class SpaceFloatGame extends Game {
 		screen.setAssetManager(assetManager);
 		screen.setFont(font);
 		screen.setEngine(engine);
+		screen.setGame(this);
 		screen.setInitialized(true);
 		setScreen(screen);
 	}
@@ -81,7 +82,7 @@ public class SpaceFloatGame extends Game {
 		Gdx.app.setLogLevel(LOGGER_LEVEL);
 		logger.info(logo);
 		loadFont();
-		setScreen(ScreenEnumerator.SHOWCASE);
+		setScreen(ScreenEnumerator.LOADING);
 		logger.debug("Game initialized");
 	}
 

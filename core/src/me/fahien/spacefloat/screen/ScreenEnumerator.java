@@ -6,7 +6,10 @@ package me.fahien.spacefloat.screen;
  * @author Fahien
  */
 public enum ScreenEnumerator {
-	SHOWCASE(new ShowcaseScreen()), INFO(new InfoScreen()), MAIN(new MainScreen());
+	SHOWCASE(new ShowcaseScreen()),
+	INFO(new InfoScreen()),
+	MAIN(new MainScreen()),
+	LOADING(new LoadingScreen());
 
 	private SpaceFloatScreen screen;
 

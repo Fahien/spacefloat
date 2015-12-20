@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import me.fahien.spacefloat.GdxTestRunner;
+import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

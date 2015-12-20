@@ -12,11 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import me.fahien.spacefloat.GdxTestRunner;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 
-import static me.fahien.spacefloat.GdxTestRunner.logger;
+import static me.fahien.spacefloat.game.GdxTestRunner.logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -115,7 +114,7 @@ public class SpaceFloatGameTest {
 			logger.error("Could not initialize the Model Batch during tests: " + e.getMessage());
 		}
 		assertEquals("The game is not showing the main screen",
-				ScreenEnumerator.SHOWCASE.getScreen(),
+				ScreenEnumerator.LOADING.getScreen(),
 				game.getScreen());
 	}
 

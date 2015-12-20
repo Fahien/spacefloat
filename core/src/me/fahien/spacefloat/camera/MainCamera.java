@@ -10,11 +10,11 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
  */
 public class MainCamera extends PerspectiveCamera {
 	private static final int MAIN_FOV = 67;
-	private static final float POSITION_X = 50f;
-	private static final float POSITION_Y = 50f;
-	private static final float POSITION_Z = 50f;
+	private static final float POSITION_X = 100f;
+	private static final float POSITION_Y = 100f;
+	private static final float POSITION_Z = 100f;
 	private static final float NEAR = 1f;
-	private static final float FAR = 300f;
+	private static final float FAR = 1000f;
 
 	public MainCamera() {
 		super(MAIN_FOV, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
