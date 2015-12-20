@@ -24,9 +24,13 @@ public class RenderingSystem extends EntitySystem {
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
 	private ImmutableArray<Entity> entities;
 
-	private PerspectiveCamera camera;
+	private MainCamera camera;
 	private Environment environment;
 	private ModelBatch batch;
+
+	public RenderingSystem(MainCamera camera) {
+		this.camera = camera;
+	}
 
 	@Override
 	public void addedToEngine(Engine engine) {
@@ -37,7 +41,6 @@ public class RenderingSystem extends EntitySystem {
 		entities = engine.getEntitiesFor(family);
 
 		// Initialize the camera
-		camera = new MainCamera();
 		camera.update();
 
 		// Initialize the environment

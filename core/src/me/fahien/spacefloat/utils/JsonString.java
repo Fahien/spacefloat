@@ -11,4 +11,7 @@ public class JsonString {
 	public static final String JSON_NAME = "name";
 	public static final String JSON_COMPONENTS = "components";
 	public static final String JSON_CLASS = "class";
+	public static final String JSON_X = "x";
+	public static final String JSON_Y = "y";
+	public static final String JSON_Z = "z";
 }

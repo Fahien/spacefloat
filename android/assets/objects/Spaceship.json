@@ -1,14 +1,1 @@
-{
-  "name":"Spaceship",
-  "components":
-  {
-    "array":
-    [
-      {
-        "class": "me.fahien.spacefloat.component.GraphicComponent",
-        "name": "player.g3db"
-      }
-    ],
-    "iterable":null
-  }
-}
+{name:Spaceship,components:{array:[{class:me.fahien.spacefloat.component.GraphicComponent,name:player.g3db},{class:me.fahien.spacefloat.component.PositionComponent,x:0,y:0,z:0},{class:me.fahien.spacefloat.component.VelocityComponent,x:0,y:0,z:-50},{class:me.fahien.spacefloat.component.PlayerComponent}],iterable:null}}

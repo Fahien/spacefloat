@@ -1,5 +1,5 @@
 {
-  "name":"Earth",
+  "name": "Earth",
   "components":
   {
     "array":
@@ -7,6 +7,18 @@
       {
         "class": "me.fahien.spacefloat.component.GraphicComponent",
         "name": "earth.g3db"
+      },
+      {
+        "class": "me.fahien.spacefloat.component.PositionComponent",
+        "x":"-500",
+        "y":"-50",
+        "z":"-1000"
+      },
+      {
+        "class": "me.fahien.spacefloat.component.VelocityComponent",
+        "x": "0",
+        "y": "0",
+        "z": "0"
       }
     ],
     "iterable":null

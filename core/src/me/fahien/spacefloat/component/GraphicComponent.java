@@ -2,6 +2,7 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -44,6 +45,13 @@ public class GraphicComponent implements Component, Json.Serializable {
 	 */
 	public void setInstance(ModelInstance instance) {
 		this.instance = instance;
+	}
+
+	/**
+	 * Sets the instance position
+	 */
+	public void setPosition(Vector3 position) {
+		instance.transform.setTranslation(position);
 	}
 
 	@Override

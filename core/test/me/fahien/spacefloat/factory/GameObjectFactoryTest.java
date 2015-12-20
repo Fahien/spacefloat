@@ -6,6 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import me.fahien.spacefloat.component.PlayerComponent;
+import me.fahien.spacefloat.component.PositionComponent;
+import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.game.GdxTestRunner;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -22,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(GdxTestRunner.class)
 public class GameObjectFactoryTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
-	private static final String MODEL_NAME = "player";
+	private static final String MODEL_NAME = "player.g3db";
 
 	private GameObjectFactory factory;
 
@@ -33,21 +36,33 @@ public class GameObjectFactoryTest {
 
 	@Test
 	public void couldSaveTheSpaceship() {
-		GameObject object = new GameObject();
-		object.setName(SPACESHIP_NAME);
+		GameObject spaceship = new GameObject();
+		spaceship.setName(SPACESHIP_NAME);
 		GraphicComponent graphic = new GraphicComponent();
 		graphic.setName(MODEL_NAME);
-		object.add(graphic);
-		factory.save(object);
+		spaceship.add(graphic);
+		PositionComponent position = new PositionComponent();
+		spaceship.add(position);
+		VelocityComponent velocity = new VelocityComponent();
+		spaceship.add(velocity);
+		PlayerComponent player = new PlayerComponent();
+		spaceship.add(player);
+		factory.save(spaceship);
 	}
 
 	@Test
 	public void couldLoadTheSpaceship() {
-		GameObject object = factory.load(SPACESHIP_NAME);
-		assertEquals("The name is not equals to " + SPACESHIP_NAME, SPACESHIP_NAME, object.getName());
-		GraphicComponent graphic = object.getComponent(GraphicComponent.class);
+		GameObject spaceship = factory.load(SPACESHIP_NAME);
+		assertEquals("The name is not equals to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
+		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
 		assertNotNull("The spaceship has no graphic component", graphic);
 		assertEquals("The graphic name is not equals to " + MODEL_NAME, MODEL_NAME, graphic.getName());
+		PositionComponent position = spaceship.getComponent(PositionComponent.class);
+		assertNotNull("The spaceship has no position component", position);
+		VelocityComponent velocity = spaceship.getComponent(VelocityComponent.class);
+		assertNotNull("The spaceship has no velocity component", velocity);
+		PlayerComponent player = spaceship.getComponent(PlayerComponent.class);
+		assertNotNull("The spaceship has no player component", player);
 	}
 
 	@Test
