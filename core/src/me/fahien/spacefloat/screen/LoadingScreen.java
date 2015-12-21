@@ -17,11 +17,11 @@ import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
 
 /**
- * The Loading {@link TwoDimensionsScreen}
+ * The Loading {@link StagedScreen}
  *
  * @author Fahien
  */
-public class LoadingScreen extends TwoDimensionsScreen {
+public class LoadingScreen extends StagedScreen {
 	private String LOADING_TEXT = " %";
 
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
@@ -68,21 +68,29 @@ public class LoadingScreen extends TwoDimensionsScreen {
 	}
 
 	@Override
-	public void update(float delta) {
+	public void prerender(float delta) {
 		assetManager.update();
 		progress = assetManager.getProgress();
 		if (progress != 1.0f) {
 			loadingActor.setText((int) (progress * 100) + LOADING_TEXT);
 		} else {
-			for (Entity entity : entities) {
-				GraphicComponent graphic = graphicMapper.get(entity);
-				if (graphic.getInstance() == null) {
-					Model model = assetManager.get(GraphicComponent.MODELS_DIR + graphic.getName(), Model.class);
-					ModelInstance instance = new ModelInstance(model);
-					graphic.setInstance(instance);
-				}
-			}
+			injectInstances(entities);
+			// Change screen
 			getGame().setScreen(ScreenEnumerator.MAIN);
+		}
+	}
+
+	/**
+	 * Inject instances in every {@link GraphicComponent}
+	 */
+	private void injectInstances(ImmutableArray<Entity> entities) {
+		for (Entity entity : entities) {
+			GraphicComponent graphic = graphicMapper.get(entity);
+			if (graphic.getInstance() == null) {
+				Model model = assetManager.get(GraphicComponent.MODELS_DIR + graphic.getName(), Model.class);
+				ModelInstance instance = new ModelInstance(model);
+				graphic.setInstance(instance);
+			}
 		}
 	}
 }

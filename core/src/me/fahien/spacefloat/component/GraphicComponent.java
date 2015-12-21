@@ -54,6 +54,13 @@ public class GraphicComponent implements Component, Json.Serializable {
 		instance.transform.setTranslation(position);
 	}
 
+	/**
+	 * Sets the instance rotation
+	 */
+	public void setFromEulerAngles(Vector3 eulerAngles) {
+		instance.transform.setFromEulerAnglesRad(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JSON_NAME, name);

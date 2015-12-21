@@ -13,20 +13,33 @@ import me.fahien.spacefloat.utils.JsonString;
 public class VelocityComponent implements Component, Json.Serializable {
 
 	private Vector3 velocity;
+	private Vector3 eulerAnglesVelocity;
 
 	public VelocityComponent() {
 		velocity = new Vector3();
+		eulerAnglesVelocity = new Vector3();
 	}
 
 	public Vector3 getVelocity() {
 		return velocity;
 	}
 
+	/**
+	 * Returns the euler Angles
+	 */
+	public Vector3 getEulerAnglesVelocity() {
+		return eulerAnglesVelocity;
+	}
+
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JsonString.JSON_X, velocity.x);
 		json.writeValue(JsonString.JSON_Y, velocity.y);
 		json.writeValue(JsonString.JSON_Z, velocity.z);
+		json.writeValue(JsonString.YAW, eulerAnglesVelocity.x);
+		json.writeValue(JsonString.PITCH, eulerAnglesVelocity.y);
+		json.writeValue(JsonString.ROLL, eulerAnglesVelocity.z);
 	}
 
 	@Override
@@ -34,5 +47,8 @@ public class VelocityComponent implements Component, Json.Serializable {
 		velocity.x = jsonData.getFloat(JsonString.JSON_X);
 		velocity.y = jsonData.getFloat(JsonString.JSON_Y);
 		velocity.z = jsonData.getFloat(JsonString.JSON_Z);
+		eulerAnglesVelocity.x = jsonData.getFloat(JsonString.YAW);
+		eulerAnglesVelocity.y = jsonData.getFloat(JsonString.PITCH);
+		eulerAnglesVelocity.z = jsonData.getFloat(JsonString.ROLL);
 	}
 }

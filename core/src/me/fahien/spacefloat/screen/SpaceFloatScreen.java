@@ -15,7 +15,7 @@ import me.fahien.spacefloat.game.SpaceFloatGame;
  * @author Fahien
  */
 public class SpaceFloatScreen implements Screen {
-	protected static final int WIDTH = 480;
+	public static final int WIDTH = 480;
 	protected static final int HEIGHT = 270;
 
 	private boolean initialized;

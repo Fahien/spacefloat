@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
  *
  * @author Fahien
  */
-public abstract class TwoDimensionsScreen extends SpaceFloatScreen {
+public abstract class StagedScreen extends SpaceFloatScreen {
 
 	private Viewport viewport;
 	private Stage stage;
@@ -20,9 +20,9 @@ public abstract class TwoDimensionsScreen extends SpaceFloatScreen {
 	public abstract void populate(Stage stage);
 
 	/**
-	 * Updates the logic
+	 * Update is called before drawing the stage
 	 */
-	public abstract void update(float delta);
+	public abstract void prerender(float delta);
 
 	@Override
 	public void show() {
@@ -35,7 +35,7 @@ public abstract class TwoDimensionsScreen extends SpaceFloatScreen {
 	@Override
 	public void render(float delta) {
 		super.render(delta);
-		update(delta);
+		prerender(delta);
 		stage.act(delta);
 		stage.draw();
 	}

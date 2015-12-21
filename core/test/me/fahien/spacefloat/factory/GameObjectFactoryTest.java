@@ -6,8 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
-import me.fahien.spacefloat.component.PositionComponent;
+import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.game.GdxTestRunner;
 import me.fahien.spacefloat.component.GraphicComponent;
@@ -41,10 +42,12 @@ public class GameObjectFactoryTest {
 		GraphicComponent graphic = new GraphicComponent();
 		graphic.setName(MODEL_NAME);
 		spaceship.add(graphic);
-		PositionComponent position = new PositionComponent();
+		TransformComponent position = new TransformComponent();
 		spaceship.add(position);
 		VelocityComponent velocity = new VelocityComponent();
 		spaceship.add(velocity);
+		AccelerationComponent acceleration = new AccelerationComponent();
+		spaceship.add(acceleration);
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
 		factory.save(spaceship);
@@ -57,12 +60,14 @@ public class GameObjectFactoryTest {
 		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
 		assertNotNull("The spaceship has no graphic component", graphic);
 		assertEquals("The graphic name is not equals to " + MODEL_NAME, MODEL_NAME, graphic.getName());
-		PositionComponent position = spaceship.getComponent(PositionComponent.class);
+		TransformComponent position = spaceship.getComponent(TransformComponent.class);
 		assertNotNull("The spaceship has no position component", position);
 		VelocityComponent velocity = spaceship.getComponent(VelocityComponent.class);
 		assertNotNull("The spaceship has no velocity component", velocity);
 		PlayerComponent player = spaceship.getComponent(PlayerComponent.class);
 		assertNotNull("The spaceship has no player component", player);
+		AccelerationComponent acceleration = spaceship.getComponent(AccelerationComponent.class);
+		assertNotNull("The spaceship has no acceleration component", acceleration);
 	}
 
 	@Test
