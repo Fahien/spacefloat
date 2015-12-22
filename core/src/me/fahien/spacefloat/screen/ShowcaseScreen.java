@@ -228,7 +228,7 @@ public class ShowcaseScreen extends SpaceFloatScreen {
 
 		loadingActor = new FontActor(getFont(), LOADING_TXT);
 		loadingActor.setPosition(WIDTH - FPS_X, FPS_Y);
-		loadingActor.setHalign(FontActor.Halign.LEFT);
+		loadingActor.setHalign(FontActor.Halign.RIGHT);
 
 		FontActor leftArrow = new FontActor(getFont(), LEFT_ARROW_TXT);
 		leftArrow.setSize(ARROW_SIZE, ARROW_SIZE);

@@ -6,11 +6,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import me.fahien.spacefloat.actor.ActorFactory;
+import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.controller.SpaceshipController;
+import me.fahien.spacefloat.controller.SpaceshipController2D;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.PhysicSystem;
 import me.fahien.spacefloat.system.RenderingSystem;
@@ -33,7 +34,7 @@ public class MainScreen extends StagedScreen {
 		camera = new CameraSystem(mainCamera);
 		rendering = new RenderingSystem(mainCamera);
 		physic = new PhysicSystem();
-		controller = new SpaceshipController();
+		controller = new SpaceshipController2D();
 	}
 
 	@Override
@@ -48,12 +49,15 @@ public class MainScreen extends StagedScreen {
 
 	@Override
 	public void populate(Stage stage) {
-		ActorFactory factory = new ActorFactory();
+		HudFactory factory = new HudFactory();
 		BitmapFont font = getFont();
 		stage.addActor(factory.getFpsActor(font));
 		Entity player = camera.getPlayer();
-		Vector3 velocity = player.getComponent(VelocityComponent.class).getVelocity();
+		VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);
+		Vector3 velocity = velocityComponent.getVelocity();
 		stage.addActor(factory.getVelocityActor(font, velocity));
+		Vector3 rotationVelocity = velocityComponent.getEulerAnglesVelocity();
+		stage.addActor(factory.getRotationVelocityActor(font, rotationVelocity));
 		Vector3 position = player.getComponent(TransformComponent.class).getPosition();
 		stage.addActor(factory.getPositionActor(font, position));
 	}

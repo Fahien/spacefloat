@@ -15,6 +15,7 @@ import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 
 import static com.badlogic.ashley.core.ComponentMapper.getFor;
+import static com.badlogic.gdx.math.MathUtils.clamp;
 
 /**
  * The Physic {@link IteratingSystem}
@@ -22,13 +23,26 @@ import static com.badlogic.ashley.core.ComponentMapper.getFor;
  * @author Fahien
  */
 public class PhysicSystem extends IteratingSystem {
+	/** Close to Zeros */
+	private static final float ROTATIONVELOCITY_CTZ = 0.005f;
+	private static final float VELOCITY_CTZ = 1.0f;
+	private static final float MAX_ROTATIONVELOCITY = 4.0f;
 	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
 	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
 	private ComponentMapper<VelocityComponent> vm = getFor(VelocityComponent.class);
 	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 
-	private Vector3 tempAcceleration;
-	private Quaternion quaternion;
+	// Temp variables
+	protected GraphicComponent graphicComponent;
+	protected TransformComponent transformComponent;
+	protected VelocityComponent velocityComponent;
+	protected AccelerationComponent accelerationComponent;
+	protected Vector3 position;
+	protected Vector3 rotation;
+	protected Vector3 velocity;
+	protected Vector3 rotationVelocity;
+	protected Vector3 tempAcceleration;
+	protected Quaternion quaternion;
 
 	public PhysicSystem() {
 		super(Family.all(GraphicComponent.class, TransformComponent.class).get());
@@ -56,38 +70,36 @@ public class PhysicSystem extends IteratingSystem {
 
 	@Override
 	protected void processEntity(Entity entity, float delta) {
-		GraphicComponent graphic = gm.get(entity);
-		TransformComponent transform = tm.get(entity);
-		VelocityComponent velocity = vm.get(entity);
-		AccelerationComponent acceleration = am.get(entity);
+		// Get the components of the current entity
+		graphicComponent = gm.get(entity);
+		transformComponent = tm.get(entity);
+		velocityComponent = vm.get(entity);
+		accelerationComponent = am.get(entity);
 
-		Vector3 position = transform.getPosition();
-		Vector3 rotation = transform.getRotation();
-		if (velocity != null) {
-			Vector3 v = velocity.getVelocity();
-			Vector3 vr = velocity.getEulerAnglesVelocity();
-			if (acceleration != null) {
-				updateVelocity(acceleration.getAcceleration(), v, graphic, delta);
-				updateRotationVelocity(acceleration.getEulerAnglesAcceleration(), vr, delta);
+		if (velocityComponent != null) {
+			// Get the position and the rotation
+			position = transformComponent.getPosition();
+			rotation = transformComponent.getRotation();
+			// Get the velocity and rotationVelocity
+			velocity = velocityComponent.getVelocity();
+			rotationVelocity = velocityComponent.getEulerAnglesVelocity();
+			if (accelerationComponent != null) {
+				updateVelocity(accelerationComponent.getAcceleration(), velocity, graphicComponent, delta);
+				updateRotationVelocity(accelerationComponent.getEulerAnglesAcceleration(), rotationVelocity, delta);
 			}
-			if (!vr.equals(Vector3.Zero)) {
-				rotation.x += vr.x * delta;
-				rotation.y += vr.y * delta;
-				rotation.z += vr.z * delta;
-			} else {
-				if (rotation.x < 0.025f && rotation.x > -0.025f) rotation.x = 0;
-				if (rotation.y < 0.025f && rotation.y > -0.025f) rotation.y = 0;
-				if (rotation.z < 0.025f && rotation.z > -0.025f) rotation.z = 0;
+			if (!rotationVelocity.equals(Vector3.Zero)) {
+				rotation.x += rotationVelocity.x * delta;
+				rotation.y += rotationVelocity.y * delta;
+				rotation.z += rotationVelocity.z * delta;
 			}
-			if (!v.equals(Vector3.Zero)) {
-				position.x += v.x * delta;
-				position.y += v.y * delta;
-				position.z += v.z * delta;
+			if (!velocity.equals(Vector3.Zero)) {
+				position.x += velocity.x * delta;
+				position.y += velocity.y * delta;
+				position.z += velocity.z * delta;
 			}
-			quaternion = new Quaternion();
 			quaternion.setEulerAnglesRad(rotation.x, rotation.y, rotation.z);
-			graphic.getInstance().transform.rotate(quaternion);
-			graphic.setPosition(position);
+			graphicComponent.getInstance().transform.set(quaternion);
+			graphicComponent.setPosition(position);
 		}
 	}
 
@@ -96,14 +108,15 @@ public class PhysicSystem extends IteratingSystem {
 	 */
 	private void updateRotationVelocity(Vector3 rotationAcceleration, Vector3 rotationVelocity, float delta) {
 		if (!rotationAcceleration.equals(Vector3.Zero)) {
-			// Updates the velocity of rotation
-			rotationVelocity.x += rotationAcceleration.x * delta;
-			rotationVelocity.y += rotationAcceleration.y * delta;
-			rotationVelocity.z += rotationAcceleration.z * delta;
-		} else {
-			if (rotationVelocity.len2() < 0.5f) {
-				rotationVelocity.x = rotationVelocity.y = rotationVelocity.z = 0.0f;
-			}
+			// Updates the velocityComponent of rotation
+			rotationVelocity.x = clamp(rotationVelocity.x + rotationAcceleration.x * delta,
+					-MAX_ROTATIONVELOCITY, MAX_ROTATIONVELOCITY);
+			rotationVelocity.y = clamp(rotationVelocity.y + rotationAcceleration.y * delta,
+					-MAX_ROTATIONVELOCITY, MAX_ROTATIONVELOCITY);
+			rotationVelocity.z = clamp(rotationVelocity.z + rotationAcceleration.z * delta,
+					-MAX_ROTATIONVELOCITY, MAX_ROTATIONVELOCITY);
+		} else if (rotationVelocity.len2() < ROTATIONVELOCITY_CTZ) {
+			rotationVelocity.x = rotationVelocity.y = rotationVelocity.z = 0.0f;
 		}
 	}
 
@@ -121,7 +134,7 @@ public class PhysicSystem extends IteratingSystem {
 			velocity.y += tempAcceleration.y * delta;
 			velocity.z += tempAcceleration.z * delta;
 		} else {
-			if (velocity.len2() < 1f) {
+			if (velocity.len2() < VELOCITY_CTZ) {
 				velocity.x = velocity.y = velocity.z = 0.0f;
 			}
 		}

@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
  */
 public class FontActor extends Actor {
 	public enum Halign {
-		LEFT(0),
-		RIGHT(-1),
+		RIGHT(0),
+		LEFT(-1),
 		CENTER(1);
 
 		private int value;
@@ -35,7 +35,7 @@ public class FontActor extends Actor {
 		super();
 		this.font = font;
 		this.text = new StringBuilder(text);
-		halign = Halign.RIGHT.getValue();
+		halign = Halign.LEFT.getValue();
 	}
 
 	/**

@@ -11,8 +11,8 @@
       {
         "class": "me.fahien.spacefloat.component.TransformComponent",
         "x":"-500",
-        "y":"-50",
-        "z":"-1000",
+        "y":"-500",
+        "z":"-500",
         "yaw": "0",
         "pitch": "0",
         "roll": "0"
