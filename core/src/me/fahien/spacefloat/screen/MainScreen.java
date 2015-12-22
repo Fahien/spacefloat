@@ -12,6 +12,7 @@ import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.controller.SpaceshipController;
 import me.fahien.spacefloat.controller.SpaceshipController2D;
+import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.PhysicSystem;
 import me.fahien.spacefloat.system.RenderingSystem;
@@ -53,13 +54,17 @@ public class MainScreen extends StagedScreen {
 		BitmapFont font = getFont();
 		stage.addActor(factory.getFpsActor(font));
 		Entity player = camera.getPlayer();
-		VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);
-		Vector3 velocity = velocityComponent.getVelocity();
-		stage.addActor(factory.getVelocityActor(font, velocity));
-		Vector3 rotationVelocity = velocityComponent.getEulerAnglesVelocity();
-		stage.addActor(factory.getRotationVelocityActor(font, rotationVelocity));
-		Vector3 position = player.getComponent(TransformComponent.class).getPosition();
-		stage.addActor(factory.getPositionActor(font, position));
+		if (player != null) {
+			VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);
+			Vector3 velocity = velocityComponent.getVelocity();
+			stage.addActor(factory.getVelocityActor(font, velocity));
+			Vector3 rotationVelocity = velocityComponent.getEulerAnglesVelocity();
+			stage.addActor(factory.getRotationVelocityActor(font, rotationVelocity));
+			Vector3 position = player.getComponent(TransformComponent.class).getPosition();
+			stage.addActor(factory.getPositionActor(font, position));
+		} else {
+			SpaceFloatGame.logger.error("Error creating the HUD: player is null");
+		}
 	}
 
 	@Override

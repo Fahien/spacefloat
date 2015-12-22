@@ -1,5 +1,7 @@
 package me.fahien.spacefloat.factory;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 
 import org.junit.Before;
@@ -70,8 +72,24 @@ public class GameObjectFactoryTest {
 		assertNotNull("The spaceship has no acceleration component", acceleration);
 	}
 
+	/**
+	 * Creates the objects list
+	 */
+	private void createObjectList() {
+		String objectList = "";
+		FileHandle[] files = Gdx.files.local(GameObjectFactory.OBJECTS_DIR).list();
+		for (FileHandle file : files) {
+			if (file.path().endsWith(GameObjectFactory.JSON_EXT)) {
+				objectList += file.nameWithoutExtension() + "\n";
+			}
+		}
+		FileHandle fileList = Gdx.files.local(GameObjectFactory.OBJECT_LIST);
+		fileList.writeString(objectList, false);
+	}
+
 	@Test
 	public void couldLoadAllObjects() {
+		createObjectList();
 		Array<GameObject> objects = factory.loadObjects();
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
