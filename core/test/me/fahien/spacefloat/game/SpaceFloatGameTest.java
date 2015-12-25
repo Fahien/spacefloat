@@ -31,7 +31,7 @@ public class SpaceFloatGameTest {
 	private static final String TEST_DIR = "test/";
 	private static final String TEST_ASSET = TEST_DIR + "spaceship.png";
 	private static final String MODELS_DIR = "models/";
-	private static final String CAR_MODEL = MODELS_DIR + "player.g3db";
+	private static final String A_MODEL = MODELS_DIR + "player.g3db";
 
 	private SpaceFloatGame game;
 
@@ -40,18 +40,20 @@ public class SpaceFloatGameTest {
 		game = new SpaceFloatGame();
 	}
 
+
+
 	@Test
-	public void couldGetTheAssetManager() {
+	public void canGetTheAssetManager() {
 		assertNotNull("The game has no asset manager", game.getAssetManager());
 	}
 
 	@Test
-	public void couldGetTheAshleyEngine() {
+	public void canGetTheAshleyEngine() {
 		assertNotNull("The game has no Ashley engine", game.getEngine());
 	}
 
 	@Test
-	public void couldLoadAnAsset() {
+	public void canLoadAnAsset() {
 		AssetManager assetManager = game.getAssetManager();
 		assetManager.load(TEST_ASSET, Texture.class);
 		assetManager.finishLoading();
@@ -59,7 +61,7 @@ public class SpaceFloatGameTest {
 	}
 
 	@Test
-	public void couldLoadAnAssetDirectory() {
+	public void canLoadAnAssetDirectory() {
 		AssetManager assetManager = game.getAssetManager();
 		FileHandle[] files = Gdx.files.local(TEST_DIR).list();
 		for(FileHandle file : files) {
@@ -72,7 +74,7 @@ public class SpaceFloatGameTest {
 	}
 
 	@Test
-	public void couldInjectDependenciesInScreens() {
+	public void canInjectDependenciesInScreens() {
 		game.loadFont();
 		for (ScreenEnumerator screenEnum : ScreenEnumerator.values()) {
 			try {
@@ -111,7 +113,7 @@ public class SpaceFloatGameTest {
 		try {
 			game.create();
 		} catch (GdxRuntimeException|IllegalArgumentException e) {
-			logger.error("Could not initialize the Model Batch during tests: " + e.getMessage());
+			logger.error("Could not create the game during tests: " + e.getMessage());
 		}
 		assertEquals("The game is not showing the main screen",
 				ScreenEnumerator.LOADING.getScreen(),
@@ -119,15 +121,15 @@ public class SpaceFloatGameTest {
 	}
 
 	@Test
-	public void couldLoadTheCarModel() {
+	public void canLoadAModel() {
 		AssetManager assetManager = game.getAssetManager();
-		assetManager.load(CAR_MODEL, Model.class);
+		assetManager.load(A_MODEL, Model.class);
 		assetManager.finishLoading();
-		assertNotNull("Could not get car model: " + CAR_MODEL, assetManager.get(CAR_MODEL));
+		assertNotNull("Could not get car model: " + A_MODEL, assetManager.get(A_MODEL));
 	}
 
 	@Test
-	public void couldLoadAndGetTheFont() {
+	public void canLoadAndGetTheFont() {
 		game.loadFont();
 		assertNotNull("Could not get the font", game.getFont());
 	}

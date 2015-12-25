@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.Logger;
 
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
@@ -82,6 +83,7 @@ public class SpaceFloatGame extends Game {
 		Gdx.app.setLogLevel(LOGGER_LEVEL);
 		logger.info(logo);
 		loadFont();
+		Bullet.init();
 		setScreen(ScreenEnumerator.LOADING);
 		logger.debug("Game initialized");
 	}

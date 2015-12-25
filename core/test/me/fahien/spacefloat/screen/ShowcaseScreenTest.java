@@ -9,9 +9,6 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static me.fahien.spacefloat.game.GdxTestRunner.logger;
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +19,6 @@ import static org.junit.Assert.assertNull;
  *
  * @author Fahien
  */
-@RunWith(GdxTestRunner.class)
 public class ShowcaseScreenTest {
 	protected static final String MODEL = "player";
 
@@ -34,7 +30,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldInitializeTheStage() {
+	public void canInitializeTheStage() {
 		try {
 			screen.initStage();
 			assertNotNull("The showcase screen has no stage", screen.getStage());
@@ -44,7 +40,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldLoadResources() {
+	public void canLoadResources() {
 		AssetManager assetManager = new AssetManager();
 		screen.setAssetManager(assetManager);
 		screen.loadModel(MODEL);
@@ -55,14 +51,14 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldInitializeInstanceAfterLoadResources() {
-		couldLoadResources();
+	public void canInitializeInstanceAfterLoadResources() {
+		canLoadResources();
 		screen.updateInstance(MODEL);
 		assertNotNull("The instance is null", screen.getInstance());
 	}
 
 	@Test
-	public void couldInitializeTheBatch() {
+	public void canInitializeTheBatch() {
 		try {
 			screen.initBatch();
 			assertNotNull(screen.getBatch());
@@ -72,7 +68,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldInitializeTheEnvironment() {
+	public void canInitializeTheEnvironment() {
 		screen.initEnvironment();
 		assertNotNull("The environment is null", screen.getEnvironment());
 	}
@@ -90,7 +86,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldLoadTheListOfModels() {
+	public void canLoadTheListOfModels() {
 		createTheModelList();
 		screen.loadInternalModels();
 		Array<String> list = screen.getModelList();
@@ -99,7 +95,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldLoadNextModel() {
+	public void canLoadNextModel() {
 		AssetManager assetManager = new AssetManager();
 		screen.setAssetManager(assetManager);
 		screen.loadNextModel();
@@ -112,7 +108,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldLoadPreviousModel() {
+	public void canLoadPreviousModel() {
 		AssetManager assetManager = new AssetManager();
 		screen.setAssetManager(assetManager);
 		screen.loadPreviousModel();
@@ -125,7 +121,7 @@ public class ShowcaseScreenTest {
 	}
 
 	@Test
-	public void couldLoadLocalModels() {
+	public void canLoadLocalModels() {
 		AssetManager assetManager = new AssetManager();
 		screen.setAssetManager(assetManager);
 		screen.loadLocalModels();

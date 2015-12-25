@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -21,7 +18,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Fahien
  */
-@RunWith(GdxTestRunner.class)
 public class SpaceFloatScreenTest {
 
 	private SpaceFloatScreen screen;
@@ -37,7 +33,7 @@ public class SpaceFloatScreenTest {
 	}
 
 	@Test
-	public void couldInitializeAScreen() {
+	public void canInitializeAScreen() {
 		screen.setInitialized(true);
 		screen.setAssetManager(new AssetManager());
 		screen.setFont(new BitmapFont());

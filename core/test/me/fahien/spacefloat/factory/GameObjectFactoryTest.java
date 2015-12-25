@@ -6,14 +6,13 @@ import com.badlogic.gdx.utils.Array;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
+import me.fahien.spacefloat.component.CollisionComponent;
+import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
-import me.fahien.spacefloat.game.GdxTestRunner;
-import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.entity.GameObject;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +24,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Fahien
  */
-@RunWith(GdxTestRunner.class)
 public class GameObjectFactoryTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
 	private static final String MODEL_NAME = "player.g3db";
@@ -38,7 +36,7 @@ public class GameObjectFactoryTest {
 	}
 
 	@Test
-	public void couldSaveTheSpaceship() {
+	public void canSaveTheSpaceship() {
 		GameObject spaceship = new GameObject();
 		spaceship.setName(SPACESHIP_NAME);
 		GraphicComponent graphic = new GraphicComponent();
@@ -52,11 +50,13 @@ public class GameObjectFactoryTest {
 		spaceship.add(acceleration);
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
+		CollisionComponent collision = new CollisionComponent();
+		spaceship.add(collision);
 		factory.save(spaceship);
 	}
 
 	@Test
-	public void couldLoadTheSpaceship() {
+	public void canLoadTheSpaceship() {
 		GameObject spaceship = factory.load(SPACESHIP_NAME);
 		assertEquals("The name is not equals to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
 		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
@@ -70,6 +70,8 @@ public class GameObjectFactoryTest {
 		assertNotNull("The spaceship has no player component", player);
 		AccelerationComponent acceleration = spaceship.getComponent(AccelerationComponent.class);
 		assertNotNull("The spaceship has no acceleration component", acceleration);
+		CollisionComponent collision = spaceship.getComponent(CollisionComponent.class);
+		assertNotNull("The spaceship has no collision component", collision);
 	}
 
 	/**
@@ -88,7 +90,7 @@ public class GameObjectFactoryTest {
 	}
 
 	@Test
-	public void couldLoadAllObjects() {
+	public void canLoadAllObjects() {
 		createObjectList();
 		Array<GameObject> objects = factory.loadObjects();
 		assertNotNull("Objects array is null", objects);

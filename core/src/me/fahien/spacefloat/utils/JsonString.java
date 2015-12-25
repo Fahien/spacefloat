@@ -17,4 +17,5 @@ public class JsonString {
 	public static final String YAW = "yaw";
 	public static final String PITCH = "pitch";
 	public static final String ROLL = "roll";
+	public static final String RADIUS = "radius";
 }

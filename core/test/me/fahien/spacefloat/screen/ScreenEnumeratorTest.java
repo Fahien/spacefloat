@@ -1,9 +1,6 @@
 package me.fahien.spacefloat.screen;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -12,26 +9,25 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Fahien
  */
-@RunWith(GdxTestRunner.class)
 public class ScreenEnumeratorTest {
 
 	@Test
-	public void couldGetTheShowcaseScreen() {
+	public void canGetTheShowcaseScreen() {
 		assertNotNull("The showcase screen is null", ScreenEnumerator.SHOWCASE.getScreen());
 	}
 
 	@Test
-	public void couldGetTheInfoScreen() {
+	public void canGetTheInfoScreen() {
 		assertNotNull("The info screen is null", ScreenEnumerator.INFO.getScreen());
 	}
 
 	@Test
-	public void couldGetTheMainScreen() {
+	public void canGetTheMainScreen() {
 		assertNotNull("The main screen is null", ScreenEnumerator.MAIN.getScreen());
 	}
 
 	@Test
-	public void couldGetTheLoadingScreen() {
+	public void canGetTheLoadingScreen() {
 		assertNotNull("The loading screen is null", ScreenEnumerator.LOADING.getScreen());
 	}
 }

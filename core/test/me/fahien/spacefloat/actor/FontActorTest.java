@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,11 +13,10 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Fahien
  */
-@RunWith(GdxTestRunner.class)
 public class FontActorTest {
 	private static final String TEST_TEXT = "Test";
-	private static final String ANOTHER_TEXT = "Another";
-	private static final String SHORT_TEXT = "s";
+	private static final String LONGER_TEXT = "Longer";
+	private static final String SHORT_TEXT = "Sh";
 
 	private FontActor actor;
 	private BitmapFont font;
@@ -32,15 +28,15 @@ public class FontActorTest {
 	}
 
 	@Test
-	public void couldSetLongerText() {
-		actor.setText(ANOTHER_TEXT);
-		assertEquals("Could not set longer text", ANOTHER_TEXT, actor.getText().toString());
+	public void canSetLongerText() {
+		actor.setText(LONGER_TEXT);
+		assertEquals("Could not set longer text", LONGER_TEXT, actor.getText().toString());
 	}
 
 	@Test
-	public void couldSetShorterText() {
+	public void canSetShorterText() {
 		actor.setText(SHORT_TEXT);
-		assertEquals("Could not set longer text", SHORT_TEXT, actor.getText().toString());
+		assertEquals("Could not set shorter text", SHORT_TEXT, actor.getText().toString());
 	}
 
 	@After
