@@ -57,7 +57,7 @@ public class SpaceFloatGameTest {
 		AssetManager assetManager = game.getAssetManager();
 		assetManager.load(TEST_ASSET, Texture.class);
 		assetManager.finishLoading();
-		assertNotNull("Could not get test asset: " + TEST_ASSET, assetManager.get(TEST_ASSET));
+		assertNotNull("Could not get canLoadObjects asset: " + TEST_ASSET, assetManager.get(TEST_ASSET));
 	}
 
 	@Test

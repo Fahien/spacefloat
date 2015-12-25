@@ -8,13 +8,19 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 import me.fahien.spacefloat.actor.FontActor;
+import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.game.SpaceFloatGame;
+
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Loading {@link StagedScreen}
@@ -25,8 +31,10 @@ public class LoadingScreen extends StagedScreen {
 	private String LOADING_TEXT = " %";
 
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
+	private ComponentMapper<CollisionComponent> collisionMapper = ComponentMapper.getFor(CollisionComponent.class);
 	private ImmutableArray<Entity> entities;
 
+	// Temp variables
 	private FontActor loadingActor;
 	private AssetManager assetManager;
 	private float progress;
@@ -39,13 +47,22 @@ public class LoadingScreen extends StagedScreen {
 		stage.addActor(loadingActor);
 		assetManager = getAssetManager();
 		loadObjects(getEngine());
+		createCollisionShapes(getEngine());
 		loadModels(getEngine());
+	}
+
+	/**
+	 * Sets the {@link AssetManager}
+	 */
+	public void setAssetManager(AssetManager assetManager) {
+		super.setAssetManager(assetManager);
+		this.assetManager = assetManager;
 	}
 
 	/**
 	 * Loads the {@link GameObject}s
 	 */
-	private void loadObjects(Engine engine) {
+	protected void loadObjects(Engine engine) {
 		GameObjectFactory factory = new GameObjectFactory();
 		Array<GameObject> objects = factory.loadObjects();
 		for (GameObject object : objects) {
@@ -54,15 +71,33 @@ public class LoadingScreen extends StagedScreen {
 	}
 
 	/**
-	 * Load the {@link Model}s
+	 * Creates and injects {@link btCollisionShape} for every {@link CollisionComponent}
 	 */
-	private void loadModels(Engine engine) {
+	protected void createCollisionShapes(Engine engine) {
+		Family family = Family.all(CollisionComponent.class).get();
+		entities = engine.getEntitiesFor(family);
+		for (Entity entity : entities) {
+			CollisionComponent collision = collisionMapper.get(entity);
+			btCollisionShape shape = new btSphereShape(collision.getRadius());
+			collision.setShape(shape);
+		}
+	}
+
+	/**
+	 * Loads the {@link Model}s
+	 */
+	protected void loadModels(Engine engine) {
 		Family family = Family.all(GraphicComponent.class).get();
 		entities = engine.getEntitiesFor(family);
 		for (Entity entity : entities) {
 			GraphicComponent graphic = graphicMapper.get(entity);
 			if(graphic.getInstance() == null) {
-				assetManager.load(GraphicComponent.MODELS_DIR + graphic.getName(), Model.class);
+				String name = graphic.getName();
+				if (name != null) {
+					assetManager.load(GraphicComponent.MODELS_DIR + name, Model.class);
+				} else {
+					logger.error("Error loading models: a graphic has no name");
+				}
 			}
 		}
 	}
@@ -81,9 +116,9 @@ public class LoadingScreen extends StagedScreen {
 	}
 
 	/**
-	 * Inject instances in every {@link GraphicComponent}
+	 * Injects instances in every {@link GraphicComponent}
 	 */
-	private void injectInstances(ImmutableArray<Entity> entities) {
+	protected void injectInstances(ImmutableArray<Entity> entities) {
 		for (Entity entity : entities) {
 			GraphicComponent graphic = graphicMapper.get(entity);
 			if (graphic.getInstance() == null) {

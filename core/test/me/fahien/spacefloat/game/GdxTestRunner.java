@@ -66,7 +66,7 @@ public class GdxTestRunner extends BlockJUnit4ClassRunner implements Application
 		synchronized (invokeInRender) {
 			invokeInRender.put(method, notifier);	//add for invoking in render phase, where gl context is available
 		}
-		waitUntilInvokedInRenderMethod();	//wait until that test was invoked
+		waitUntilInvokedInRenderMethod();	//wait until that canLoadObjects was invoked
 	}
 
 	private void waitUntilInvokedInRenderMethod() {
