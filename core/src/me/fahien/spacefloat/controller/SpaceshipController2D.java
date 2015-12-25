@@ -1,5 +1,6 @@
 package me.fahien.spacefloat.controller;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
@@ -33,6 +34,33 @@ public class SpaceshipController2D extends SpaceshipController {
 		public SpaceshipInputAdapter(Vector3 acceleration, Vector3 eulerAnglesAcceleration) {
 			this.acceleration = acceleration;
 			this.eulerAnglesAcceleration = eulerAnglesAcceleration;
+		}
+
+		@Override
+		public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+			acceleration.x = screenX - Gdx.graphics.getWidth() / 2;
+			acceleration.z = screenY - Gdx.graphics.getHeight() / 2;
+			acceleration.nor();
+			acceleration.z *= VELOCITY;
+			acceleration.x *= VELOCITY;
+			return true;
+		}
+
+		@Override
+		public boolean touchDragged(int screenX, int screenY, int pointer) {
+			acceleration.x = screenX - Gdx.graphics.getWidth() / 2;
+			acceleration.z = screenY - Gdx.graphics.getHeight() / 2;
+			acceleration.nor();
+			acceleration.z *= VELOCITY;
+			acceleration.x *= VELOCITY;
+			return true;
+		}
+
+		@Override
+		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+			acceleration.x = 0;
+			acceleration.z = 0;
+			return true;
 		}
 
 		@Override

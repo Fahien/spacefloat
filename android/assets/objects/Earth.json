@@ -10,21 +10,25 @@
       },
       {
         "class": "me.fahien.spacefloat.component.TransformComponent",
-        "x":"-500",
-        "y":"-500",
-        "z":"-500",
-        "yaw": "0",
-        "pitch": "0",
-        "roll": "0"
+        "x":-400,
+        "y":0,
+        "z":-500,
+        "yaw":0,
+        "pitch":0,
+        "roll":0
       },
       {
         "class": "me.fahien.spacefloat.component.VelocityComponent",
-        "x": "0",
-        "y": "0",
-        "z": "0",
-        "yaw": "0",
-        "pitch": "0",
-        "roll": "0"
+        "x":0,
+        "y":0,
+        "z":0,
+        "yaw":0,
+        "pitch":0,
+        "roll":0
+      },
+      {
+        "class":"me.fahien.spacefloat.component.CollisionComponent",
+        "radius":500
       }
     ],
     "iterable":null

@@ -31,6 +31,11 @@ public class VelocityComponent implements Component, Json.Serializable {
 		return eulerAnglesVelocity;
 	}
 
+	public void collision() {
+		velocity.x = 0;
+		velocity.y = 0;
+		velocity.z = 0;
+	}
 
 	@Override
 	public void write(Json json) {

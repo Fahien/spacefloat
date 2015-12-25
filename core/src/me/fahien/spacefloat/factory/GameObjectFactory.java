@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -32,27 +31,17 @@ public class GameObjectFactory {
 	}
 
 	/**
-	 * Load a {@link GameObject}
+	 * Loads a {@link GameObject}
 	 */
 	public GameObject load(String testName) {
 		return json.fromJson(GameObject.class, Gdx.files.local(OBJECTS_DIR + testName + JSON_EXT));
 	}
 
 	/**
-	 * Loads all {@link GameObject} in OBJECTS_DIR
+	 * Loads a {@link GameObject}
 	 */
-	public Array<GameObject> loadOldObjects() {
-		FileHandle[] objects = Gdx.files.local(OBJECTS_DIR).list();
-		if (objects.length == 0) {
-			objects = Gdx.files.internal(OBJECTS_DIR).list();
-		}
-		logger.info("Objects in " + OBJECTS_DIR + ": " + objects.length);
-		Array<GameObject> array = new Array<>((int)objects.length);
-		for (FileHandle object : objects) {
-			array.add(load(object.nameWithoutExtension()));
-		}
-		logger.info("Loaded " + array.size + " objects");
-		return array;
+	public GameObject loadInternal(String testName) {
+		return json.fromJson(GameObject.class, Gdx.files.internal(OBJECTS_DIR + testName + JSON_EXT));
 	}
 
 	/**
@@ -82,7 +71,7 @@ public class GameObjectFactory {
 						objects.add(load(file.nameWithoutExtension()));
 					}
 				}
-				logger.info(objects.size + " object found in the local directory: " + OBJECTS_DIR);
+				logger.info(objects.size + " objects found in the local directory: " + OBJECTS_DIR);
 				return objects;
 			}
 		}
@@ -100,7 +89,7 @@ public class GameObjectFactory {
 		if (modelNames.length > 0) {
 			objects = new Array<>(modelNames.length);
 			for (String modelName : modelNames) {
-				objects.add(load(modelName));
+				objects.add(loadInternal(modelName));
 			}
 			logger.info(objects.size + " object found in the internal directory: " + OBJECTS_DIR);
 			return objects;

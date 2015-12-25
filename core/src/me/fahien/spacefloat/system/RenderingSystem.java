@@ -114,11 +114,9 @@ public class RenderingSystem extends EntitySystem {
 		shapeRenderer.end();
 	}
 
-
-	/**
-	 * Disposes the resources
-	 */
-	public void dispose() {
+	@Override
+	public void removedFromEngine(Engine engine) {
+		super.removedFromEngine(engine);
 		// Dispose the model batch
 		if (batch != null) batch.dispose();
 	}

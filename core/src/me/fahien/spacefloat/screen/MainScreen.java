@@ -14,6 +14,7 @@ import me.fahien.spacefloat.controller.SpaceshipController;
 import me.fahien.spacefloat.controller.SpaceshipController2D;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.system.CollisionSystem;
 import me.fahien.spacefloat.system.PhysicSystem;
 import me.fahien.spacefloat.system.RenderingSystem;
 
@@ -28,6 +29,7 @@ public class MainScreen extends StagedScreen {
 	private CameraSystem camera;
 	private RenderingSystem rendering;
 	private PhysicSystem physic;
+	private CollisionSystem collision;
 	private SpaceshipController controller;
 
 	public MainScreen() {
@@ -35,16 +37,18 @@ public class MainScreen extends StagedScreen {
 		camera = new CameraSystem(mainCamera);
 		rendering = new RenderingSystem(mainCamera);
 		physic = new PhysicSystem();
+		collision = new CollisionSystem();
 		controller = new SpaceshipController2D();
 	}
 
 	@Override
 	public void show() {
 		engine = getEngine();
+		engine.addSystem(controller);
+		engine.addSystem(collision);
+		engine.addSystem(physic);
 		engine.addSystem(camera);
 		engine.addSystem(rendering);
-		engine.addSystem(physic);
-		engine.addSystem(controller);
 		super.show();
 	}
 
@@ -75,15 +79,15 @@ public class MainScreen extends StagedScreen {
 	@Override
 	public void hide() {
 		super.hide();
+		engine.removeSystem(camera);
 		engine.removeSystem(rendering);
 		engine.removeSystem(physic);
-		engine.removeSystem(camera);
+		engine.removeSystem(collision);
 		engine.removeSystem(controller);
 	}
 
 	@Override
 	public void dispose() {
 		super.dispose();
-		if (rendering != null) rendering.dispose();
 	}
 }

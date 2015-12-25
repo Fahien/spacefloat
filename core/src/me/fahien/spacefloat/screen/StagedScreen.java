@@ -28,7 +28,7 @@ public abstract class StagedScreen extends SpaceFloatScreen {
 	public void show() {
 		super.show();
 		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
-		stage = new Stage();
+		stage = new Stage(viewport);
 		populate(stage);
 	}
 

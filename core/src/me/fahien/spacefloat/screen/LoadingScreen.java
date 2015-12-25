@@ -8,17 +8,13 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 import me.fahien.spacefloat.actor.FontActor;
-import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
-import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -31,7 +27,6 @@ public class LoadingScreen extends StagedScreen {
 	private String LOADING_TEXT = " %";
 
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
-	private ComponentMapper<CollisionComponent> collisionMapper = ComponentMapper.getFor(CollisionComponent.class);
 	private ImmutableArray<Entity> entities;
 
 	// Temp variables
@@ -47,7 +42,6 @@ public class LoadingScreen extends StagedScreen {
 		stage.addActor(loadingActor);
 		assetManager = getAssetManager();
 		loadObjects(getEngine());
-		createCollisionShapes(getEngine());
 		loadModels(getEngine());
 	}
 
@@ -67,19 +61,6 @@ public class LoadingScreen extends StagedScreen {
 		Array<GameObject> objects = factory.loadObjects();
 		for (GameObject object : objects) {
 			engine.addEntity(object);
-		}
-	}
-
-	/**
-	 * Creates and injects {@link btCollisionShape} for every {@link CollisionComponent}
-	 */
-	protected void createCollisionShapes(Engine engine) {
-		Family family = Family.all(CollisionComponent.class).get();
-		entities = engine.getEntitiesFor(family);
-		for (Entity entity : entities) {
-			CollisionComponent collision = collisionMapper.get(entity);
-			btCollisionShape shape = new btSphereShape(collision.getRadius());
-			collision.setShape(shape);
 		}
 	}
 

@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.game.GdxTestRunner;
 
@@ -48,18 +47,6 @@ public class LoadingScreenTest {
 	public void canLoadObjects() {
 		screen.loadObjects(engine);
 		assertTrue("The engine has no entities", engine.getEntities().size() > 0);
-	}
-
-	@Test
-	public void canCreateCollisionShapes() {
-		screen.loadObjects(engine);
-		screen.createCollisionShapes(engine);
-		Family family = Family.all(CollisionComponent.class).get();
-		ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
-		for (Entity entity : entities) {
-			CollisionComponent collision = entity.getComponent(CollisionComponent.class);
-			assertNotNull("A collision component has no shape", collision.getShape());
-		}
 	}
 
 	@Test
