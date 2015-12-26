@@ -29,6 +29,10 @@
       {
         "class":"me.fahien.spacefloat.component.CollisionComponent",
         "radius":500
+      },
+      {
+        "class":"me.fahien.spacefloat.component.GravityComponent",
+        "mass": 1
       }
     ],
     "iterable":null

@@ -14,19 +14,19 @@ import me.fahien.spacefloat.utils.JsonString;
  */
 public class AccelerationComponent implements Component, Json.Serializable {
 
-	private Vector3 acceleration;
+	private Vector3 gravity;
 	private Vector3 eulerAnglesAcceleration;
 
 	public AccelerationComponent() {
-		acceleration = new Vector3();
+		gravity = new Vector3();
 		eulerAnglesAcceleration = new Vector3();
 	}
 
 	/**
-	 * Returns the Acceleration
+	 * Returns the gravity
 	 */
 	public Vector3 getAcceleration() {
-		return acceleration;
+		return gravity;
 	}
 
 	/**
@@ -38,9 +38,9 @@ public class AccelerationComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.JSON_X, acceleration.x);
-		json.writeValue(JsonString.JSON_Y, acceleration.y);
-		json.writeValue(JsonString.JSON_Z, acceleration.z);
+		json.writeValue(JsonString.JSON_X, gravity.x);
+		json.writeValue(JsonString.JSON_Y, gravity.y);
+		json.writeValue(JsonString.JSON_Z, gravity.z);
 		json.writeValue(JsonString.YAW, eulerAnglesAcceleration.x);
 		json.writeValue(JsonString.PITCH, eulerAnglesAcceleration.y);
 		json.writeValue(JsonString.ROLL, eulerAnglesAcceleration.z);
@@ -48,9 +48,9 @@ public class AccelerationComponent implements Component, Json.Serializable {
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		acceleration.x = jsonData.getFloat(JsonString.JSON_X);
-		acceleration.y = jsonData.getFloat(JsonString.JSON_Y);
-		acceleration.z = jsonData.getFloat(JsonString.JSON_Z);
+		gravity.x = jsonData.getFloat(JsonString.JSON_X);
+		gravity.y = jsonData.getFloat(JsonString.JSON_Y);
+		gravity.z = jsonData.getFloat(JsonString.JSON_Z);
 		eulerAnglesAcceleration.x = jsonData.getFloat(JsonString.YAW);
 		eulerAnglesAcceleration.y = jsonData.getFloat(JsonString.PITCH);
 		eulerAnglesAcceleration.z = jsonData.getFloat(JsonString.ROLL);

@@ -17,7 +17,7 @@ import static com.badlogic.ashley.core.ComponentMapper.getFor;
  * @author Fahien
  */
 public class CameraSystem extends PlayerSystem {
-	private static final float CAMERA_Y_OFFSET = 512.f;
+	private static final float CAMERA_Y_OFFSET = 1024.f;
 	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
 
 	private Vector3 playerPosition;

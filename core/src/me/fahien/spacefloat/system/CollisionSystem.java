@@ -128,7 +128,7 @@ public class CollisionSystem extends IteratingSystem {
 	public void removedFromEngine(Engine engine) {
 		super.removedFromEngine(engine);
 
-		collisionWorld.dispose();
+		if (collisionWorld != null) collisionWorld.dispose();
 		broadphase.dispose();
 
 		contactListener.dispose();

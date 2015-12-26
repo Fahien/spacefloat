@@ -14,6 +14,7 @@ import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.component.GravityComponent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class GameObjectFactoryTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
+	private static final String EARTH_NAME = "Earth";
 	private static final String MODEL_NAME = "player.g3db";
 
 	private GameObjectFactory factory;
@@ -72,6 +74,14 @@ public class GameObjectFactoryTest {
 		assertNotNull("The spaceship has no acceleration component", acceleration);
 		CollisionComponent collision = spaceship.getComponent(CollisionComponent.class);
 		assertNotNull("The spaceship has no collision component", collision);
+	}
+
+	@Test
+	public void canLoadTheEarth() {
+		GameObject earth = factory.load(EARTH_NAME);
+		assertEquals("The name is not equals to " + EARTH_NAME, EARTH_NAME, earth.getName());
+		GravityComponent gravity = earth.getComponent(GravityComponent.class);
+		assertNotNull("The spaceship has no gravity component", gravity);
 	}
 
 	/**

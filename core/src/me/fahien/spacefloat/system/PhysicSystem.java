@@ -25,7 +25,7 @@ import static com.badlogic.gdx.math.MathUtils.clamp;
 public class PhysicSystem extends IteratingSystem {
 	/** Close to Zeros */
 	private static final float ROTATIONVELOCITY_CTZ = 0.005f;
-	private static final float VELOCITY_CTZ = 1.0f;
+	private static final float VELOCITY_CTZ = 0.05f;
 	private static final float MAX_ROTATIONVELOCITY = 4.0f;
 	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
 	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
@@ -125,14 +125,15 @@ public class PhysicSystem extends IteratingSystem {
 	 */
 	private void updateVelocity(Vector3 acceleration, Vector3 velocity, float delta) {
 		if (!acceleration.equals(Vector3.Zero)) {
-			tempAcceleration.x = acceleration.x;
-			tempAcceleration.y = acceleration.y;
-			tempAcceleration.z = acceleration.z;
-			//tempAcceleration.rot(graphic.getInstance().transform);
+			tempAcceleration.set(acceleration);
+			// tempAcceleration.rot(graphic.getInstance().transform);
 			// Updates velocity
+			velocity.add(tempAcceleration.scl(delta));
+			/*
 			velocity.x += tempAcceleration.x * delta;
 			velocity.y += tempAcceleration.y * delta;
 			velocity.z += tempAcceleration.z * delta;
+			*/
 		} else {
 			if (velocity.len2() < VELOCITY_CTZ) {
 				velocity.x = velocity.y = velocity.z = 0.0f;

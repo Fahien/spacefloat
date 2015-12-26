@@ -13,7 +13,7 @@ import me.fahien.spacefloat.screen.SpaceFloatScreen;
 public class HudFactory {
 	private static final String FPS_TXT = "FPS: ";
 	private static final String VEL_TXT = "VEL: ";
-	private static final String ROT_TXT = "ROT: ";
+	private static final String ROT_TXT = "ACC: ";
 	private static final String POS_TXT = "POS: ";
 	private static final float FPS_X = 4.0f;
 	private static final float FPS_Y = 8.0f;
@@ -27,7 +27,7 @@ public class HudFactory {
 	private FontActor fpsActor;
 	private FontActor velocityActor;
 	private FontActor positionActor;
-	private FontActor rotationVelocityActor;
+	private FontActor accelerationActor;
 
 	/**
 	 * Returns the fps {@link FontActor}
@@ -85,17 +85,17 @@ public class HudFactory {
 	/**
 	 * Returns the rotation velocity {@link FontActor}
 	 */
-	public FontActor getRotationVelocityActor(BitmapFont font, final Vector3 rotation) {
-		if (rotationVelocityActor == null) {
-			rotationVelocityActor = new FontActor(font, ROT_TXT + rotation) {
+	public FontActor getAccelerationActor(BitmapFont font, final Vector3 acceleration) {
+		if (accelerationActor == null) {
+			accelerationActor = new FontActor(font, ROT_TXT + acceleration) {
 				@Override
 				public void act(float delta) {
-					setText(ROT_TXT + (int)(rotation.x * 10) / 10.0f);
+					setText(ROT_TXT + (int) acceleration.len());
 				}
 			};
-			rotationVelocityActor.setPosition(ROT_X, ROT_Y);
-			rotationVelocityActor.setHalign(FontActor.Halign.RIGHT);
+			accelerationActor.setPosition(ROT_X, ROT_Y);
+			accelerationActor.setHalign(FontActor.Halign.RIGHT);
 		}
-		return rotationVelocityActor;
+		return accelerationActor;
 	}
 }
