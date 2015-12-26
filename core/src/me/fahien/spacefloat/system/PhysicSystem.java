@@ -84,7 +84,7 @@ public class PhysicSystem extends IteratingSystem {
 			velocity = velocityComponent.getVelocity();
 			rotationVelocity = velocityComponent.getEulerAnglesVelocity();
 			if (accelerationComponent != null) {
-				updateVelocity(accelerationComponent.getAcceleration(), velocity, graphicComponent, delta);
+				updateVelocity(accelerationComponent.getAcceleration(), velocity, delta);
 				updateRotationVelocity(accelerationComponent.getEulerAnglesAcceleration(), rotationVelocity, delta);
 			}
 			if (!rotationVelocity.equals(Vector3.Zero)) {
@@ -123,12 +123,12 @@ public class PhysicSystem extends IteratingSystem {
 	/**
 	 * Updates the velocity
 	 */
-	private void updateVelocity(Vector3 acceleration, Vector3 velocity, GraphicComponent graphic, float delta) {
+	private void updateVelocity(Vector3 acceleration, Vector3 velocity, float delta) {
 		if (!acceleration.equals(Vector3.Zero)) {
 			tempAcceleration.x = acceleration.x;
 			tempAcceleration.y = acceleration.y;
 			tempAcceleration.z = acceleration.z;
-			tempAcceleration.rot(graphic.getInstance().transform);
+			//tempAcceleration.rot(graphic.getInstance().transform);
 			// Updates velocity
 			velocity.x += tempAcceleration.x * delta;
 			velocity.y += tempAcceleration.y * delta;

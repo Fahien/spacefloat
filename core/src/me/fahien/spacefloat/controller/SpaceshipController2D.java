@@ -69,11 +69,14 @@ public class SpaceshipController2D extends SpaceshipController {
 				case Input.Keys.W:
 					acceleration.z = NEGATIVE * VELOCITY;
 					return true;
+				case Input.Keys.S:
+					acceleration.z = POSITIVE * VELOCITY;
+					return true;
 				case Input.Keys.A:
-					eulerAnglesAcceleration.x = POSITIVE;
+					acceleration.x = NEGATIVE * VELOCITY;
 					return true;
 				case Input.Keys.D:
-					eulerAnglesAcceleration.x = NEGATIVE;
+					acceleration.x = POSITIVE * VELOCITY;
 					return true;
 				default:
 					return false;
@@ -86,11 +89,14 @@ public class SpaceshipController2D extends SpaceshipController {
 				case Input.Keys.W:
 					acceleration.z = 0;
 					return true;
+				case Input.Keys.S:
+					acceleration.z = 0;
+					return true;
 				case Input.Keys.A:
-					eulerAnglesAcceleration.x = 0;
+					acceleration.x = 0;
 					return true;
 				case Input.Keys.D:
-					eulerAnglesAcceleration.x = 0;
+					acceleration.x = 0;
 					return true;
 				default:
 					return false;

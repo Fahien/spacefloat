@@ -9,6 +9,8 @@ import me.fahien.spacefloat.utils.JsonString;
 
 /**
  * The Velocity {@link Component}
+ *
+ * @author Fahien
  */
 public class VelocityComponent implements Component, Json.Serializable {
 
@@ -32,9 +34,7 @@ public class VelocityComponent implements Component, Json.Serializable {
 	}
 
 	public void collision() {
-		velocity.x = 0;
-		velocity.y = 0;
-		velocity.z = 0;
+		velocity.scl(0);
 	}
 
 	@Override

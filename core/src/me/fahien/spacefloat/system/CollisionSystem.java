@@ -24,7 +24,6 @@ import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
 
 import static com.badlogic.ashley.core.ComponentMapper.getFor;
-import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Collision {@link IteratingSystem}
@@ -44,12 +43,11 @@ public class CollisionSystem extends IteratingSystem {
 		private VelocityComponent velocity;
 
 		@Override
-		public boolean onContactAdded (btManifoldPoint cp,
+		public boolean onContactAdded(btManifoldPoint cp,
 				btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
 				btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
 			GameObject entity0 = (GameObject) colObj0Wrap.getCollisionObject().userData;
 			GameObject entity1 = (GameObject) colObj1Wrap.getCollisionObject().userData;
-			logger.info("Collision between " + entity0.getName() + " and " + entity1.getName());
 			velocity = vm.get(entity0);
 			if (velocity != null) {
 				velocity.collision();
