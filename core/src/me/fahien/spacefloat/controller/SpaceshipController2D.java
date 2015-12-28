@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
+
 /**
  * The 2D {@link SpaceshipController}
  *
@@ -27,7 +29,7 @@ public class SpaceshipController2D extends SpaceshipController {
 	 */
 	private class SpaceshipInputAdapter extends InputAdapter {
 		private static final float SEMIPI = MathUtils.PI / 2;
-		private static final float VELOCITY = 32f;
+		private static final float VELOCITY = 64f;
 		private static final float NEGATIVE = -1;
 		private static final float POSITIVE = -NEGATIVE;
 

@@ -10,6 +10,8 @@ import me.fahien.spacefloat.utils.JsonString;
 
 /**
  * The Collision {@link Component}
+ *
+ * @author Fahien
  */
 public class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
 	private static final float DEFAULT_RADIUS = 1.0f;

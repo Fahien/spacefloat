@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
@@ -18,12 +19,15 @@ import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
+import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.component.GravityComponent;
+import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
-import me.fahien.spacefloat.entity.GameObject;
 
 import static com.badlogic.ashley.core.ComponentMapper.getFor;
+import static com.badlogic.ashley.core.Family.all;
 
 /**
  * The Collision {@link IteratingSystem}
@@ -33,31 +37,64 @@ import static com.badlogic.ashley.core.ComponentMapper.getFor;
 public class CollisionSystem extends IteratingSystem {
 
 	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
+	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
 	private ComponentMapper<VelocityComponent> vm = getFor(VelocityComponent.class);
+	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 	private ComponentMapper<CollisionComponent> cm = getFor(CollisionComponent.class);
+	private ComponentMapper<GravityComponent> grm = getFor(GravityComponent.class);
 
 	private btDefaultCollisionConfiguration collisionConfig;
 	private btCollisionDispatcher dispatcher;
 
 	class SpaceFloatContactListener extends ContactListener {
-		private VelocityComponent velocity;
+		private Vector3 normal;
+		private Entity entity0;
+		private Entity entity1;
+
+		public SpaceFloatContactListener() {
+			normal = new Vector3();
+		}
 
 		@Override
 		public boolean onContactAdded(btManifoldPoint cp,
-				btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
-				btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-			GameObject entity0 = (GameObject) colObj0Wrap.getCollisionObject().userData;
-			GameObject entity1 = (GameObject) colObj1Wrap.getCollisionObject().userData;
-			velocity = vm.get(entity0);
-			if (velocity != null) {
-				velocity.collision();
-			}
-			velocity = vm.get(entity1);
-			if (velocity != null) {
-				velocity.collision();
-			}
-
+									  btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
+									  btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
+			entity0 = (Entity) colObj0Wrap.getCollisionObject().userData;
+			entity1 = (Entity) colObj1Wrap.getCollisionObject().userData;
+			cp.getNormalWorldOnB(normal);
+			computeCollision(grm.get(entity0), entity1, tm.get(entity1), vm.get(entity1), am.get(entity1), normal);
+			computeCollision(grm.get(entity1), entity0, tm.get(entity0), vm.get(entity0), am.get(entity0), normal);
 			return true;
+		}
+
+		private void computeCollision(GravityComponent gravity,
+									  Entity entity,
+									  TransformComponent transform,
+									  VelocityComponent velocity,
+									  AccelerationComponent acceleration,
+									  Vector3 normal) {
+			if (gravity != null) {
+				if (!gravity.collideWith(entity)) {
+					gravity.addCollision(entity);
+					velocity.collision(normal);
+					transform.collision(normal);
+				}
+				acceleration.collision(normal);
+			}
+		}
+
+		@Override
+		public void onContactEnded(btCollisionObject colObj0, btCollisionObject colObj1) {
+			entity0 = (Entity) colObj0.userData;
+			entity1 = (Entity) colObj1.userData;
+			endCollision(grm.get(entity0), entity1);
+			endCollision(grm.get(entity1), entity0);
+		}
+
+		private void endCollision(GravityComponent gravity, Entity entity) {
+			if (gravity != null) {
+				gravity.removeCollision(entity);
+			}
 		}
 	}
 
@@ -67,7 +104,7 @@ public class CollisionSystem extends IteratingSystem {
 	private btCollisionWorld collisionWorld;
 
 	public CollisionSystem() {
-		super(Family.all(GraphicComponent.class, CollisionComponent.class).get());
+		super(all(GraphicComponent.class, CollisionComponent.class).get());
 	}
 
 	@Override
@@ -136,7 +173,7 @@ public class CollisionSystem extends IteratingSystem {
 		dispatcher.dispose();
 		collisionConfig.dispose();
 
-		for (Entity entity : engine.getEntitiesFor(Family.all(CollisionComponent.class).get())) {
+		for (Entity entity : engine.getEntitiesFor(all(CollisionComponent.class).get())) {
 			cm.get(entity).dispose();
 		}
 	}

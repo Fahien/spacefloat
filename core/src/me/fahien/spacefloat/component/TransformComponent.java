@@ -36,6 +36,15 @@ public class TransformComponent implements Component, Json.Serializable {
 		return rotation;
 	}
 
+	/**
+	 * Collide with normal
+	 */
+	public void collision(Vector3 normal) {
+		normal.nor();
+		normal.scl(0.25f);
+		position.add(normal);
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JsonString.JSON_X, position.x);
@@ -55,5 +64,4 @@ public class TransformComponent implements Component, Json.Serializable {
 		rotation.y = jsonData.getFloat(JsonString.PITCH);
 		rotation.z = jsonData.getFloat(JsonString.ROLL);
 	}
-
 }

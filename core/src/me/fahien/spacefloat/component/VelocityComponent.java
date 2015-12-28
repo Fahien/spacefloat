@@ -22,6 +22,9 @@ public class VelocityComponent implements Component, Json.Serializable {
 		eulerAnglesVelocity = new Vector3();
 	}
 
+	/**
+	 * Returns the velocity
+	 */
 	public Vector3 getVelocity() {
 		return velocity;
 	}
@@ -33,8 +36,14 @@ public class VelocityComponent implements Component, Json.Serializable {
 		return eulerAnglesVelocity;
 	}
 
-	public void collision() {
-		velocity.scl(0);
+	/**
+	 * Collide with normal
+	 */
+	public void collision(Vector3 normal) {
+		normal.nor();
+		float dot = 2 * velocity.dot(normal);
+		normal.scl(dot);
+		velocity.sub(normal).scl(0.5f);
 	}
 
 	@Override

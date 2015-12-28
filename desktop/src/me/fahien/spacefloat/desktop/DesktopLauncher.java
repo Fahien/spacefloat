@@ -6,8 +6,8 @@ import me.fahien.spacefloat.game.SpaceFloatGame;
 
 public class DesktopLauncher {
 	private static final String WINDOW_TITLE = "SpaceFloat";
-	private static final int WINDOW_WIDTH = 480;
-	private static final int WINDOW_HEIGHT = 270;
+	private static final int WINDOW_WIDTH = 960;
+	private static final int WINDOW_HEIGHT = 540;
 
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
