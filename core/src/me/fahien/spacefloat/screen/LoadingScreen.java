@@ -15,6 +15,7 @@ import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.game.SpaceFloat;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -92,7 +93,7 @@ public class LoadingScreen extends StagedScreen {
 		} else {
 			injectInstances(entities);
 			// Change screen
-			getGame().setScreen(ScreenEnumerator.MAIN);
+			SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);
 		}
 	}
 

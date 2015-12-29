@@ -2,7 +2,8 @@ package me.fahien.spacefloat.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import me.fahien.spacefloat.game.SpaceFloatGame;
+
+import me.fahien.spacefloat.game.SpaceFloat;
 
 public class DesktopLauncher {
 	private static final String WINDOW_TITLE = "SpaceFloat";
@@ -14,6 +15,6 @@ public class DesktopLauncher {
 		config.title = WINDOW_TITLE;
 		config.width = WINDOW_WIDTH;
 		config.height = WINDOW_HEIGHT;
-		new LwjglApplication(new SpaceFloatGame(), config);
+		new LwjglApplication(SpaceFloat.GAME.getGame(), config);
 	}
 }

@@ -70,12 +70,19 @@ public class SpaceFloatGame extends Game {
 	 */
 	public void setScreen(ScreenEnumerator screenEnumerator) {
 		SpaceFloatScreen screen = screenEnumerator.getScreen();
+		if (!screen.isInitialized()) injectDependencies(screen);
+		setScreen(screen);
+	}
+
+	/**
+	 * Inject Dependencies in a {@link SpaceFloatScreen}
+	 */
+	private void injectDependencies(SpaceFloatScreen screen) {
 		screen.setAssetManager(assetManager);
 		screen.setFont(font);
 		screen.setEngine(engine);
 		screen.setGame(this);
 		screen.setInitialized(true);
-		setScreen(screen);
 	}
 
 	@Override

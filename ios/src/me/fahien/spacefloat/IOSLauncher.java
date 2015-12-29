@@ -1,17 +1,18 @@
 package me.fahien.spacefloat;
 
+import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
+import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
+
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
 
-import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
-import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
-import me.fahien.spacefloat.game.SpaceFloatGame;
+import me.fahien.spacefloat.game.SpaceFloat;
 
 public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new SpaceFloatGame(), config);
+        return new IOSApplication(SpaceFloat.GAME.getGame(), config);
     }
 
     public static void main(String[] argv) {
