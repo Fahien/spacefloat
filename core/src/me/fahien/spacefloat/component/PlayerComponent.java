@@ -4,13 +4,92 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
+import me.fahien.spacefloat.utils.JsonString;
+
 /**
  * The Player {@link Component}
+ *
+ * @author Fahien
  */
 public class PlayerComponent implements Component, Json.Serializable {
-	@Override
-	public void write(Json json) {}
+	private static final float FUEL_MAX_DEFAULT = 19.0f;
+
+	private float fuelMax;
+	private Float fuel;
+	private int money;
+
+	public PlayerComponent() {
+		fuelMax = FUEL_MAX_DEFAULT;
+		fuel = FUEL_MAX_DEFAULT;
+	}
+
+	/**
+	 * Returns the fuelMax
+	 */
+	public float getFuelMax() {
+		return fuelMax;
+	}
+
+	/**
+	 * Sets the fuelMax
+	 */
+	public void setFuelMax(float fuelMax) {
+		this.fuelMax = fuelMax;
+	}
+
+	/**
+	 * Returns the fuel
+	 */
+	public Float getFuel() {
+		return fuel;
+	}
+
+	/**
+	 * Sets the fuel
+	 */
+	public void setFuel(float fuel) {
+		if (fuel > fuelMax) {
+			fuel = (int)fuelMax;
+		}
+		if (fuel < 0) {
+			fuel = 0;
+		}
+		this.fuel = fuel;
+	}
+
+	/**
+	 * Adds fuel
+	 */
+	public void addFuel(float fuel){
+		fuel += this.fuel;
+		setFuel(fuel);
+	}
+
+	/**
+	 * Returns the money
+	 */
+	public int getMoney() {
+		return money;
+	}
+
+	/**
+	 * Sets the money
+	 */
+	public void setMoney(int money) {
+		this.money = money;
+	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {}
+	public void write(Json json) {
+		json.writeValue(JsonString.FUELMAX, fuelMax);
+		json.writeValue(JsonString.FUEL, fuel);
+		json.writeValue(JsonString.MONEY, money);
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		fuelMax = jsonData.getInt(JsonString.FUELMAX);
+		fuel = jsonData.getFloat(JsonString.FUEL);
+		money = jsonData.getInt(JsonString.MONEY);
+	}
 }

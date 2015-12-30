@@ -7,6 +7,7 @@ import me.fahien.spacefloat.game.SpaceFloat;
 
 public class DesktopLauncher {
 	private static final String WINDOW_TITLE = "SpaceFloat";
+
 	private static final int WINDOW_WIDTH = 960;
 	private static final int WINDOW_HEIGHT = 540;
 

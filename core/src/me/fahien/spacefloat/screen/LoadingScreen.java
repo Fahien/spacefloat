@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.factory.GameObjectService;
 import me.fahien.spacefloat.game.SpaceFloat;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -30,18 +30,18 @@ public class LoadingScreen extends StagedScreen {
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
 	private ImmutableArray<Entity> entities;
 
-	// Temp variables
-	private FontActor loadingActor;
-	private AssetManager assetManager;
-	private float progress;
+	// Loop variables
+	private FontActor m_loadingActor;
+	private AssetManager m_assetManager;
+	private float m_progress;
 
 	@Override
 	public void populate(Stage stage) {
-		loadingActor = new FontActor(getFont(), progress + LOADING_TEXT);
-		loadingActor.setPosition(SpaceFloatScreen.WIDTH / 2, SpaceFloatScreen.HEIGHT / 2);
-		loadingActor.setHalign(FontActor.Halign.CENTER);
-		stage.addActor(loadingActor);
-		assetManager = getAssetManager();
+		m_loadingActor = new FontActor(getFont(), m_progress + LOADING_TEXT);
+		m_loadingActor.setPosition(SpaceFloatScreen.WIDTH / 2, SpaceFloatScreen.HEIGHT / 2);
+		m_loadingActor.setHalign(FontActor.Halign.CENTER);
+		stage.addActor(m_loadingActor);
+		m_assetManager = getAssetManager();
 		loadObjects(getEngine());
 		loadModels(getEngine());
 	}
@@ -51,14 +51,14 @@ public class LoadingScreen extends StagedScreen {
 	 */
 	public void setAssetManager(AssetManager assetManager) {
 		super.setAssetManager(assetManager);
-		this.assetManager = assetManager;
+		this.m_assetManager = assetManager;
 	}
 
 	/**
 	 * Loads the {@link GameObject}s
 	 */
 	protected void loadObjects(Engine engine) {
-		GameObjectFactory factory = new GameObjectFactory();
+		GameObjectService factory = new GameObjectService();
 		Array<GameObject> objects = factory.loadObjects();
 		for (GameObject object : objects) {
 			engine.addEntity(object);
@@ -76,7 +76,7 @@ public class LoadingScreen extends StagedScreen {
 			if(graphic.getInstance() == null) {
 				String name = graphic.getName();
 				if (name != null) {
-					assetManager.load(GraphicComponent.MODELS_DIR + name, Model.class);
+					m_assetManager.load(GraphicComponent.MODELS_DIR + name, Model.class);
 				} else {
 					logger.error("Error loading models: a graphic has no name");
 				}
@@ -86,10 +86,10 @@ public class LoadingScreen extends StagedScreen {
 
 	@Override
 	public void prerender(float delta) {
-		assetManager.update();
-		progress = assetManager.getProgress();
-		if (progress != 1.0f) {
-			loadingActor.setText((int) (progress * 100) + LOADING_TEXT);
+		m_assetManager.update();
+		m_progress = m_assetManager.getProgress();
+		if (m_progress != 1.0f) {
+			m_loadingActor.setText((int) (m_progress * 100) + LOADING_TEXT);
 		} else {
 			injectInstances(entities);
 			// Change screen
@@ -104,7 +104,7 @@ public class LoadingScreen extends StagedScreen {
 		for (Entity entity : entities) {
 			GraphicComponent graphic = graphicMapper.get(entity);
 			if (graphic.getInstance() == null) {
-				Model model = assetManager.get(GraphicComponent.MODELS_DIR + graphic.getName(), Model.class);
+				Model model = m_assetManager.get(GraphicComponent.MODELS_DIR + graphic.getName(), Model.class);
 				ModelInstance instance = new ModelInstance(model);
 				graphic.setInstance(instance);
 			}

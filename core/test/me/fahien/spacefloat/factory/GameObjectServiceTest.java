@@ -21,20 +21,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The {@link GameObjectFactory} Test Case
+ * The {@link GameObjectService} Test Case
  *
  * @author Fahien
  */
-public class GameObjectFactoryTest {
+public class GameObjectServiceTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
 	private static final String EARTH_NAME = "Earth";
-	private static final String MODEL_NAME = "player.g3db";
+	private static final String MODEL_NAME = "cargo.g3db";
+	private static final float RADIUS_COLLISION = 50.0f;
 
-	private GameObjectFactory factory;
+	private GameObjectService factory;
 
 	@Before
 	public void before() {
-		factory = new GameObjectFactory();
+		factory = new GameObjectService();
 	}
 
 	@Test
@@ -52,7 +53,7 @@ public class GameObjectFactoryTest {
 		spaceship.add(acceleration);
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
-		CollisionComponent collision = new CollisionComponent();
+		CollisionComponent collision = new CollisionComponent(RADIUS_COLLISION);
 		spaceship.add(collision);
 		factory.save(spaceship);
 	}
@@ -85,17 +86,17 @@ public class GameObjectFactoryTest {
 	}
 
 	/**
-	 * Creates the objects list
+	 * Creates the {@link GameObject}s list
 	 */
 	private void createObjectList() {
 		String objectList = "";
-		FileHandle[] files = Gdx.files.local(GameObjectFactory.OBJECTS_DIR).list();
+		FileHandle[] files = Gdx.files.local(GameObjectService.OBJECTS_DIR).list();
 		for (FileHandle file : files) {
-			if (file.path().endsWith(GameObjectFactory.JSON_EXT)) {
+			if (file.path().endsWith(GameObjectService.JSON_EXT)) {
 				objectList += file.nameWithoutExtension() + "\n";
 			}
 		}
-		FileHandle fileList = Gdx.files.local(GameObjectFactory.OBJECT_LIST);
+		FileHandle fileList = Gdx.files.local(GameObjectService.OBJECT_LIST);
 		fileList.writeString(objectList, false);
 	}
 
@@ -103,6 +104,16 @@ public class GameObjectFactoryTest {
 	public void canLoadAllObjects() {
 		createObjectList();
 		Array<GameObject> objects = factory.loadObjects();
+		assertNotNull("Objects array is null", objects);
+		assertTrue("The array does not contain any object", objects.size > 0);
+	}
+
+	@Test
+	public void canSaveAllObjects() {
+		createObjectList();
+		Array<GameObject> objects = factory.loadObjects();
+		factory.saveObjects(objects);
+		objects = factory.loadObjects();
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}

@@ -2,13 +2,17 @@ package me.fahien.spacefloat.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
 /**
  * The {@link Actor} Factory
+ *
+ * @author Fahien
  */
 public class HudFactory {
 	private static final String FPS_TXT = "FPS: ";
@@ -23,11 +27,14 @@ public class HudFactory {
 	private static final float ROT_Y = FPS_Y * 3;
 	private static final float POS_X = VEL_X;
 	private static final float POS_Y = FPS_Y * 6;
+	private static final float FUEL_X = FPS_X;
+	private static final float FUEL_Y = SpaceFloatScreen.HEIGHT - 22.0f;
 
 	private FontActor fpsActor;
 	private FontActor velocityActor;
 	private FontActor positionActor;
 	private FontActor accelerationActor;
+	private HudActor fuelActor;
 
 	/**
 	 * Returns the fps {@link FontActor}
@@ -97,5 +104,16 @@ public class HudFactory {
 			accelerationActor.setHalign(FontActor.Halign.RIGHT);
 		}
 		return accelerationActor;
+	}
+
+	/**
+	 * Returns the fuel {@link HudActor}
+	 */
+	public HudActor getFuelActor(TextureAtlas hud, PlayerComponent player) {
+		if (fuelActor == null) {
+			fuelActor = new FuelHudActor(hud, player);
+			fuelActor.setPosition(FUEL_X, FUEL_Y);
+		}
+		return fuelActor;
 	}
 }

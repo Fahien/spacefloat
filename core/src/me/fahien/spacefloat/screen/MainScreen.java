@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.component.AccelerationComponent;
+import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.controller.SpaceshipController;
@@ -72,6 +73,8 @@ public class MainScreen extends StagedScreen {
 			stage.addActor(factory.getAccelerationActor(font, acceleration));
 			Vector3 position = player.getComponent(TransformComponent.class).getPosition();
 			stage.addActor(factory.getPositionActor(font, position));
+			PlayerComponent playerComponent = player.getComponent(PlayerComponent.class);
+			stage.addActor(factory.getFuelActor(getHud(), playerComponent));
 		} else {
 			SpaceFloatGame.logger.error("Error creating the HUD: player is null");
 		}

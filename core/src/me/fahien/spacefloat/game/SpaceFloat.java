@@ -3,7 +3,7 @@ package me.fahien.spacefloat.game;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 
 /**
- * SpaceFloat
+ * SpaceFloat Enumerator
  *
  * @author Fahien
  */
@@ -15,12 +15,17 @@ public enum SpaceFloat {
 	SpaceFloat(SpaceFloatGame game) {
 		this.game = game;
 	}
-
-	public void setScreen(ScreenEnumerator screenEnumerator) {
-		game.setScreen(screenEnumerator);
-	}
-
+	/**
+	 * Returns the {@link SpaceFloatGame}
+	 */
 	public SpaceFloatGame getGame() {
 		return game;
+	}
+
+	/**
+	 * Sets the current screen
+	 */
+	public void setScreen(ScreenEnumerator screenEnumerator) {
+		game.setScreen(screenEnumerator);
 	}
 }

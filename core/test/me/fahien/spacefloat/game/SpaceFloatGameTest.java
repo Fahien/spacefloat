@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
@@ -40,8 +41,6 @@ public class SpaceFloatGameTest {
 		game = new SpaceFloatGame();
 	}
 
-
-
 	@Test
 	public void canGetTheAssetManager() {
 		assertNotNull("The game has no asset manager", game.getAssetManager());
@@ -76,6 +75,7 @@ public class SpaceFloatGameTest {
 	@Test
 	public void canInjectDependenciesInScreens() {
 		game.loadFont();
+		game.loadHud();
 		for (ScreenEnumerator screenEnum : ScreenEnumerator.values()) {
 			try {
 				game.setScreen(screenEnum);
@@ -86,6 +86,7 @@ public class SpaceFloatGameTest {
 			assertTrue("The screen is not initialized", screen.isInitialized());
 			assertNotNull("The screen has no asset manager", screen.getAssetManager());
 			assertNotNull("The screen has no font", screen.getFont());
+			assertNotNull("The screen has no hud", screen.getHud());
 			assertNotNull("The screen has no engine", screen.getEngine());
 			assertEquals("The screens are not equals", screen, game.getScreen());
 		}
@@ -132,6 +133,14 @@ public class SpaceFloatGameTest {
 	public void canLoadAndGetTheFont() {
 		game.loadFont();
 		assertNotNull("Could not get the font", game.getFont());
+	}
+
+	@Test
+	public void canLoadAndGetTheHud() {
+		game.loadHud();
+		TextureAtlas hud = game.getHud();
+		assertNotNull("Could not get the HUD", hud);
+		assertNotNull("The hud has no fuel", hud.findRegion("fuel"));
 	}
 
 	@After

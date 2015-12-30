@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
+import me.fahien.spacefloat.component.PlayerComponent;
 
 /**
  * The 2D {@link SpaceshipController}
@@ -18,8 +18,8 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public class SpaceshipController2D extends SpaceshipController {
 
 	@Override
-	protected InputProcessor createInputProcessor(final Vector3 acceleration, final Vector3 eulerAngles) {
-		return new SpaceshipInputAdapter(acceleration, eulerAngles);
+	protected InputProcessor createInputProcessor(PlayerComponent player, final Vector3 acceleration, final Vector3 eulerAngles) {
+		return new SpaceshipInputAdapter(player, acceleration, eulerAngles);
 	}
 
 	/**
@@ -34,10 +34,12 @@ public class SpaceshipController2D extends SpaceshipController {
 		private static final float POSITIVE = -NEGATIVE;
 
 		private Vector2 mouse;
+		private PlayerComponent player;
 		private Vector3 acceleration;
 		private Vector3 eulerAngles;
 
-		public SpaceshipInputAdapter(Vector3 acceleration, Vector3 eulerAngles) {
+		public SpaceshipInputAdapter(PlayerComponent player, Vector3 acceleration, Vector3 eulerAngles) {
+			this.player = player;
 			this.acceleration = acceleration;
 			this.eulerAngles = eulerAngles;
 			mouse = new Vector2();
@@ -45,6 +47,7 @@ public class SpaceshipController2D extends SpaceshipController {
 
 		@Override
 		public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+			if (player.getFuel() <= 0) return false;
 			acceleration.x = screenX - Gdx.graphics.getWidth() / 2;
 			acceleration.z = screenY - Gdx.graphics.getHeight() / 2;
 			acceleration.nor();
@@ -56,6 +59,7 @@ public class SpaceshipController2D extends SpaceshipController {
 		@Override
 		public boolean touchDragged(int screenX, int screenY, int pointer) {
 			mouseMoved(screenX, screenY);
+			if (player.getFuel() <= 0) return false;
 			acceleration.x = screenX - Gdx.graphics.getWidth() / 2;
 			acceleration.z = screenY - Gdx.graphics.getHeight() / 2;
 			acceleration.nor();

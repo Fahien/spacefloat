@@ -3,6 +3,7 @@ package me.fahien.spacefloat.screen;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,10 +38,12 @@ public class SpaceFloatScreenTest {
 		screen.setInitialized(true);
 		screen.setAssetManager(new AssetManager());
 		screen.setFont(new BitmapFont());
+		screen.setHud(new TextureAtlas());
 		screen.setEngine(new Engine());
 		assertTrue("The screen is not initialized", screen.isInitialized());
 		assertNotNull("The asset manager is null", screen.getAssetManager());
 		assertNotNull("The font is null", screen.getFont());
+		assertNotNull("The hud is null", screen.getHud());
 		assertNotNull("The engine is null", screen.getEngine());
 	}
 
@@ -50,6 +53,7 @@ public class SpaceFloatScreenTest {
 		assertFalse("The screen is still initialized", screen.isInitialized());
 		assertNull("The asset manager is not null", screen.getAssetManager());
 		assertNull("The font is not null", screen.getFont());
+		assertNull("The hud is not null", screen.getHud());
 		assertNull("The engine is not null", screen.getEngine());
 	}
 }

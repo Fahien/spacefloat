@@ -19,4 +19,7 @@ public class JsonString {
 	public static final String ROLL = "roll";
 	public static final String RADIUS = "radius";
 	public static final String MASS = "mass";
+	public static final String MONEY = "money";
+	public static final String FUEL = "fuel";
+	public static final String FUELMAX = "fuelMax";
 }

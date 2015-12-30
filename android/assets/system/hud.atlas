@@ -1,0 +1,18 @@
+hud.png
+format:RGBA8888
+filter: Nearest, Nearest
+repeat: none
+fuel
+  rotate: false
+  xy: 125, 241
+  size: 99, 18
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+point
+  rotate: false
+  xy: 137, 214
+  size: 3, 8
+  orig: 1, 1
+  offset: 0, 0
+  index: -1

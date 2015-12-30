@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import me.fahien.spacefloat.game.SpaceFloatGame;
 
@@ -22,6 +24,7 @@ public class SpaceFloatScreen implements Screen {
 	private SpaceFloatGame game;
 	private AssetManager assetManager;
 	private BitmapFont font;
+	private TextureAtlas hud;
 	private Engine engine;
 
 	/**
@@ -81,6 +84,20 @@ public class SpaceFloatScreen implements Screen {
 	}
 
 	/**
+	 * Sets the HUD {@link TextureAtlas}
+	 */
+	public void setHud(TextureAtlas hud) {
+		this.hud = hud;
+	}
+
+	/**
+	 * Returns the HUD {@link TextureAtlas}
+	 */
+	public TextureAtlas getHud() {
+		return hud;
+	}
+
+	/**
 	 * Returns the Ashley {@link Engine}
 	 */
 	public Engine getEngine() {
@@ -121,6 +138,7 @@ public class SpaceFloatScreen implements Screen {
 	public void dispose() {
 		engine = null;
 		font = null;
+		hud = null;
 		assetManager = null;
 		initialized = false;
 	}
