@@ -11,6 +11,7 @@ import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
+import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -29,6 +30,7 @@ public class GameObjectServiceTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
 	private static final String EARTH_NAME = "Earth";
 	private static final String MODEL_NAME = "cargo.g3db";
+	private static final String REACTOR_NAME = "reactor.pfx";
 	private static final float RADIUS_COLLISION = 50.0f;
 
 	private GameObjectService factory;
@@ -55,6 +57,9 @@ public class GameObjectServiceTest {
 		spaceship.add(player);
 		CollisionComponent collision = new CollisionComponent(RADIUS_COLLISION);
 		spaceship.add(collision);
+		ReactorComponent reactorComponent = new ReactorComponent();
+		reactorComponent.setName(REACTOR_NAME);
+		spaceship.add(reactorComponent);
 		factory.save(spaceship);
 	}
 
@@ -75,6 +80,8 @@ public class GameObjectServiceTest {
 		assertNotNull("The spaceship has no acceleration component", acceleration);
 		CollisionComponent collision = spaceship.getComponent(CollisionComponent.class);
 		assertNotNull("The spaceship has no collision component", collision);
+		ReactorComponent reactor = spaceship.getComponent(ReactorComponent.class);
+		assertNotNull("The spaceship has no reactor component", reactor);
 	}
 
 	@Test

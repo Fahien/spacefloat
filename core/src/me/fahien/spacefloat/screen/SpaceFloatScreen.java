@@ -7,8 +7,9 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 
+import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 
 /**
@@ -22,10 +23,12 @@ public class SpaceFloatScreen implements Screen {
 
 	private boolean initialized;
 	private SpaceFloatGame game;
+	private ParticleSystem particleSystem;
 	private AssetManager assetManager;
 	private BitmapFont font;
 	private TextureAtlas hud;
 	private Engine engine;
+	private MainCamera camera;
 
 	/**
 	 * Tests whether is initialized
@@ -70,6 +73,20 @@ public class SpaceFloatScreen implements Screen {
 	}
 
 	/**
+	 * Returns the {@link ParticleSystem}
+	 */
+	public ParticleSystem getParticleSystem() {
+		return particleSystem;
+	}
+
+	/**
+	 * Sets the {@link ParticleSystem}
+	 */
+	public void setParticleSystem(ParticleSystem particleSystem) {
+		this.particleSystem = particleSystem;
+	}
+
+	/**
 	 * Returns the {@link BitmapFont}
 	 */
 	public BitmapFont getFont() {
@@ -109,6 +126,20 @@ public class SpaceFloatScreen implements Screen {
 	 */
 	public void setEngine(Engine engine) {
 		this.engine = engine;
+	}
+
+	/**
+	 * Returns the {@link MainCamera}
+	 */
+	public MainCamera getCamera() {
+		return camera;
+	}
+
+	/**
+	 * Sets the {@link MainCamera}
+	 */
+	public void setCamera(MainCamera camera) {
+		this.camera = camera;
 	}
 
 	@Override

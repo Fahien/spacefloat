@@ -76,6 +76,7 @@ public class SpaceFloatGameTest {
 	public void canInjectDependenciesInScreens() {
 		game.loadFont();
 		game.loadHud();
+		game.initCamera();
 		for (ScreenEnumerator screenEnum : ScreenEnumerator.values()) {
 			try {
 				game.setScreen(screenEnum);
@@ -95,6 +96,7 @@ public class SpaceFloatGameTest {
 	@Test
 	public void shouldDisposeProperlyAScreenOnChangingIt() {
 		SpaceFloatScreen mainScreen = ScreenEnumerator.SHOWCASE.getScreen();
+		game.initCamera();
 		try {
 			game.setScreen(ScreenEnumerator.SHOWCASE);
 		} catch (GdxRuntimeException|IllegalArgumentException e) {
@@ -113,12 +115,12 @@ public class SpaceFloatGameTest {
 	public void shouldShowTheMainScreenAfterCreate() {
 		try {
 			game.create();
+			assertEquals("The game is not showing the loading screen",
+					ScreenEnumerator.LOADING.getScreen(),
+					game.getScreen());
 		} catch (GdxRuntimeException|IllegalArgumentException e) {
 			logger.error("Could not create the game during tests: " + e.getMessage());
 		}
-		assertEquals("The game is not showing the main screen",
-				ScreenEnumerator.LOADING.getScreen(),
-				game.getScreen());
 	}
 
 	@Test

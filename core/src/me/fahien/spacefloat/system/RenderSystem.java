@@ -11,37 +11,55 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 
 import me.fahien.spacefloat.camera.MainCamera;
+import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
 /**
  * The Rendering {@link EntitySystem}
+ *
+ * @author Fahien
  */
-public class RenderingSystem extends EntitySystem {
+public class RenderSystem extends EntitySystem {
 
-	private ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
 	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
+	private ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
+	private ComponentMapper<AccelerationComponent> accelerationMapper = ComponentMapper.getFor(AccelerationComponent.class);
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
+	private ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);
 	private ImmutableArray<Entity> entities;
 
 	private MainCamera camera;
+	private ParticleSystem particleSystem;
+
 	private Environment environment;
 	private ModelBatch batch;
 	private ShapeRenderer shapeRenderer;
 
 	// Temp variables
-	protected GraphicComponent graphic;
+	protected GraphicComponent m_graphicComponent;
 	protected ModelInstance instance;
 
-	public RenderingSystem(MainCamera camera) {
+	/**
+	 * Sets the {@link MainCamera}
+	 */
+	public void setCamera(MainCamera camera) {
 		this.camera = camera;
+	}
+
+	/**
+	 * Sets the {@link ParticleSystem}
+	 */
+	public void setParticleSystem(ParticleSystem particleSystem) {
+		this.particleSystem = particleSystem;
 	}
 
 	@Override
@@ -66,6 +84,11 @@ public class RenderingSystem extends EntitySystem {
 		shapeRenderer = new ShapeRenderer();
 	}
 
+	protected TransformComponent m_transformComponent;
+	protected VelocityComponent m_velocityComponent;
+	protected AccelerationComponent m_accelerationComponent;
+	protected ReactorComponent m_reactorComponent;
+
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
@@ -76,42 +99,68 @@ public class RenderingSystem extends EntitySystem {
 
 		// Render the model instances
 		for (Entity entity : entities) {
-			graphic = graphicMapper.get(entity);
+			m_transformComponent = transformMapper.get(entity);
+			m_velocityComponent = velocityMapper.get(entity);
+			m_accelerationComponent = accelerationMapper.get(entity);
+			m_reactorComponent = reactorMapper.get(entity);
+			m_graphicComponent = graphicMapper.get(entity);
+
 			// Render velocity lines
-			renderVelocity(transformMapper.get(entity), velocityMapper.get(entity));
+			renderVelocity(m_transformComponent, m_velocityComponent);
+
+			// Render Reactor particle effects
+			renderReactor(m_accelerationComponent, m_graphicComponent, m_reactorComponent);
 
 			// Render models
-			instance = graphic.getInstance();
+			instance = m_graphicComponent.getInstance();
 			if (instance != null) {
 				batch.render(instance, environment);
 			}
 		}
 
+		// Render Particles
+		particleSystem.update(); // technically not necessary for rendering
+		particleSystem.begin();
+		particleSystem.draw();
+		particleSystem.end();
+		batch.render(particleSystem);
+
 		// End the batch
 		batch.end();
 	}
 
-	protected Vector3 center;
-	protected Vector3 a = new Vector3();
-	protected Vector3 b = new Vector3();
-	protected Vector3 velocity;
+	protected Vector3 m_center;
+	protected Vector3 m_a = new Vector3();
+	protected Vector3 m_b = new Vector3();
+	protected Vector3 m_velocity;
+
 	private void renderVelocity(TransformComponent transformComponent, VelocityComponent velocityComponent) {
 		if (velocityComponent == null) return;
-		velocity = velocityComponent.getVelocity();
-		if (velocity.equals(Vector3.Zero)) return;
-		if (velocity.len2() < 1.0f) return;
+		m_velocity = velocityComponent.getVelocity();
+		if (m_velocity.equals(Vector3.Zero)) return;
+		if (m_velocity.len2() < 1.0f) return;
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		center = transformComponent.getPosition();
+		m_center = transformComponent.getPosition();
 
-		a.x = center.x - velocity.x * SpaceFloatScreen.WIDTH;
-		a.y = center.y - velocity.y * SpaceFloatScreen.WIDTH;
-		a.z = center.z - velocity.z * SpaceFloatScreen.WIDTH;
-		b.x = center.x + velocity.x * SpaceFloatScreen.WIDTH;
-		b.y = center.y + velocity.y * SpaceFloatScreen.WIDTH;
-		b.z = center.z + velocity.z * SpaceFloatScreen.WIDTH;
+		m_a.x = m_center.x - m_velocity.x * SpaceFloatScreen.WIDTH;
+		m_a.y = m_center.y - m_velocity.y * SpaceFloatScreen.WIDTH;
+		m_a.z = m_center.z - m_velocity.z * SpaceFloatScreen.WIDTH;
+		m_b.x = m_center.x + m_velocity.x * SpaceFloatScreen.WIDTH;
+		m_b.y = m_center.y + m_velocity.y * SpaceFloatScreen.WIDTH;
+		m_b.z = m_center.z + m_velocity.z * SpaceFloatScreen.WIDTH;
+
 		shapeRenderer.setColor(1, 0, 0, 1);
-		shapeRenderer.line(a, b);
+		shapeRenderer.line(m_a, m_b);
 		shapeRenderer.end();
+	}
+
+	private void renderReactor(AccelerationComponent acceleration, GraphicComponent graphic, ReactorComponent reactor) {
+		if (acceleration == null) return;
+		if (acceleration.getAcceleration().equals(Vector3.Zero)) {
+			reactor.stop(particleSystem);
+		} else {
+			reactor.start(particleSystem, graphic.getInstance().transform);
+		}
 	}
 
 	@Override

@@ -24,9 +24,15 @@ public class CameraSystem extends PlayerSystem {
 	private MainCamera camera;
 	private Vector3 cameraOffset;
 
-	public CameraSystem(MainCamera camera) {
-		this.camera = camera;
+	public CameraSystem() {
 		cameraOffset = new Vector3(0, CAMERA_Y_OFFSET, 0);
+	}
+
+	/**
+	 * Sets the {@link MainCamera}
+	 */
+	public void setCamera(MainCamera camera) {
+		this.camera = camera;
 	}
 
 	@Override

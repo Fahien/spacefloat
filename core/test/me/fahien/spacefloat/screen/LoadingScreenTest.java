@@ -54,7 +54,7 @@ public class LoadingScreenTest {
 		screen.loadObjects(engine);
 		screen.loadModels(engine);
 		screen.getAssetManager().finishLoading();
-		screen.injectInstances(engine.getEntities());
+		screen.injectGraphics(engine.getEntities());
 		Family family = Family.all(GraphicComponent.class).get();
 		ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
 		for (Entity entity : entities) {

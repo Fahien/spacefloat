@@ -25,11 +25,6 @@ public class ShowcaseScreenTest {
 	private ShowcaseScreen screen = (ShowcaseScreen) ScreenEnumerator.SHOWCASE.getScreen();
 
 	@Test
-	public void shouldHaveACamera() {
-		assertNotNull("The showcase screen has no camera", screen.getCamera());
-	}
-
-	@Test
 	public void canInitializeTheStage() {
 		try {
 			screen.initStage();

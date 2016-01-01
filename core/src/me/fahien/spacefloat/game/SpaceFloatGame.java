@@ -6,11 +6,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.Logger;
 
-import me.fahien.spacefloat.screen.SpaceFloatScreen;
+import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
+import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
 /**
  * SpaceFloat {@link Game}
@@ -32,9 +35,13 @@ public class SpaceFloatGame extends Game {
 	public static final Logger logger = new Logger(SpaceFloatGame.class.getSimpleName(), LOGGER_LEVEL);
 
 	private AssetManager assetManager;
+
+	private Engine engine;
+	private MainCamera camera;
+	private ParticleSystem particleSystem;
+
 	private BitmapFont font;
 	private TextureAtlas hud;
-	private Engine engine;
 
 	public SpaceFloatGame() {
 		assetManager = new AssetManager();
@@ -53,6 +60,13 @@ public class SpaceFloatGame extends Game {
 	 */
 	public Engine getEngine() {
 		return engine;
+	}
+
+	/**
+	 * Initializes the {@link MainCamera}
+	 */
+	public void initCamera() {
+		camera = new MainCamera();
 	}
 
 	/**
@@ -104,8 +118,20 @@ public class SpaceFloatGame extends Game {
 		screen.setFont(font);
 		screen.setHud(hud);
 		screen.setEngine(engine);
+		screen.setCamera(camera);
+		screen.setParticleSystem(particleSystem);
 		screen.setGame(this);
 		screen.setInitialized(true);
+	}
+
+	/**
+	 * Initializes the {@link ParticleSystem}
+	 */
+	private void initParticleSystem() {
+		particleSystem = ParticleSystem.get();
+		PointSpriteParticleBatch pointSpriteBatch = new PointSpriteParticleBatch();
+		pointSpriteBatch.setCamera(camera);
+		particleSystem.add(pointSpriteBatch);
 	}
 
 	@Override
@@ -114,6 +140,8 @@ public class SpaceFloatGame extends Game {
 		logger.info(logo);
 		loadFont();
 		loadHud();
+		initCamera();
+		initParticleSystem();
 		Bullet.init();
 		setScreen(ScreenEnumerator.LOADING);
 		logger.debug("Game initialized");

@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.actor.FontActor;
-import me.fahien.spacefloat.camera.MainCamera;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -63,7 +62,6 @@ public class ShowcaseScreen extends SpaceFloatScreen {
 	private CameraInputController cameraController;
 
 	public ShowcaseScreen() {
-		camera = new MainCamera();
 		viewport = new FitViewport(WIDTH, HEIGHT);
 	}
 
@@ -120,13 +118,6 @@ public class ShowcaseScreen extends SpaceFloatScreen {
 	 */
 	protected Array<String> getModelList() {
 		return modelList;
-	}
-
-	/**
-	 * Returns the camera
-	 */
-	protected PerspectiveCamera getCamera() {
-		return camera;
 	}
 
 	/**
@@ -316,6 +307,7 @@ public class ShowcaseScreen extends SpaceFloatScreen {
 	@Override
 	public void show() {
 		super.show();
+		camera = getCamera();
 		camera.update();
 
 		initStage();

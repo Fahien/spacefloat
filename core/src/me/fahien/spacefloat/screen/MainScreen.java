@@ -19,7 +19,7 @@ import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.CollisionSystem;
 import me.fahien.spacefloat.system.GravitySystem;
 import me.fahien.spacefloat.system.PhysicSystem;
-import me.fahien.spacefloat.system.RenderingSystem;
+import me.fahien.spacefloat.system.RenderSystem;
 
 /**
  * The Main {@link SpaceFloatScreen}
@@ -29,32 +29,36 @@ import me.fahien.spacefloat.system.RenderingSystem;
 public class MainScreen extends StagedScreen {
 
 	private Engine engine;
-	private CameraSystem camera;
-	private RenderingSystem rendering;
-	private GravitySystem gravity;
-	private PhysicSystem physic;
-	private CollisionSystem collision;
-	private SpaceshipController controller;
+	private CameraSystem cameraSystem;
+	private RenderSystem renderSystem;
+	private GravitySystem gravitySystem;
+	private PhysicSystem physicSystem;
+	private CollisionSystem collisionSystem;
+	private SpaceshipController spaceshipController;
 
 	public MainScreen() {
-		MainCamera mainCamera = new MainCamera();
-		camera = new CameraSystem(mainCamera);
-		rendering = new RenderingSystem(mainCamera);
-		gravity = new GravitySystem();
-		physic = new PhysicSystem();
-		collision = new CollisionSystem();
-		controller = new SpaceshipController2D();
+		cameraSystem = new CameraSystem();
+		renderSystem = new RenderSystem();
+		gravitySystem = new GravitySystem();
+		physicSystem = new PhysicSystem();
+		collisionSystem = new CollisionSystem();
+		spaceshipController = new SpaceshipController2D();
 	}
 
 	@Override
 	public void show() {
+		MainCamera mainCamera = getCamera();
+		cameraSystem.setCamera(mainCamera);
+		renderSystem.setCamera(mainCamera);
+		renderSystem.setParticleSystem(getParticleSystem());
+
 		engine = getEngine();
-		engine.addSystem(controller);
-		engine.addSystem(collision);
-		engine.addSystem(gravity);
-		engine.addSystem(physic);
-		engine.addSystem(camera);
-		engine.addSystem(rendering);
+		engine.addSystem(spaceshipController);
+		engine.addSystem(collisionSystem);
+		engine.addSystem(gravitySystem);
+		engine.addSystem(physicSystem);
+		engine.addSystem(cameraSystem);
+		engine.addSystem(renderSystem);
 		super.show();
 	}
 
@@ -63,7 +67,7 @@ public class MainScreen extends StagedScreen {
 		HudFactory factory = new HudFactory();
 		BitmapFont font = getFont();
 		stage.addActor(factory.getFpsActor(font));
-		Entity player = camera.getPlayer();
+		Entity player = cameraSystem.getPlayer();
 		if (player != null) {
 			AccelerationComponent accelerationComponent = player.getComponent(AccelerationComponent.class);
 			VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);
@@ -88,12 +92,12 @@ public class MainScreen extends StagedScreen {
 	@Override
 	public void hide() {
 		super.hide();
-		engine.removeSystem(camera);
-		engine.removeSystem(rendering);
-		engine.removeSystem(physic);
-		engine.removeSystem(gravity);
-		engine.removeSystem(collision);
-		engine.removeSystem(controller);
+		engine.removeSystem(cameraSystem);
+		engine.removeSystem(renderSystem);
+		engine.removeSystem(physicSystem);
+		engine.removeSystem(gravitySystem);
+		engine.removeSystem(collisionSystem);
+		engine.removeSystem(spaceshipController);
 	}
 
 	@Override
