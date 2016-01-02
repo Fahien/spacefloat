@@ -51,22 +51,28 @@ public class GravitySystem extends IteratingSystem {
 		}
 	}
 
+	protected GravityComponent m_gravity;
+	protected TransformComponent m_transform;
+	protected CollisionComponent m_collision;
+	protected CollisionComponent m_playerCollision;
+
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		GravityComponent gravity = gm.get(entity);
+		m_gravity = gm.get(entity);
 		// If the planet collide with player do not apply gravity
-		if (gravity.collideWith(player)) return;
-		TransformComponent transform = tm.get(entity);
-		CollisionComponent collision = cm.get(entity);
+		if (m_gravity.collideWith(player)) return;
+		m_transform = tm.get(entity);
+		m_collision = cm.get(entity);
+		m_playerCollision = cm.get(player);
 		// Set distance vector equal to the planet position
-		distanceVector.set(transform.getPosition());
+		distanceVector.set(m_transform.getPosition());
 		// Calculate the distance from the player
 		float distance = distanceVector.dst(playerPosition);
 		// If is within the area and is not collided
-		if (distance < MAX_DISTANCE && distance > collision.getRadius() + 2) {
+		if (distance < MAX_DISTANCE && distance > m_collision.getRadius() + m_playerCollision.getRadius() / 2) {
 			// Compute the attractive vector
 			distanceVector.sub(playerPosition);
-			distance = GravityComponent.G * gravity.getMass();
+			distance = GravityComponent.G * m_gravity.getMass();
 			distanceVector.nor().scl(distance);
 			playerVelocity.add(distanceVector);
 		}

@@ -7,13 +7,17 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.JsonReader;
 
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.component.GraphicComponent;
@@ -36,6 +40,9 @@ public class LoadingScreen extends StagedScreen {
 	private ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);
 	private ImmutableArray<Entity> entities;
 
+	private LocalFileHandleResolver localResolver;
+	private InternalFileHandleResolver internalResolver;
+
 	// Loop variables
 	private FontActor m_loadingActor;
 	private AssetManager m_assetManager;
@@ -48,6 +55,8 @@ public class LoadingScreen extends StagedScreen {
 		m_loadingActor.setHalign(FontActor.Halign.CENTER);
 		stage.addActor(m_loadingActor);
 		m_assetManager = getAssetManager();
+		localResolver = new LocalFileHandleResolver();
+		internalResolver = new InternalFileHandleResolver();
 		loadObjects(getEngine());
 		loadModels(getEngine());
 	}
@@ -77,6 +86,8 @@ public class LoadingScreen extends StagedScreen {
 	protected void loadModels(Engine engine) {
 		Family family = Family.all(GraphicComponent.class).get();
 		entities = engine.getEntitiesFor(family);
+		G3dModelLoader loader = new G3dModelLoader(new JsonReader(), localResolver);
+		m_assetManager.setLoader(Model.class, loader);
 		for (Entity entity : entities) {
 			GraphicComponent graphic = graphicMapper.get(entity);
 			if(graphic.getInstance() == null) {
@@ -95,11 +106,10 @@ public class LoadingScreen extends StagedScreen {
 	 *
 	 * @see <a href="https://github.com/libgdx/libgdx/wiki/3D-Particle-Effects">3D Particle Effects</a>
 	 */
-	protected void loadParticles(Engine engine, ParticleSystem particleSystem) {
+	protected void loadParticles(Engine engine, ParticleSystem particleSystem, ParticleEffectLoader loader) {
 		Family family = Family.all(ReactorComponent.class).get();
 		entities = engine.getEntitiesFor(family);
 		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
-		ParticleEffectLoader loader = new ParticleEffectLoader(new InternalFileHandleResolver());
 		m_assetManager.setLoader(ParticleEffect.class, loader);
 		for (Entity entity : entities) {
 			ReactorComponent reactorComponent = reactorMapper.get(entity);
@@ -112,6 +122,7 @@ public class LoadingScreen extends StagedScreen {
 				}
 			}
 		}
+		m_assetManager.finishLoading();
 	}
 
 	@Override
@@ -122,8 +133,13 @@ public class LoadingScreen extends StagedScreen {
 			m_loadingActor.setText((int) (m_progress * 100) + LOADING_TEXT);
 		} else {
 			injectGraphics(entities);
-			loadParticles(getEngine(), getParticleSystem());
-			m_assetManager.finishLoading();
+			ParticleEffectLoader localLoader = new ParticleEffectLoader(localResolver);
+			try {
+				loadParticles(getEngine(), getParticleSystem(), localLoader);
+			} catch (GdxRuntimeException e) {
+				ParticleEffectLoader internalLoader = new ParticleEffectLoader(internalResolver);
+				loadParticles(getEngine(), getParticleSystem(), internalLoader);
+			}
 			injectReactors(getEngine().getEntitiesFor(Family.all(ReactorComponent.class).get()));
 			// Change screen
 			SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);

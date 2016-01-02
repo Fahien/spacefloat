@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector3;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
+import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.system.PlayerSystem;
@@ -21,13 +22,14 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public abstract class SpaceshipController extends PlayerSystem {
-	private static final float CONSUMES = 1.0f;
+	private static final float CONSUMES = 0.5f;
 
 	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
 	private ComponentMapper<PlayerComponent> pm = getFor(PlayerComponent.class);
+	private ComponentMapper<EnergyComponent> em = getFor(EnergyComponent.class);
 
-	private PlayerComponent playerComponent;
+	private EnergyComponent energyComponent;
 	private Vector3 acceleration;
 
 	/**
@@ -38,13 +40,13 @@ public abstract class SpaceshipController extends PlayerSystem {
 	@Override
 	public void addedToEngine(Engine engine, Entity player, InputMultiplexer inputMultiplexer) {
 		if (player != null) {
-			playerComponent = pm.get(player);
+			energyComponent = em.get(player);
 			AccelerationComponent accelerationComponent = am.get(player);
 			TransformComponent transform = tm.get(player);
 			if (accelerationComponent != null && transform != null) {
 				acceleration = accelerationComponent.getAcceleration();
 				Vector3 eulerAngles = transform.getRotation();
-				InputProcessor inputProcessor = createInputProcessor(playerComponent, acceleration, eulerAngles);
+				InputProcessor inputProcessor = createInputProcessor(pm.get(player), acceleration, eulerAngles);
 				inputMultiplexer.addProcessor(inputProcessor);
 			} else {
 				logger.error("Error adding " + SpaceshipController.class.getSimpleName() +
@@ -55,12 +57,12 @@ public abstract class SpaceshipController extends PlayerSystem {
 
 	@Override
 	public void update(float deltaTime) {
-		if (playerComponent.getFuel() <= 0.0f) {
+		if (energyComponent.getCharge() <= 0.0f) {
 			acceleration.set(Vector3.Zero);
 			return;
 		}
 		if (!acceleration.equals(Vector3.Zero)) {
-			playerComponent.addFuel(-CONSUMES * deltaTime);
+			energyComponent.addCharge(-CONSUMES * deltaTime);
 		}
 	}
 }

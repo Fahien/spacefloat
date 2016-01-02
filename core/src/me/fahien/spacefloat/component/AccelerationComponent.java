@@ -56,7 +56,7 @@ public class AccelerationComponent implements Component, Json.Serializable {
 		eulerAnglesAcceleration.z = jsonData.getFloat(JsonString.ROLL);
 	}
 
-	public void collision(Vector3 normal) {
+	public void collide(Vector3 normal) {
 		normal.nor();
 		float dot = acceleration.dot(normal);
 		if (dot < 0) {

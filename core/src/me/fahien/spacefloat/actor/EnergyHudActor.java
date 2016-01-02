@@ -4,14 +4,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import me.fahien.spacefloat.component.PlayerComponent;
+import me.fahien.spacefloat.component.EnergyComponent;
 
 /**
  * A linear {@link HudActor}
  *
  * @author Fahien
  */
-public class FuelHudActor extends HudActor {
+public class EnergyHudActor extends HudActor {
 	private static final String LINEAR_HUD = "fuel";
 	private static final String POINT_HUD = "point";
 	private static final int POINT_MAX = 19;
@@ -23,20 +23,20 @@ public class FuelHudActor extends HudActor {
 	private int pointWidth;
 	private int pointHeight;
 
-	private PlayerComponent player;
+	private EnergyComponent energy;
 
-	public FuelHudActor(TextureAtlas hud, PlayerComponent player) {
+	public EnergyHudActor(TextureAtlas hud, EnergyComponent energy) {
 		super(hud.findRegion(LINEAR_HUD));
 		point = hud.findRegion(POINT_HUD);
 		pointWidth = point.getRegionWidth();
 		pointHeight = point.getRegionHeight();
-		this.player = player;
+		this.energy = energy;
 	}
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		int pointCount = (int)(player.getFuel() / player.getFuelMax() * POINT_MAX);
+		int pointCount = (int)(energy.getCharge() / energy.getChargeMax() * POINT_MAX);
 		for (int i = 0; i < pointCount; i++) {
 			batch.draw(point,
 					getX() + POINT_INITIAL_OFFSET + i * POINT_X_OFFSET,

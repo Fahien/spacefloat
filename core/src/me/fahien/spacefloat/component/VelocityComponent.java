@@ -14,6 +14,8 @@ import me.fahien.spacefloat.utils.JsonString;
  */
 public class VelocityComponent implements Component, Json.Serializable {
 
+	public static final int BOUNCE_LIMIT = 8;
+	public static final float ABSORBE_FACTOR = 0.25f;
 	private Vector3 velocity;
 	private Vector3 eulerAnglesVelocity;
 
@@ -37,13 +39,28 @@ public class VelocityComponent implements Component, Json.Serializable {
 	}
 
 	/**
-	 * Collide with normal
+	 * Hurt with normal
 	 */
-	public void collision(Vector3 normal) {
+	public void hurt(Vector3 normal) {
 		normal.nor();
 		float dot = 2 * velocity.dot(normal);
 		normal.scl(dot);
-		velocity.sub(normal).scl(0.5f);
+		velocity.sub(normal).scl(ABSORBE_FACTOR);
+		if (velocity.len2() < BOUNCE_LIMIT) {
+			velocity.set(Vector3.Zero);
+		}
+	}
+
+	/**
+	 * Collide with normal
+	 */
+	public void collide(Vector3 normal) {
+		normal.nor();
+		float dot = velocity.dot(normal);
+		if (dot < 0) {
+			normal.scl(dot);
+			velocity.sub(normal);
+		}
 	}
 
 	@Override

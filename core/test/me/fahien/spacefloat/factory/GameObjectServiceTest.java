@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
+import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
@@ -60,6 +61,8 @@ public class GameObjectServiceTest {
 		ReactorComponent reactorComponent = new ReactorComponent();
 		reactorComponent.setName(REACTOR_NAME);
 		spaceship.add(reactorComponent);
+		EnergyComponent energy = new EnergyComponent();
+		spaceship.add(energy);
 		factory.save(spaceship);
 	}
 
@@ -82,6 +85,8 @@ public class GameObjectServiceTest {
 		assertNotNull("The spaceship has no collision component", collision);
 		ReactorComponent reactor = spaceship.getComponent(ReactorComponent.class);
 		assertNotNull("The spaceship has no reactor component", reactor);
+		EnergyComponent energy = spaceship.getComponent(EnergyComponent.class);
+		assertNotNull("The spaceship has no energy component", energy);
 	}
 
 	@Test

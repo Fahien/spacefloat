@@ -20,9 +20,9 @@ import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
+import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
-import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 
 import static com.badlogic.ashley.core.ComponentMapper.getFor;
@@ -36,11 +36,12 @@ import static com.badlogic.ashley.core.Family.all;
 public class CollisionSystem extends IteratingSystem {
 
 	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
-	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
 	private ComponentMapper<VelocityComponent> vm = getFor(VelocityComponent.class);
 	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 	private ComponentMapper<CollisionComponent> cm = getFor(CollisionComponent.class);
 	private ComponentMapper<GravityComponent> grm = getFor(GravityComponent.class);
+	private ComponentMapper<EnergyComponent> em = getFor(EnergyComponent.class);
+
 
 	private btDefaultCollisionConfiguration collisionConfig;
 	private btCollisionDispatcher dispatcher;
@@ -61,24 +62,28 @@ public class CollisionSystem extends IteratingSystem {
 			entity0 = (Entity) colObj0Wrap.getCollisionObject().userData;
 			entity1 = (Entity) colObj1Wrap.getCollisionObject().userData;
 			cp.getNormalWorldOnB(normal);
-			computeCollision(grm.get(entity0), entity1, tm.get(entity1), vm.get(entity1), am.get(entity1), normal);
-			computeCollision(grm.get(entity1), entity0, tm.get(entity0), vm.get(entity0), am.get(entity0), normal);
+			computeCollision(grm.get(entity0), entity1, vm.get(entity1), am.get(entity1), em.get(entity1), normal);
+			computeCollision(grm.get(entity1), entity0, vm.get(entity0), am.get(entity0), em.get(entity0), normal);
 			return true;
 		}
 
 		private void computeCollision(GravityComponent gravity,
 									  Entity entity,
-									  TransformComponent transform,
 									  VelocityComponent velocity,
 									  AccelerationComponent acceleration,
+									  EnergyComponent energyComponent,
 									  Vector3 normal) {
 			if (gravity != null) {
 				if (!gravity.collideWith(entity)) {
 					gravity.addCollision(entity);
-					velocity.collision(normal);
-					transform.collision(normal);
+					if (energyComponent != null) {
+						energyComponent.hurt(velocity.getVelocity(), normal);
+					}
+					velocity.hurt(normal);
+				} else {
+					velocity.collide(normal);
 				}
-				acceleration.collision(normal);
+				acceleration.collide(normal);
 			}
 		}
 
@@ -123,8 +128,6 @@ public class CollisionSystem extends IteratingSystem {
 		addToCollisionWorld(getEntities());
 	}
 
-
-
 	/**
 	 * Initialize every {@link CollisionComponent}
 	 */
@@ -151,12 +154,14 @@ public class CollisionSystem extends IteratingSystem {
 		}
 	}
 
+	protected GraphicComponent m_graphic;
+	protected CollisionComponent m_collision;
+
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		GraphicComponent graphic = gm.get(entity);
-		CollisionComponent collision = cm.get(entity);
-		collision.setTransform(graphic.getInstance().transform);
-
+		m_graphic = gm.get(entity);
+		m_collision = cm.get(entity);
+		m_collision.setTransform(m_graphic.getInstance().transform);
 		collisionWorld.performDiscreteCollisionDetection();
 	}
 

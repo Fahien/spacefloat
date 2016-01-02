@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import me.fahien.spacefloat.component.PlayerComponent;
+import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
 /**
@@ -109,9 +109,9 @@ public class HudFactory {
 	/**
 	 * Returns the fuel {@link HudActor}
 	 */
-	public HudActor getFuelActor(TextureAtlas hud, PlayerComponent player) {
+	public HudActor getFuelActor(TextureAtlas hud, EnergyComponent energy) {
 		if (fuelActor == null) {
-			fuelActor = new FuelHudActor(hud, player);
+			fuelActor = new EnergyHudActor(hud, energy);
 			fuelActor.setPosition(FUEL_X, FUEL_Y);
 		}
 		return fuelActor;
