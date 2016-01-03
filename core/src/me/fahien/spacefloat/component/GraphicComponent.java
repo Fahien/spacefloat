@@ -19,6 +19,12 @@ public class GraphicComponent implements Component, Json.Serializable {
 	private String name;
 	private ModelInstance instance;
 
+	public GraphicComponent() {}
+
+	public GraphicComponent(String name) {
+		this.name = name;
+	}
+
 	/**
 	 * Returns the name
 	 */

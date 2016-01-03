@@ -19,6 +19,12 @@ public class GameObject extends Entity implements Json.Serializable {
 
 	private String name;
 
+	public GameObject() {}
+
+	public GameObject(String name) {
+		this.name = name;
+	}
+
 	/**
 	 * Returns the name
 	 */

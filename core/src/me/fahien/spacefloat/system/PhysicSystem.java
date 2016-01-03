@@ -25,29 +25,14 @@ import static com.badlogic.gdx.math.MathUtils.clamp;
 public class PhysicSystem extends IteratingSystem {
 	/** Close to Zeros */
 	private static final float ROTATIONVELOCITY_CTZ = 0.005f;
-	private static final float VELOCITY_CTZ = 0.05f;
 	private static final float MAX_ROTATIONVELOCITY = 4.0f;
 	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
 	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
 	private ComponentMapper<VelocityComponent> vm = getFor(VelocityComponent.class);
 	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 
-	// Temp variables
-	protected GraphicComponent graphicComponent;
-	protected TransformComponent transformComponent;
-	protected VelocityComponent velocityComponent;
-	protected AccelerationComponent accelerationComponent;
-	protected Vector3 position;
-	protected Vector3 rotation;
-	protected Vector3 velocity;
-	protected Vector3 rotationVelocity;
-	protected Vector3 tempAcceleration;
-	protected Quaternion quaternion;
-
 	public PhysicSystem() {
 		super(Family.all(GraphicComponent.class, TransformComponent.class).get());
-		tempAcceleration = new Vector3();
-		quaternion = new Quaternion();
 	}
 
 	@Override
@@ -68,38 +53,48 @@ public class PhysicSystem extends IteratingSystem {
 		}
 	}
 
+	protected GraphicComponent m_graphicComponent;
+	protected TransformComponent m_transformComponent;
+	protected VelocityComponent m_velocityComponent;
+	protected AccelerationComponent m_accelerationComponent;
+	protected Vector3 m_position;
+	protected Vector3 m_rotation;
+	protected Vector3 m_velocity;
+	protected Vector3 m_rotationVelocity;
+	protected Quaternion m_quaternion = new Quaternion();
+
 	@Override
 	protected void processEntity(Entity entity, float delta) {
 		// Get the components of the current entity
-		graphicComponent = gm.get(entity);
-		transformComponent = tm.get(entity);
-		velocityComponent = vm.get(entity);
-		accelerationComponent = am.get(entity);
+		m_graphicComponent = gm.get(entity);
+		m_transformComponent = tm.get(entity);
+		m_velocityComponent = vm.get(entity);
+		m_accelerationComponent = am.get(entity);
 
-		if (velocityComponent != null) {
+		if (m_velocityComponent != null) {
 			// Get the position and the rotation
-			position = transformComponent.getPosition();
-			rotation = transformComponent.getRotation();
+			m_position = m_transformComponent.getPosition();
+			m_rotation = m_transformComponent.getRotation();
 			// Get the velocity and rotationVelocity
-			velocity = velocityComponent.getVelocity();
-			rotationVelocity = velocityComponent.getEulerAnglesVelocity();
-			if (accelerationComponent != null) {
-				updateVelocity(accelerationComponent.getAcceleration(), velocity, delta);
-				updateRotationVelocity(accelerationComponent.getEulerAnglesAcceleration(), rotationVelocity, delta);
+			m_velocity = m_velocityComponent.getVelocity();
+			m_rotationVelocity = m_velocityComponent.getEulerAnglesVelocity();
+			if (m_accelerationComponent != null) {
+				updateVelocity(m_accelerationComponent.getAcceleration(), m_velocity, delta);
+				updateRotationVelocity(m_accelerationComponent.getEulerAnglesAcceleration(), m_rotationVelocity, delta);
 			}
-			if (!rotationVelocity.equals(Vector3.Zero)) {
-				rotation.x += rotationVelocity.x * delta;
-				rotation.y += rotationVelocity.y * delta;
-				rotation.z += rotationVelocity.z * delta;
+			if (!m_rotationVelocity.equals(Vector3.Zero)) {
+				m_rotation.x += m_rotationVelocity.x * delta;
+				m_rotation.y += m_rotationVelocity.y * delta;
+				m_rotation.z += m_rotationVelocity.z * delta;
 			}
-			if (!velocity.equals(Vector3.Zero)) {
-				position.x += velocity.x * delta;
-				position.y += velocity.y * delta;
-				position.z += velocity.z * delta;
+			if (!m_velocity.equals(Vector3.Zero)) {
+				m_position.x += m_velocity.x * delta;
+				m_position.y += m_velocity.y * delta;
+				m_position.z += m_velocity.z * delta;
 			}
-			quaternion.setEulerAnglesRad(rotation.x, rotation.y, rotation.z);
-			graphicComponent.getInstance().transform.set(quaternion);
-			graphicComponent.setPosition(position);
+			m_quaternion.setEulerAnglesRad(m_rotation.x, m_rotation.y, m_rotation.z);
+			m_graphicComponent.getInstance().transform.set(m_quaternion);
+			m_graphicComponent.setPosition(m_position);
 		}
 	}
 
@@ -120,24 +115,16 @@ public class PhysicSystem extends IteratingSystem {
 		}
 	}
 
+	protected Vector3 m_tempAcceleration = new Vector3();
+
 	/**
 	 * Updates the velocity
 	 */
 	private void updateVelocity(Vector3 acceleration, Vector3 velocity, float delta) {
 		if (!acceleration.equals(Vector3.Zero)) {
-			tempAcceleration.set(acceleration);
-			// tempAcceleration.rot(graphic.getInstance().transform);
+			m_tempAcceleration.set(acceleration);
 			// Updates velocity
-			velocity.add(tempAcceleration.scl(delta));
-			/*
-			velocity.x += tempAcceleration.x * delta;
-			velocity.y += tempAcceleration.y * delta;
-			velocity.z += tempAcceleration.z * delta;
-			*/
-		} else {
-			if (velocity.len2() < VELOCITY_CTZ) {
-				velocity.x = velocity.y = velocity.z = 0.0f;
-			}
+			velocity.add(m_tempAcceleration.scl(delta));
 		}
 	}
 }

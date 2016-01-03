@@ -2,6 +2,7 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -14,7 +15,7 @@ import me.fahien.spacefloat.utils.JsonString;
  * @author Fahien
  */
 public class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
-	private static final float DEFAULT_RADIUS = 1.0f;
+	private static final float DEFAULT_RADIUS = 128.0f;
 
 	private float radius;
 
@@ -31,6 +32,13 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	 */
 	public float getRadius() {
 		return radius;
+	}
+
+	/**
+	 * Returns the position
+	 */
+	public Vector3 getPosition(Vector3 position) {
+		return getWorldTransform().getTranslation(position);
 	}
 
 	/**

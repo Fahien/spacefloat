@@ -18,8 +18,17 @@ public class TransformComponent implements Component, Json.Serializable {
 	private Vector3 rotation;
 
 	public TransformComponent() {
-		position = new Vector3();
-		rotation = new Vector3();
+		this(new Vector3(), new Vector3());
+
+	}
+
+	public TransformComponent(Vector3 position) {
+		this(position, new Vector3());
+	}
+
+	public TransformComponent(Vector3 position, Vector3 rotation) {
+		this.position = position;
+		this.rotation = rotation;
 	}
 
 	/**

@@ -23,7 +23,7 @@ import static com.badlogic.ashley.core.Family.all;
  * @author Fahien
  */
 public class GravitySystem extends IteratingSystem {
-	private static final float MAX_DISTANCE = 2048f;
+	public static final float MAX_DISTANCE = 2048f;
 
 	private ComponentMapper<GravityComponent> gm = getFor(GravityComponent.class);
 	private ComponentMapper<VelocityComponent> am = getFor(VelocityComponent.class);
@@ -59,6 +59,8 @@ public class GravitySystem extends IteratingSystem {
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
 		m_gravity = gm.get(entity);
+		// If the mass is zero do nothing
+		if (m_gravity.getMass() == 0f) return;
 		// If the planet collide with player do not apply gravity
 		if (m_gravity.collideWith(player)) return;
 		m_transform = tm.get(entity);

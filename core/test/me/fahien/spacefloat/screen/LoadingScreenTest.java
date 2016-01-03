@@ -18,6 +18,8 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * The {@link LoadingScreen} Test Case
+ *
+ * @author Fahien
  */
 public class LoadingScreenTest {
 

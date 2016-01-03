@@ -26,6 +26,7 @@ import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectService;
 import me.fahien.spacefloat.game.SpaceFloat;
 
+import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -84,7 +85,7 @@ public class LoadingScreen extends StagedScreen {
 	 * Loads the {@link Model}s
 	 */
 	protected void loadModels(Engine engine) {
-		Family family = Family.all(GraphicComponent.class).get();
+		Family family = all(GraphicComponent.class).get();
 		entities = engine.getEntitiesFor(family);
 		G3dModelLoader loader = new G3dModelLoader(new JsonReader(), localResolver);
 		m_assetManager.setLoader(Model.class, loader);
@@ -106,42 +107,54 @@ public class LoadingScreen extends StagedScreen {
 	 *
 	 * @see <a href="https://github.com/libgdx/libgdx/wiki/3D-Particle-Effects">3D Particle Effects</a>
 	 */
-	protected void loadParticles(Engine engine, ParticleSystem particleSystem, ParticleEffectLoader loader) {
-		Family family = Family.all(ReactorComponent.class).get();
-		entities = engine.getEntitiesFor(family);
+	protected void loadParticles(Engine engine, ParticleSystem particleSystem) {
+		// Get all entities with a reactor component
+		entities = engine.getEntitiesFor(all(ReactorComponent.class).get());
+		// Initialize loaders
+		ParticleEffectLoader localLoader = new ParticleEffectLoader(localResolver);
+		ParticleEffectLoader internalLoader = new ParticleEffectLoader(internalResolver);
 		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
-		m_assetManager.setLoader(ParticleEffect.class, loader);
+		m_assetManager.setLoader(ParticleEffect.class, localLoader);
 		for (Entity entity : entities) {
 			ReactorComponent reactorComponent = reactorMapper.get(entity);
 			if(reactorComponent.getReactor() == null) {
 				String name = reactorComponent.getName();
 				if (name != null) {
-					m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+					try {
+						m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+						m_assetManager.finishLoading();
+					} catch (GdxRuntimeException e) {
+						m_assetManager.setLoader(ParticleEffect.class, internalLoader);
+						m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+						m_assetManager.finishLoading();
+						m_assetManager.setLoader(ParticleEffect.class, localLoader);
+					}
 				} else {
 					logger.error("Error loading particle effects: a reactor has no name");
 				}
 			}
 		}
-		m_assetManager.finishLoading();
+		logger.info("Loaded " + entities.size() + " reactor particle effects");
 	}
 
 	@Override
 	public void prerender(float delta) {
+		logger.debug("Updating asset manager");
 		m_assetManager.update();
+		logger.debug("Getting asset manager progress");
 		m_progress = m_assetManager.getProgress();
 		if (m_progress != 1.0f) {
+			logger.debug("Setting loading text");
 			m_loadingActor.setText((int) (m_progress * 100) + LOADING_TEXT);
 		} else {
+			logger.info("Loaded " + entities.size() + " models");
+			logger.debug("Injecting graphics into entities");
 			injectGraphics(entities);
-			ParticleEffectLoader localLoader = new ParticleEffectLoader(localResolver);
-			try {
-				loadParticles(getEngine(), getParticleSystem(), localLoader);
-			} catch (GdxRuntimeException e) {
-				ParticleEffectLoader internalLoader = new ParticleEffectLoader(internalResolver);
-				loadParticles(getEngine(), getParticleSystem(), internalLoader);
-			}
-			injectReactors(getEngine().getEntitiesFor(Family.all(ReactorComponent.class).get()));
-			// Change screen
+			logger.debug("Loading reactor particle effects");
+			loadParticles(getEngine(), getParticleSystem());
+			logger.debug("Injecting reactors into entities");
+			injectReactors(getEngine().getEntitiesFor(all(ReactorComponent.class).get()));
+			logger.debug("Changing screen");
 			SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);
 		}
 	}

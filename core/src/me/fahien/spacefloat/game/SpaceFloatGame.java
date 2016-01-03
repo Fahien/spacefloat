@@ -26,7 +26,7 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	private static final int LOGGER_LEVEL = Logger.DEBUG;
+	private static final int LOGGER_LEVEL = Logger.INFO;
 
 	private static final String SYSTEM_PATH = "system/";
 	private static final String SYSTEM_FONT = SYSTEM_PATH + "font.fnt";
@@ -44,8 +44,14 @@ public class SpaceFloatGame extends Game {
 	private TextureAtlas hud;
 
 	public SpaceFloatGame() {
-		assetManager = new AssetManager();
 		engine = new Engine();
+	}
+
+	/**
+	 * Initializes the {@link AssetManager}
+	 */
+	public void initAssetManager() {
+		assetManager = new AssetManager();
 	}
 
 	/**
@@ -138,6 +144,7 @@ public class SpaceFloatGame extends Game {
 	public void create() {
 		Gdx.app.setLogLevel(LOGGER_LEVEL);
 		logger.info(logo);
+		initAssetManager();
 		loadFont();
 		loadHud();
 		initCamera();

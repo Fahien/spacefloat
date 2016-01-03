@@ -2,6 +2,7 @@ package me.fahien.spacefloat.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
+import me.fahien.spacefloat.component.RefuelComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -29,52 +31,89 @@ import static org.junit.Assert.assertTrue;
  */
 public class GameObjectServiceTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
+	private static final String SPACESHIP_GRAPHIC = "cargo.g3db";
+	private static final String SPACESHIP_REACTOR = "reactor.pfx";
+	private static final float  SPACESHIP_RADIUS = 75f;
 	private static final String EARTH_NAME = "Earth";
-	private static final String MODEL_NAME = "cargo.g3db";
-	private static final String REACTOR_NAME = "reactor.pfx";
-	private static final float RADIUS_COLLISION = 50.0f;
+	private static final String ENERGYSTATION_NAME = "EnergyStation";
+	private static final String ENERGYSTATION_GRAPHIC = "energy_station.g3db";
+	private static final float  ENERGYSTATION_RADIUS = 100f;
+	private static final float MASS_ZERO = 0f;
 
-	private GameObjectService factory;
+	private GameObjectService gameObjectService;
 
 	@Before
 	public void before() {
-		factory = new GameObjectService();
+		gameObjectService = new GameObjectService();
 	}
 
 	@Test
-	public void canSaveTheSpaceship() {
-		GameObject spaceship = new GameObject();
-		spaceship.setName(SPACESHIP_NAME);
-		GraphicComponent graphic = new GraphicComponent();
-		graphic.setName(MODEL_NAME);
+	public void couldSaveTheSpaceship() {
+		// Create the spaceship
+		GameObject spaceship = new GameObject(SPACESHIP_NAME);
+		// Create a graphic component
+		GraphicComponent graphic = new GraphicComponent(SPACESHIP_GRAPHIC);
 		spaceship.add(graphic);
+		// Create a transform component
 		TransformComponent position = new TransformComponent();
 		spaceship.add(position);
+		// Create a velocity component
 		VelocityComponent velocity = new VelocityComponent();
 		spaceship.add(velocity);
+		// Create an acceleration component
 		AccelerationComponent acceleration = new AccelerationComponent();
 		spaceship.add(acceleration);
+		// Create a player component
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
-		CollisionComponent collision = new CollisionComponent(RADIUS_COLLISION);
+		// Create a collision component
+		CollisionComponent collision = new CollisionComponent(SPACESHIP_RADIUS);
 		spaceship.add(collision);
-		ReactorComponent reactorComponent = new ReactorComponent();
-		reactorComponent.setName(REACTOR_NAME);
+		// Create a reactor component
+		ReactorComponent reactorComponent = new ReactorComponent(SPACESHIP_REACTOR);
 		spaceship.add(reactorComponent);
+		// Create an energy component
 		EnergyComponent energy = new EnergyComponent();
 		spaceship.add(energy);
-		factory.save(spaceship);
+		// Save the spaceship
+		gameObjectService.save(spaceship);
 	}
 
 	@Test
-	public void canLoadTheSpaceship() {
-		GameObject spaceship = factory.load(SPACESHIP_NAME);
+	public void couldSaveTheEnergyStation() {
+		// Create the energy station
+		GameObject energyStation = new GameObject(ENERGYSTATION_NAME);
+		// Create a graphic component
+		GraphicComponent graphic = new GraphicComponent(ENERGYSTATION_GRAPHIC);
+		energyStation.add(graphic);
+		// Create a transform component
+		TransformComponent transform = new TransformComponent(new Vector3(1000f, 0f, 0f));
+		energyStation.add(transform);
+		// Create a velocity component
+		VelocityComponent velocity = new VelocityComponent();
+		energyStation.add(velocity);
+		// Create a collision component
+		CollisionComponent collision = new CollisionComponent(ENERGYSTATION_RADIUS);
+		energyStation.add(collision);
+		// Create a gravity component
+		GravityComponent gravity = new GravityComponent(MASS_ZERO);
+		energyStation.add(gravity);
+		// Create e refuel component
+		RefuelComponent refuel = new RefuelComponent();
+		energyStation.add(refuel);
+		// Save the energy station
+		gameObjectService.save(energyStation);
+	}
+
+	@Test
+	public void couldLoadTheSpaceship() {
+		GameObject spaceship = gameObjectService.load(SPACESHIP_NAME);
 		assertEquals("The name is not equals to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
 		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
 		assertNotNull("The spaceship has no graphic component", graphic);
-		assertEquals("The graphic name is not equals to " + MODEL_NAME, MODEL_NAME, graphic.getName());
-		TransformComponent position = spaceship.getComponent(TransformComponent.class);
-		assertNotNull("The spaceship has no position component", position);
+		assertEquals("The graphic name is not equals to " + SPACESHIP_GRAPHIC, SPACESHIP_GRAPHIC, graphic.getName());
+		TransformComponent transform = spaceship.getComponent(TransformComponent.class);
+		assertNotNull("The spaceship has no transform component", transform);
 		VelocityComponent velocity = spaceship.getComponent(VelocityComponent.class);
 		assertNotNull("The spaceship has no velocity component", velocity);
 		PlayerComponent player = spaceship.getComponent(PlayerComponent.class);
@@ -90,8 +129,25 @@ public class GameObjectServiceTest {
 	}
 
 	@Test
-	public void canLoadTheEarth() {
-		GameObject earth = factory.load(EARTH_NAME);
+	public void couldLoadTheEnergyStation() {
+		GameObject energyStation = gameObjectService.load(ENERGYSTATION_NAME);
+		assertEquals("The energy station name is not equals to " + ENERGYSTATION_NAME, ENERGYSTATION_NAME, energyStation.getName());
+		GraphicComponent graphic = energyStation.getComponent(GraphicComponent.class);
+		assertNotNull("The energy station has no graphic component", graphic);
+		assertEquals("The energy station graphic name is not equals to " + ENERGYSTATION_GRAPHIC, ENERGYSTATION_GRAPHIC, graphic.getName());
+		TransformComponent transform = energyStation.getComponent(TransformComponent.class);
+		assertNotNull("The energy station has no transform component", transform);
+		CollisionComponent collision = energyStation.getComponent(CollisionComponent.class);
+		assertNotNull("The energy station has no collision component", collision);
+		GravityComponent gravity = energyStation.getComponent(GravityComponent.class);
+		assertNotNull("The energy station has no gravity component", gravity);
+		RefuelComponent refuel = energyStation.getComponent(RefuelComponent.class);
+		assertNotNull("The energy station has no refuel component", refuel);
+	}
+
+	@Test
+	public void couldLoadTheEarth() {
+		GameObject earth = gameObjectService.load(EARTH_NAME);
 		assertEquals("The name is not equals to " + EARTH_NAME, EARTH_NAME, earth.getName());
 		GravityComponent gravity = earth.getComponent(GravityComponent.class);
 		assertNotNull("The spaceship has no gravity component", gravity);
@@ -113,19 +169,19 @@ public class GameObjectServiceTest {
 	}
 
 	@Test
-	public void canLoadAllObjects() {
+	public void couldLoadAllObjects() {
 		createObjectList();
-		Array<GameObject> objects = factory.loadObjects();
+		Array<GameObject> objects = gameObjectService.loadObjects();
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}
 
 	@Test
-	public void canSaveAllObjects() {
+	public void couldSaveAllObjects() {
 		createObjectList();
-		Array<GameObject> objects = factory.loadObjects();
-		factory.saveObjects(objects);
-		objects = factory.loadObjects();
+		Array<GameObject> objects = gameObjectService.loadObjects();
+		gameObjectService.saveObjects(objects);
+		objects = gameObjectService.loadObjects();
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}

@@ -23,6 +23,12 @@ public class ReactorComponent implements Component, Json.Serializable {
 
 	private boolean playing;
 
+	public ReactorComponent() {}
+
+	public ReactorComponent(String name) {
+		this.name = name;
+	}
+
 	/**
 	 * Returns the name
 	 */

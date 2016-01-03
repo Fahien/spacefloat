@@ -21,6 +21,8 @@ import me.fahien.spacefloat.system.GravitySystem;
 import me.fahien.spacefloat.system.PhysicSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
+
 /**
  * The Main {@link SpaceFloatScreen}
  *
@@ -47,17 +49,27 @@ public class MainScreen extends StagedScreen {
 
 	@Override
 	public void show() {
+		logger.debug("Getting the main camera");
 		MainCamera mainCamera = getCamera();
+		logger.debug("Injecting camera into camera system");
 		cameraSystem.setCamera(mainCamera);
+		logger.debug("Injecting camera into render system");
 		renderSystem.setCamera(mainCamera);
+		logger.debug("Injecting particle system into render system");
 		renderSystem.setParticleSystem(getParticleSystem());
-
+		logger.debug("Getting the engine");
 		engine = getEngine();
+		logger.debug("Adding spaceship controller to the engine");
 		engine.addSystem(spaceshipController);
+		logger.debug("Adding collision system to the engine");
 		engine.addSystem(collisionSystem);
+		logger.debug("Adding gravity system to the engine");
 		engine.addSystem(gravitySystem);
+		logger.debug("Adding physic system to the engine");
 		engine.addSystem(physicSystem);
+		logger.debug("Adding camera system to the engine");
 		engine.addSystem(cameraSystem);
+		logger.debug("Adding render system to the engine");
 		engine.addSystem(renderSystem);
 		super.show();
 	}
@@ -80,12 +92,13 @@ public class MainScreen extends StagedScreen {
 			EnergyComponent energyComponent = player.getComponent(EnergyComponent.class);
 			stage.addActor(factory.getFuelActor(getHud(), energyComponent));
 		} else {
-			SpaceFloatGame.logger.error("Error creating the HUD: player is null");
+			logger.error("Error creating the HUD: player is null");
 		}
 	}
 
 	@Override
 	public void prerender(float delta) {
+		logger.debug("Updating engine");
 		engine.update(delta);
 	}
 

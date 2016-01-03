@@ -1,3 +1,4 @@
+energy_station
 player
 earth
 cargo

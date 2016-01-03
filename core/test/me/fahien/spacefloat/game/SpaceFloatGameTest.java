@@ -39,6 +39,7 @@ public class SpaceFloatGameTest {
 	@Before
 	public void before() {
 		game = new SpaceFloatGame();
+		game.initAssetManager();
 	}
 
 	@Test
