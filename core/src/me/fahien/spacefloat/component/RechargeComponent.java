@@ -8,11 +8,11 @@ import com.badlogic.gdx.math.Vector3;
  *
  * @author Fahien
  */
-public class RefuelComponent extends CollisionComponent {
+public class RechargeComponent extends CollisionComponent {
 	private static final float DEFAULT_RADIUS = 100.0f;
 	private static final Vector3 offset = new Vector3(-115f, 0f, 207f);
 
-	public RefuelComponent() {
+	public RechargeComponent() {
 		super(DEFAULT_RADIUS);
 	}
 

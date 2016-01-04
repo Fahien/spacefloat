@@ -24,7 +24,7 @@ import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
-import me.fahien.spacefloat.component.RefuelComponent;
+import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 
 import static com.badlogic.ashley.core.ComponentMapper.getFor;
@@ -37,13 +37,13 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public class CollisionSystem extends IteratingSystem {
+	public static float RECHARGE_POWER = 0.125f;
 
-	private static final float CHARGE_POWER = 0.125f;
 	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
 	private ComponentMapper<VelocityComponent> vm = getFor(VelocityComponent.class);
 	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 	private ComponentMapper<CollisionComponent> cm = getFor(CollisionComponent.class);
-	private ComponentMapper<RefuelComponent> rm = getFor(RefuelComponent.class);
+	private ComponentMapper<RechargeComponent> rm = getFor(RechargeComponent.class);
 	private ComponentMapper<GravityComponent> grm = getFor(GravityComponent.class);
 	private ComponentMapper<EnergyComponent> em = getFor(EnergyComponent.class);
 
@@ -73,14 +73,14 @@ public class CollisionSystem extends IteratingSystem {
 				entity0 = (Entity) collisionObject0.userData;
 				entity1 = (Entity) collisionObject1.userData;
 				cp.getNormalWorldOnB(normal);
-				if (collisionObject0 instanceof RefuelComponent) {
+				if (collisionObject0 instanceof RechargeComponent) {
 					logger.debug("Computing refuel between object0 and entity1");
-					computeRefuel(em.get(entity1), vm.get(entity1));
+					computeRecharge(em.get(entity1), vm.get(entity1));
 					return true;
 				}
-				if (collisionObject1 instanceof RefuelComponent) {
+				if (collisionObject1 instanceof RechargeComponent) {
 					logger.debug("Computing refuel between entity1 and entity0");
-					computeRefuel(em.get(entity0), vm.get(entity0));
+					computeRecharge(em.get(entity0), vm.get(entity0));
 					return true;
 				}
 				logger.debug("Computing collision between entity0 and entity1");
@@ -96,11 +96,11 @@ public class CollisionSystem extends IteratingSystem {
 		}
 
 		/**
-		 * Apply Refuel logic
+		 * Apply recharge logic
 		 */
-		private void computeRefuel(EnergyComponent energy, VelocityComponent velocity) {
+		private void computeRecharge(EnergyComponent energy, VelocityComponent velocity) {
 			if (energy == null) return;
-			energy.addCharge(CHARGE_POWER * Gdx.graphics.getDeltaTime());
+			energy.addCharge(RECHARGE_POWER * Gdx.graphics.getDeltaTime());
 			if (velocity == null) return;
 			velocity.getVelocity().scl(1f - Gdx.graphics.getDeltaTime() / 8f);
 		}
@@ -168,7 +168,7 @@ public class CollisionSystem extends IteratingSystem {
 		super.addedToEngine(engine);
 
 		createCollisionObjects(getEntities());
-		ImmutableArray<Entity> refuelEntities = engine.getEntitiesFor(all(GraphicComponent.class, RefuelComponent.class).get());
+		ImmutableArray<Entity> refuelEntities = engine.getEntitiesFor(all(GraphicComponent.class, RechargeComponent.class).get());
 		createRefuelCollisionObjects(refuelEntities);
 
 		collisionConfig = new btDefaultCollisionConfiguration();
@@ -204,7 +204,7 @@ public class CollisionSystem extends IteratingSystem {
 	 */
 	protected void createRefuelCollisionObjects(ImmutableArray<Entity> entities) {
 		for (Entity entity : entities) {
-			RefuelComponent collision = rm.get(entity);
+			RechargeComponent collision = rm.get(entity);
 			GraphicComponent graphic = gm.get(entity);
 			btCollisionObject collisionObject = new btCollisionObject();
 			btCollisionShape shape = new btSphereShape(collision.getRadius());
@@ -230,14 +230,14 @@ public class CollisionSystem extends IteratingSystem {
 	 */
 	private void addRefuelToCollisionWorld(ImmutableArray<Entity> entities) {
 		for (Entity entity : entities) {
-			RefuelComponent collision = rm.get(entity);
+			RechargeComponent collision = rm.get(entity);
 			collisionWorld.addCollisionObject(collision);
 		}
 	}
 
 	protected GraphicComponent m_graphic;
 	protected CollisionComponent m_collision;
-	protected RefuelComponent m_refuel;
+	protected RechargeComponent m_refuel;
 
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {

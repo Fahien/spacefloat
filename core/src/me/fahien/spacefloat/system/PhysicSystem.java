@@ -123,7 +123,6 @@ public class PhysicSystem extends IteratingSystem {
 	private void updateVelocity(Vector3 acceleration, Vector3 velocity, float delta) {
 		if (!acceleration.equals(Vector3.Zero)) {
 			m_tempAcceleration.set(acceleration);
-			// Updates velocity
 			velocity.add(m_tempAcceleration.scl(delta));
 		}
 	}

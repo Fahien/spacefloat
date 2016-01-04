@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
+import me.fahien.spacefloat.utils.SpaceFloatPreferences;
 
 /**
  * SpaceFloat {@link Game}
@@ -29,13 +30,13 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	private static final int LOGGER_LEVEL = Logger.DEBUG;
+	public static int LOGGER_LEVEL = Logger.DEBUG;
 
 	private static final String SYSTEM_PATH = "system/";
 	private static final String SYSTEM_FONT = SYSTEM_PATH + "font.fnt";
 	private static final String SYSTEM_HUD = SYSTEM_PATH + "hud.atlas";
 
-	public static final Logger logger = new Logger(SpaceFloatGame.class.getSimpleName(), LOGGER_LEVEL);
+	public static Logger logger;
 
 	private AssetManager assetManager;
 
@@ -51,6 +52,22 @@ public class SpaceFloatGame extends Game {
 
 	public SpaceFloatGame() {
 		engine = new Engine();
+	}
+
+	/**
+	 * Loads the {@link SpaceFloatPreferences}
+	 */
+	public void loadPreferences() {
+		SpaceFloatPreferences preferences = new SpaceFloatPreferences();
+		preferences.load();
+		preferences.save();
+	}
+
+	/**
+	 * Initializes the {@link Logger}
+	 */
+	public void initLogger() {
+		logger = new Logger(SpaceFloatGame.class.getSimpleName(), LOGGER_LEVEL);
 	}
 
 	/**
@@ -169,7 +186,9 @@ public class SpaceFloatGame extends Game {
 
 	@Override
 	public void create() {
+		loadPreferences();
 		Gdx.app.setLogLevel(LOGGER_LEVEL);
+		initLogger();
 		logger.info(logo);
 		logger.debug("Initializing Game");
 		initAssetManager();

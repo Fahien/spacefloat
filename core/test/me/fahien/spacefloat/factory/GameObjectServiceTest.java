@@ -14,7 +14,7 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
-import me.fahien.spacefloat.component.RefuelComponent;
+import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -99,7 +99,7 @@ public class GameObjectServiceTest {
 		GravityComponent gravity = new GravityComponent(MASS_ZERO);
 		energyStation.add(gravity);
 		// Create e refuel component
-		RefuelComponent refuel = new RefuelComponent();
+		RechargeComponent refuel = new RechargeComponent();
 		energyStation.add(refuel);
 		// Save the energy station
 		gameObjectService.save(energyStation);
@@ -141,7 +141,7 @@ public class GameObjectServiceTest {
 		assertNotNull("The energy station has no collision component", collision);
 		GravityComponent gravity = energyStation.getComponent(GravityComponent.class);
 		assertNotNull("The energy station has no gravity component", gravity);
-		RefuelComponent refuel = energyStation.getComponent(RefuelComponent.class);
+		RechargeComponent refuel = energyStation.getComponent(RechargeComponent.class);
 		assertNotNull("The energy station has no refuel component", refuel);
 	}
 

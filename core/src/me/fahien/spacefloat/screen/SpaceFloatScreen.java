@@ -185,7 +185,7 @@ public class SpaceFloatScreen implements Screen {
 
 	@Override
 	public void show() {
-		logger.info("Showing screen");
+		logger.debug("Showing screen");
 		Gdx.input.setCatchBackKey(true);
 		logger.debug("Populating stage");
 		populate(stage);

@@ -20,7 +20,7 @@ import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
-import me.fahien.spacefloat.component.RefuelComponent;
+import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
@@ -41,7 +41,7 @@ public class RenderSystem extends EntitySystem {
 	private ComponentMapper<GravityComponent> gravityMapper = ComponentMapper.getFor(GravityComponent.class);
 	private ComponentMapper<CollisionComponent> collisionMapper = ComponentMapper.getFor(CollisionComponent.class);
 	private ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);
-	private ComponentMapper<RefuelComponent> refuelMapper = ComponentMapper.getFor(RefuelComponent.class);
+	private ComponentMapper<RechargeComponent> refuelMapper = ComponentMapper.getFor(RechargeComponent.class);
 	private ImmutableArray<Entity> entities;
 
 	private MainCamera camera;
@@ -96,7 +96,7 @@ public class RenderSystem extends EntitySystem {
 	protected AccelerationComponent m_accelerationComponent;
 	protected CollisionComponent m_collisionComponent;
 	protected ReactorComponent m_reactorComponent;
-	protected RefuelComponent m_refuelComponent;
+	protected RechargeComponent m_rechargeComponent;
 
 	@Override
 	public void update(float deltaTime) {
@@ -127,8 +127,8 @@ public class RenderSystem extends EntitySystem {
 			renderCollision(m_collisionComponent);
 
 			// Render refuel radius
-			m_refuelComponent = refuelMapper.get(entity);
-			renderRefuel(m_refuelComponent);
+			m_rechargeComponent = refuelMapper.get(entity);
+			renderRefuel(m_rechargeComponent);
 
 			// Render reactor particle effect
 			renderReactor(m_accelerationComponent, m_graphicComponent, m_reactorComponent);
@@ -223,7 +223,7 @@ public class RenderSystem extends EntitySystem {
 	/**
 	 * Render refuel radius
 	 */
-	private void renderRefuel(RefuelComponent refuel) {
+	private void renderRefuel(RechargeComponent refuel) {
 		// Return if refuel is null
 		if (refuel == null) return;
 		// Begin shape renderer with line shape type

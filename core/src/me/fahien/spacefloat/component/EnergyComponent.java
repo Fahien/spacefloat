@@ -17,7 +17,7 @@ public class EnergyComponent implements Component, Json.Serializable {
 	protected static final float CHARGE_MAX_DEFAULT = 32f;
 	protected static final float CHARGE_MAX_LOWER_LIMIT = 1f;
 	protected static final float CHARGE_MIN = 0f;
-	protected static final float HURT_FACTOR = 0.0005f;
+	public static float SHIELD_CONSUME = 0.0005f;
 
 	private float charge;
 	private float chargeMax;
@@ -66,7 +66,7 @@ public class EnergyComponent implements Component, Json.Serializable {
 		normal.nor();
 		float dot = 2 * velocity.dot(normal);
 		normal.scl(dot);
-		float charge = -normal.len2() * HURT_FACTOR;
+		float charge = -normal.len2() * SHIELD_CONSUME;
 		if (charge > -2.0f) return;
 		SpaceFloatGame.logger.info("Shield: " + charge);
 		addCharge(charge);

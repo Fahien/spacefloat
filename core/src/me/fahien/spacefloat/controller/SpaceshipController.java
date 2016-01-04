@@ -22,7 +22,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public abstract class SpaceshipController extends PlayerSystem {
-	private static final float CONSUMES = 0.5f;
+	public static float REACTOR_CONSUMES = 0.5f;
 
 	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
 	private ComponentMapper<TransformComponent> tm = getFor(TransformComponent.class);
@@ -62,7 +62,7 @@ public abstract class SpaceshipController extends PlayerSystem {
 			return;
 		}
 		if (!acceleration.equals(Vector3.Zero)) {
-			energyComponent.addCharge(-CONSUMES * deltaTime);
+			energyComponent.addCharge(-REACTOR_CONSUMES * deltaTime);
 		}
 	}
 }

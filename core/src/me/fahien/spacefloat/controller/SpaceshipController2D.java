@@ -16,6 +16,7 @@ import me.fahien.spacefloat.component.PlayerComponent;
  * @author Fahien
  */
 public class SpaceshipController2D extends SpaceshipController {
+	public static float ACCELERATION = 64f;
 
 	@Override
 	protected InputProcessor createInputProcessor(PlayerComponent player, final Vector3 acceleration, final Vector3 eulerAngles) {
@@ -29,7 +30,6 @@ public class SpaceshipController2D extends SpaceshipController {
 	 */
 	private class SpaceshipInputAdapter extends InputAdapter {
 		private static final float SEMIPI = MathUtils.PI / 2;
-		private static final float VELOCITY = 64f;
 		private static final float NEGATIVE = -1;
 		private static final float POSITIVE = -NEGATIVE;
 
@@ -51,8 +51,8 @@ public class SpaceshipController2D extends SpaceshipController {
 			acceleration.x = screenX - Gdx.graphics.getWidth() / 2;
 			acceleration.z = screenY - Gdx.graphics.getHeight() / 2;
 			acceleration.nor();
-			acceleration.z *= VELOCITY;
-			acceleration.x *= VELOCITY;
+			acceleration.z *= ACCELERATION;
+			acceleration.x *= ACCELERATION;
 			return true;
 		}
 
@@ -63,8 +63,8 @@ public class SpaceshipController2D extends SpaceshipController {
 			acceleration.x = screenX - Gdx.graphics.getWidth() / 2;
 			acceleration.z = screenY - Gdx.graphics.getHeight() / 2;
 			acceleration.nor();
-			acceleration.z *= VELOCITY;
-			acceleration.x *= VELOCITY;
+			acceleration.z *= ACCELERATION;
+			acceleration.x *= ACCELERATION;
 			return true;
 		}
 
@@ -87,16 +87,16 @@ public class SpaceshipController2D extends SpaceshipController {
 		public boolean keyDown(int keycode) {
 			switch(keycode) {
 				case Input.Keys.W:
-					acceleration.z = NEGATIVE * VELOCITY;
+					acceleration.z = NEGATIVE * ACCELERATION;
 					return true;
 				case Input.Keys.S:
-					acceleration.z = POSITIVE * VELOCITY;
+					acceleration.z = POSITIVE * ACCELERATION;
 					return true;
 				case Input.Keys.A:
-					acceleration.x = NEGATIVE * VELOCITY;
+					acceleration.x = NEGATIVE * ACCELERATION;
 					return true;
 				case Input.Keys.D:
-					acceleration.x = POSITIVE * VELOCITY;
+					acceleration.x = POSITIVE * ACCELERATION;
 					return true;
 				default:
 					return false;
