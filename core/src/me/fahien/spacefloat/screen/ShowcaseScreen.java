@@ -121,13 +121,6 @@ public class ShowcaseScreen extends SpaceFloatScreen {
 	}
 
 	/**
-	 * Returns the stage
-	 */
-	protected Stage getStage() {
-		return stage;
-	}
-
-	/**
 	 *
 	 * Returns the {@link ModelInstance}
 	 */

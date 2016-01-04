@@ -9,7 +9,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
@@ -26,7 +29,7 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	private static final int LOGGER_LEVEL = Logger.INFO;
+	private static final int LOGGER_LEVEL = Logger.DEBUG;
 
 	private static final String SYSTEM_PATH = "system/";
 	private static final String SYSTEM_FONT = SYSTEM_PATH + "font.fnt";
@@ -42,6 +45,9 @@ public class SpaceFloatGame extends Game {
 
 	private BitmapFont font;
 	private TextureAtlas hud;
+
+	private Viewport viewport;
+	private Stage stage;
 
 	public SpaceFloatGame() {
 		engine = new Engine();
@@ -112,7 +118,14 @@ public class SpaceFloatGame extends Game {
 	 */
 	public void setScreen(ScreenEnumerator screenEnumerator) {
 		SpaceFloatScreen screen = screenEnumerator.getScreen();
-		if (!screen.isInitialized()) injectDependencies(screen);
+		if (!screen.isInitialized()) {
+			logger.debug("Injecting dependencies into " + screen.getClass().getSimpleName());
+			injectDependencies(screen);
+		}
+		if (screen == this.screen) return;
+		String currentScreen = "Null";
+		if (this.screen != null) currentScreen = this.screen.getClass().getSimpleName();
+		logger.debug("Switching screen: " + currentScreen + " → " + screen.getClass().getSimpleName());
 		setScreen(screen);
 	}
 
@@ -126,6 +139,8 @@ public class SpaceFloatGame extends Game {
 		screen.setEngine(engine);
 		screen.setCamera(camera);
 		screen.setParticleSystem(particleSystem);
+		screen.setViewport(viewport);
+		screen.setStage(stage);
 		screen.setGame(this);
 		screen.setInitialized(true);
 	}
@@ -134,24 +149,37 @@ public class SpaceFloatGame extends Game {
 	 * Initializes the {@link ParticleSystem}
 	 */
 	private void initParticleSystem() {
+		logger.debug("Creating particle system");
 		particleSystem = ParticleSystem.get();
+		particleSystem.removeAll();
 		PointSpriteParticleBatch pointSpriteBatch = new PointSpriteParticleBatch();
 		pointSpriteBatch.setCamera(camera);
 		particleSystem.add(pointSpriteBatch);
+	}
+
+	/**
+	 * Initializes the {@link Viewport} and the {@link Stage}
+	 */
+	private void initViewportAndStage() {
+		logger.debug("Creating viewport");
+		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
+		logger.debug("Creating stage");
+		stage = new Stage(viewport);
 	}
 
 	@Override
 	public void create() {
 		Gdx.app.setLogLevel(LOGGER_LEVEL);
 		logger.info(logo);
+		logger.debug("Initializing Game");
 		initAssetManager();
 		loadFont();
 		loadHud();
 		initCamera();
 		initParticleSystem();
+		initViewportAndStage();
 		Bullet.init();
 		setScreen(ScreenEnumerator.LOADING);
-		logger.debug("Game initialized");
 	}
 
 	@Override
@@ -160,8 +188,18 @@ public class SpaceFloatGame extends Game {
 	}
 
 	@Override
+	public void pause() {
+		super.pause();
+	}
+
+	@Override
 	public void dispose() {
 		super.dispose();
+		if (stage != null) {
+			logger.debug("Disposing stage");
+			stage.dispose();
+		}
+		logger.debug("Disposing asset manager");
 		assetManager.dispose();
 		logger.debug("Game disposed");
 	}

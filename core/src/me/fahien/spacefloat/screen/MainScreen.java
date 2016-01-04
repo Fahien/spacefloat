@@ -14,7 +14,6 @@ import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.controller.SpaceshipController;
 import me.fahien.spacefloat.controller.SpaceshipController2D;
-import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.CollisionSystem;
 import me.fahien.spacefloat.system.GravitySystem;
@@ -28,7 +27,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  *
  * @author Fahien
  */
-public class MainScreen extends StagedScreen {
+public class MainScreen extends SpaceFloatScreen {
 
 	private Engine engine;
 	private CameraSystem cameraSystem;
@@ -97,7 +96,8 @@ public class MainScreen extends StagedScreen {
 	}
 
 	@Override
-	public void prerender(float delta) {
+	public void update(float delta) {
+		super.update(delta);
 		logger.debug("Updating engine");
 		engine.update(delta);
 	}
@@ -105,6 +105,7 @@ public class MainScreen extends StagedScreen {
 	@Override
 	public void hide() {
 		super.hide();
+		if (engine == null) return;
 		engine.removeSystem(cameraSystem);
 		engine.removeSystem(renderSystem);
 		engine.removeSystem(physicSystem);

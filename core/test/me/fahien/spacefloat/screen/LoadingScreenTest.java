@@ -35,7 +35,7 @@ public class LoadingScreenTest {
 		screen.setEngine(engine);
 		try {
 			screen.show();
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException|NullPointerException e) {
 			GdxTestRunner.logger.error("Cannot show the loading screen: " + e.getMessage());
 		}
 	}

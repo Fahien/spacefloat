@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -30,11 +32,11 @@ import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
- * The Loading {@link StagedScreen}
+ * The Loading {@link SpaceFloatScreen}
  *
  * @author Fahien
  */
-public class LoadingScreen extends StagedScreen {
+public class LoadingScreen extends SpaceFloatScreen {
 	private String LOADING_TEXT = " %";
 
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
@@ -55,7 +57,6 @@ public class LoadingScreen extends StagedScreen {
 		m_loadingActor.setPosition(SpaceFloatScreen.WIDTH / 2, SpaceFloatScreen.HEIGHT / 2);
 		m_loadingActor.setHalign(FontActor.Halign.CENTER);
 		stage.addActor(m_loadingActor);
-		m_assetManager = getAssetManager();
 		localResolver = new LocalFileHandleResolver();
 		internalResolver = new InternalFileHandleResolver();
 		loadObjects(getEngine());
@@ -113,7 +114,11 @@ public class LoadingScreen extends StagedScreen {
 		// Initialize loaders
 		ParticleEffectLoader localLoader = new ParticleEffectLoader(localResolver);
 		ParticleEffectLoader internalLoader = new ParticleEffectLoader(internalResolver);
-		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
+		Array<ParticleBatch<?>> batches = particleSystem.getBatches();
+		if (batches == null || batches.size == 0) {
+			throw new GdxRuntimeException("Particle Batches are null");
+		}
+		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(batches);
 		m_assetManager.setLoader(ParticleEffect.class, localLoader);
 		for (Entity entity : entities) {
 			ReactorComponent reactorComponent = reactorMapper.get(entity);
@@ -122,11 +127,15 @@ public class LoadingScreen extends StagedScreen {
 				if (name != null) {
 					try {
 						m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
-						m_assetManager.finishLoading();
+						m_assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
 					} catch (GdxRuntimeException e) {
 						m_assetManager.setLoader(ParticleEffect.class, internalLoader);
 						m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
-						m_assetManager.finishLoading();
+						try {
+							m_assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
+						} catch (GdxRuntimeException ex) {
+							logger.error("Could not load " + ReactorComponent.PARTICLES_DIR + name + ": " + e.getMessage());
+						}
 						m_assetManager.setLoader(ParticleEffect.class, localLoader);
 					}
 				} else {
@@ -135,28 +144,6 @@ public class LoadingScreen extends StagedScreen {
 			}
 		}
 		logger.info("Loaded " + entities.size() + " reactor particle effects");
-	}
-
-	@Override
-	public void prerender(float delta) {
-		logger.debug("Updating asset manager");
-		m_assetManager.update();
-		logger.debug("Getting asset manager progress");
-		m_progress = m_assetManager.getProgress();
-		if (m_progress != 1.0f) {
-			logger.debug("Setting loading text");
-			m_loadingActor.setText((int) (m_progress * 100) + LOADING_TEXT);
-		} else {
-			logger.info("Loaded " + entities.size() + " models");
-			logger.debug("Injecting graphics into entities");
-			injectGraphics(entities);
-			logger.debug("Loading reactor particle effects");
-			loadParticles(getEngine(), getParticleSystem());
-			logger.debug("Injecting reactors into entities");
-			injectReactors(getEngine().getEntitiesFor(all(ReactorComponent.class).get()));
-			logger.debug("Changing screen");
-			SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);
-		}
 	}
 
 	/**
@@ -180,9 +167,47 @@ public class LoadingScreen extends StagedScreen {
 		for (Entity entity : entities) {
 			ReactorComponent reactor = reactorMapper.get(entity);
 			if (reactor.getReactor() == null) {
-				ParticleEffect particleEffect = m_assetManager.get(ReactorComponent.PARTICLES_DIR + reactor.getName(), ParticleEffect.class);
+				String particleName = ReactorComponent.PARTICLES_DIR + reactor.getName();
+				ParticleEffect particleEffect = m_assetManager.get(particleName, ParticleEffect.class);
 				reactor.setReactor(particleEffect);
 			}
 		}
+	}
+
+	@Override
+	public void update(float delta) {
+		super.update(delta);
+		if (m_progress < 1.0f) {
+			logger.debug("Updating asset manager");
+			m_assetManager.update();
+			logger.debug("Getting asset manager progress");
+			m_progress = m_assetManager.getProgress();
+			logger.debug("Setting loading text");
+			m_loadingActor.setText((int) (m_progress * 100) + LOADING_TEXT);
+		}
+		if (m_progress >= 1.0f) {
+			logger.info("Loaded " + entities.size() + " models");
+			try {
+				logger.debug("Injecting graphics into entities");
+				injectGraphics(entities);
+				logger.debug("Loading reactor particle effects");
+				loadParticles(getEngine(), getParticleSystem());
+				logger.debug("Injecting reactors into entities");
+				injectReactors(getEngine().getEntitiesFor(all(ReactorComponent.class).get()));
+				logger.debug("Changing screen");
+				SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);
+			} catch (GdxRuntimeException e) {
+				logger.error("Could not inject reactors:" + e.getMessage());
+				m_loadingActor.setText("Could not inject reactors, please restart SpaceFloat");
+				Gdx.app.exit();
+			}
+		}
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		m_progress = 0.0f;
+		m_assetManager = null;
 	}
 }

@@ -81,7 +81,7 @@ public class SpaceFloatGameTest {
 		for (ScreenEnumerator screenEnum : ScreenEnumerator.values()) {
 			try {
 				game.setScreen(screenEnum);
-			} catch (GdxRuntimeException|IllegalArgumentException e) {
+			} catch (GdxRuntimeException|IllegalArgumentException|NullPointerException e) {
 				logger.error("Could not initialize the Model Batch during tests: " + e.getMessage());
 			}
 			SpaceFloatScreen screen = screenEnum.getScreen();
