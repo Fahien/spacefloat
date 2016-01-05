@@ -24,4 +24,5 @@ public class JsonString {
 	public static final String FUELMAX = "fuelMax";
 	public static final String CHARGEMAX = "chargeMax";
 	public static final String CHARGE = "charge";
+	public static final String HANDLER = "handler";
 }

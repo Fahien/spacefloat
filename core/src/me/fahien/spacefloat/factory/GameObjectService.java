@@ -6,6 +6,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
 import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -23,6 +25,7 @@ public class GameObjectService {
 
 	public GameObjectService() {
 		json = new Json();
+		SpaceFloat.GAME.getGame().initLogger();
 	}
 
 	/**

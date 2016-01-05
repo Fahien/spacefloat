@@ -1,6 +1,7 @@
 package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -43,7 +44,7 @@ public class VelocityComponent implements Component, Json.Serializable {
 	 */
 	public void hurt(Vector3 normal) {
 		normal.nor();
-		float dot = 2 * velocity.dot(normal);
+		float dot = MathUtils.clamp(2 * velocity.dot(normal), 0.5f, 2f);
 		normal.scl(dot);
 		velocity.sub(normal).scl(ABSORBE_FACTOR);
 		if (velocity.len2() < BOUNCE_LIMIT) {

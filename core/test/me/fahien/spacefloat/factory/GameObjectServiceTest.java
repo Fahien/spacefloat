@@ -9,16 +9,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
-import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.component.GravityComponent;
+import me.fahien.spacefloat.component.HurtComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.component.GravityComponent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,12 +33,10 @@ public class GameObjectServiceTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
 	private static final String SPACESHIP_GRAPHIC = "cargo.g3db";
 	private static final String SPACESHIP_REACTOR = "reactor.pfx";
-	private static final float  SPACESHIP_RADIUS = 75f;
 	private static final String EARTH_NAME = "Earth";
 	private static final String ENERGYSTATION_NAME = "EnergyStation";
 	private static final String ENERGYSTATION_GRAPHIC = "energy_station.g3db";
 	private static final float  ENERGYSTATION_RADIUS = 100f;
-	private static final float MASS_ZERO = 0f;
 
 	private GameObjectService gameObjectService;
 
@@ -67,7 +65,7 @@ public class GameObjectServiceTest {
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
 		// Create a collision component
-		CollisionComponent collision = new CollisionComponent(SPACESHIP_RADIUS);
+		HurtComponent collision = new HurtComponent();
 		spaceship.add(collision);
 		// Create a reactor component
 		ReactorComponent reactorComponent = new ReactorComponent(SPACESHIP_REACTOR);
@@ -92,12 +90,9 @@ public class GameObjectServiceTest {
 		// Create a velocity component
 		VelocityComponent velocity = new VelocityComponent();
 		energyStation.add(velocity);
-		// Create a collision component
-		CollisionComponent collision = new CollisionComponent(ENERGYSTATION_RADIUS);
+		// Create a hurt component
+		HurtComponent collision = new HurtComponent(ENERGYSTATION_RADIUS);
 		energyStation.add(collision);
-		// Create a gravity component
-		GravityComponent gravity = new GravityComponent(MASS_ZERO);
-		energyStation.add(gravity);
 		// Create e refuel component
 		RechargeComponent refuel = new RechargeComponent();
 		energyStation.add(refuel);
@@ -120,8 +115,8 @@ public class GameObjectServiceTest {
 		assertNotNull("The spaceship has no player component", player);
 		AccelerationComponent acceleration = spaceship.getComponent(AccelerationComponent.class);
 		assertNotNull("The spaceship has no acceleration component", acceleration);
-		CollisionComponent collision = spaceship.getComponent(CollisionComponent.class);
-		assertNotNull("The spaceship has no collision component", collision);
+		HurtComponent hurt = spaceship.getComponent(HurtComponent.class);
+		assertNotNull("The spaceship has no hurt component", hurt);
 		ReactorComponent reactor = spaceship.getComponent(ReactorComponent.class);
 		assertNotNull("The spaceship has no reactor component", reactor);
 		EnergyComponent energy = spaceship.getComponent(EnergyComponent.class);
@@ -137,10 +132,10 @@ public class GameObjectServiceTest {
 		assertEquals("The energy station graphic name is not equals to " + ENERGYSTATION_GRAPHIC, ENERGYSTATION_GRAPHIC, graphic.getName());
 		TransformComponent transform = energyStation.getComponent(TransformComponent.class);
 		assertNotNull("The energy station has no transform component", transform);
-		CollisionComponent collision = energyStation.getComponent(CollisionComponent.class);
-		assertNotNull("The energy station has no collision component", collision);
-		GravityComponent gravity = energyStation.getComponent(GravityComponent.class);
-		assertNotNull("The energy station has no gravity component", gravity);
+		VelocityComponent velocity = energyStation.getComponent(VelocityComponent.class);
+		assertNotNull("The energy station has no velocity component", velocity);
+		HurtComponent hurt = energyStation.getComponent(HurtComponent.class);
+		assertNotNull("The energy station has no collision component", hurt);
 		RechargeComponent refuel = energyStation.getComponent(RechargeComponent.class);
 		assertNotNull("The energy station has no refuel component", refuel);
 	}

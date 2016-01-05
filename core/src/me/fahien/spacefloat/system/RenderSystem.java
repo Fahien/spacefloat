@@ -1,11 +1,11 @@
 package me.fahien.spacefloat.system;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -18,7 +18,6 @@ import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
-import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.TransformComponent;
@@ -27,6 +26,14 @@ import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.utils.ShapeRenderer;
 import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.accelerationMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.reactorMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
+
 /**
  * The Rendering {@link EntitySystem}
  *
@@ -34,14 +41,6 @@ import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
  */
 public class RenderSystem extends EntitySystem {
 
-	private ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
-	private ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
-	private ComponentMapper<AccelerationComponent> accelerationMapper = ComponentMapper.getFor(AccelerationComponent.class);
-	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
-	private ComponentMapper<GravityComponent> gravityMapper = ComponentMapper.getFor(GravityComponent.class);
-	private ComponentMapper<CollisionComponent> collisionMapper = ComponentMapper.getFor(CollisionComponent.class);
-	private ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);
-	private ComponentMapper<RechargeComponent> refuelMapper = ComponentMapper.getFor(RechargeComponent.class);
 	private ImmutableArray<Entity> entities;
 
 	private MainCamera camera;
@@ -98,6 +97,9 @@ public class RenderSystem extends EntitySystem {
 	protected ReactorComponent m_reactorComponent;
 	protected RechargeComponent m_rechargeComponent;
 
+	private static final Color RED = new Color(1f, 0f, 0f, 1f);
+	private static final Color GREEN = new Color(0f, 1f, 0f, 1f);
+
 	@Override
 	public void update(float deltaTime) {
 		super.update(deltaTime);
@@ -118,26 +120,22 @@ public class RenderSystem extends EntitySystem {
 			renderVelocity(m_transformComponent, m_velocityComponent);
 
 			// Render gravity radius
-			if (gravityMapper.get(entity) != null) {
-				renderGravity(m_transformComponent);
-			}
+			if (gravityMapper.get(entity) != null) renderGravity(m_transformComponent);
 
 			// Render collision radius
-			m_collisionComponent = collisionMapper.get(entity);
-			renderCollision(m_collisionComponent);
+			m_collisionComponent = gravityMapper.get(entity);
+			renderCollision(m_collisionComponent, RED);
 
 			// Render refuel radius
-			m_rechargeComponent = refuelMapper.get(entity);
-			renderRefuel(m_rechargeComponent);
+			m_rechargeComponent = rechargeMapper.get(entity);
+			renderCollision(m_rechargeComponent, GREEN);
 
 			// Render reactor particle effect
 			renderReactor(m_accelerationComponent, m_graphicComponent, m_reactorComponent);
 
 			// Render models
 			instance = m_graphicComponent.getInstance();
-			if (instance != null) {
-				batch.render(instance, environment);
-			}
+			if (instance != null) batch.render(instance, environment);
 		}
 
 		// Render Particles
@@ -205,7 +203,7 @@ public class RenderSystem extends EntitySystem {
 	/**
 	 * Render collision radius
 	 */
-	private void renderCollision(CollisionComponent collision) {
+	private <T extends CollisionComponent> void renderCollision(T collision, Color color) {
 		// Return if collision is null
 		if (collision == null) return;
 		// Begin shape renderer with line shape type
@@ -213,27 +211,9 @@ public class RenderSystem extends EntitySystem {
 		// Set center point equals to collision position
 		collision.getPosition(m_collisionCenter);
 		// Set shape renderer color RED
-		shapeRenderer.setColor(1, 0, 0, 1);
+		shapeRenderer.setColor(color);
 		// Draw a circle
 		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, collision.getRadius());
-		// End shape renderer
-		shapeRenderer.end();
-	}
-
-	/**
-	 * Render refuel radius
-	 */
-	private void renderRefuel(RechargeComponent refuel) {
-		// Return if refuel is null
-		if (refuel == null) return;
-		// Begin shape renderer with line shape type
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		// Set center point equals to collision position
-		refuel.getPosition(m_collisionCenter);
-		// Set shape renderer color GREEN
-		shapeRenderer.setColor(0, 1, 0, 1);
-		// Draw a circle
-		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, refuel.getRadius());
 		// End shape renderer
 		shapeRenderer.end();
 	}

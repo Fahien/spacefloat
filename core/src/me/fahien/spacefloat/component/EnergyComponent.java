@@ -5,8 +5,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.utils.JsonString;
+
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Energy {@link Component}
@@ -68,7 +69,6 @@ public class EnergyComponent implements Component, Json.Serializable {
 		normal.scl(dot);
 		float charge = -normal.len2() * SHIELD_CONSUME;
 		if (charge > -2.0f) return;
-		SpaceFloatGame.logger.info("Shield: " + charge);
 		addCharge(charge);
 	}
 
@@ -96,5 +96,12 @@ public class EnergyComponent implements Component, Json.Serializable {
 	public void read(Json json, JsonValue jsonData) {
 		chargeMax = jsonData.getInt(JsonString.CHARGEMAX);
 		charge = jsonData.getFloat(JsonString.CHARGE);
+	}
+
+	/**
+	 * Recharges energy
+	 */
+	public void recharge() {
+		logger.debug("Recharging energy");
 	}
 }

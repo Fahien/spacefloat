@@ -10,6 +10,10 @@ import com.badlogic.gdx.math.Vector3;
  */
 public class RechargeComponent extends CollisionComponent {
 	private static final float DEFAULT_RADIUS = 100.0f;
+
+	/**
+	 * Offset for the energy station model
+	 */
 	private static final Vector3 offset = new Vector3(-115f, 0f, 207f);
 
 	public RechargeComponent() {

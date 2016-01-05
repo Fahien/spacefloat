@@ -1,11 +1,13 @@
 package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectSet;
 
 import me.fahien.spacefloat.utils.JsonString;
 
@@ -14,9 +16,10 @@ import me.fahien.spacefloat.utils.JsonString;
  *
  * @author Fahien
  */
-public class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
+public abstract class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
 	private static final float DEFAULT_RADIUS = 128.0f;
 
+	private ObjectSet<Entity> collisions;
 	private float radius;
 
 	public CollisionComponent() {
@@ -25,6 +28,29 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 
 	public CollisionComponent(float radius) {
 		this.radius = radius;
+		collisions = new ObjectSet<>();
+	}
+
+
+	/**
+	 * Adds a collision
+	 */
+	public void addCollision(Entity entity) {
+		collisions.add(entity);
+	}
+
+	/**
+	 * Tests whether collide with an entity
+	 */
+	public boolean collideWith(Entity entity) {
+		return collisions.contains(entity);
+	}
+
+	/**
+	 * Removes a collision
+	 */
+	public void removeCollision(Entity entity) {
+		collisions.remove(entity);
 	}
 
 	/**

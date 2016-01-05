@@ -1,9 +1,8 @@
 package me.fahien.spacefloat.system;
 
-import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
@@ -24,73 +23,87 @@ import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
+import me.fahien.spacefloat.component.HurtComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
+import me.fahien.spacefloat.entity.GameObject;
 
-import static com.badlogic.ashley.core.ComponentMapper.getFor;
 import static com.badlogic.ashley.core.Family.all;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.accelerationMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.hurtMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
- * The Collision {@link IteratingSystem}
+ * The Collision {@link EntitySystem}
  *
  * @author Fahien
  */
-public class CollisionSystem extends IteratingSystem {
+public class CollisionSystem extends EntitySystem {
 	public static float RECHARGE_POWER = 0.125f;
 
-	private ComponentMapper<GraphicComponent> gm = getFor(GraphicComponent.class);
-	private ComponentMapper<VelocityComponent> vm = getFor(VelocityComponent.class);
-	private ComponentMapper<AccelerationComponent> am = getFor(AccelerationComponent.class);
-	private ComponentMapper<CollisionComponent> cm = getFor(CollisionComponent.class);
-	private ComponentMapper<RechargeComponent> rm = getFor(RechargeComponent.class);
-	private ComponentMapper<GravityComponent> grm = getFor(GravityComponent.class);
-	private ComponentMapper<EnergyComponent> em = getFor(EnergyComponent.class);
-
+	private ImmutableArray<Entity> gravityEntities;
+	private ImmutableArray<Entity> rechargeEntities;
+	private ImmutableArray<Entity> hurtEntities;
 
 	private btDefaultCollisionConfiguration collisionConfig;
 	private btCollisionDispatcher dispatcher;
 
 	class SpaceFloatContactListener extends ContactListener {
 		private Vector3 normal;
-		private Entity entity0;
-		private Entity entity1;
+		private GameObject object0;
+		private GameObject object1;
 
 		public SpaceFloatContactListener() {
 			normal = new Vector3();
 		}
 
-		protected btCollisionObject collisionObject0;
-		protected btCollisionObject collisionObject1;
+		protected CollisionComponent collision0;
+		protected CollisionComponent collision1;
 
 		@Override
 		public boolean onContactAdded(btManifoldPoint cp,
 									  btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
 									  btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
 			try {
-				collisionObject0 = colObj0Wrap.getCollisionObject();
-				collisionObject1 = colObj1Wrap.getCollisionObject();
-				entity0 = (Entity) collisionObject0.userData;
-				entity1 = (Entity) collisionObject1.userData;
+				collision0 = (CollisionComponent) colObj0Wrap.getCollisionObject();
+				collision1 = (CollisionComponent) colObj1Wrap.getCollisionObject();
+				object0 = (GameObject) collision0.userData;
+				object1 = (GameObject) collision1.userData;
 				cp.getNormalWorldOnB(normal);
-				if (collisionObject0 instanceof RechargeComponent) {
-					logger.debug("Computing refuel between object0 and entity1");
-					computeRecharge(em.get(entity1), vm.get(entity1));
+				if (collision0 instanceof RechargeComponent) {
+					logger.debug("Computing refuel between " + object0.getName() + " and " + object1.getName());
+					computeRecharge(energyMapper.get(object1), velocityMapper.get(object1));
 					return true;
 				}
-				if (collisionObject1 instanceof RechargeComponent) {
-					logger.debug("Computing refuel between entity1 and entity0");
-					computeRecharge(em.get(entity0), vm.get(entity0));
+				if (collision1 instanceof RechargeComponent) {
+					logger.debug("Computing refuel between " + object1.getName() + " and " + object0.getName());
+					computeRecharge(energyMapper.get(object0), velocityMapper.get(object0));
 					return true;
 				}
-				logger.debug("Computing collision between entity0 and entity1");
-				computeCollision(grm.get(entity0), entity1, vm.get(entity1), am.get(entity1), em.get(entity1), normal);
-				logger.debug("Computing collision between entity1 and entity0");
-				computeCollision(grm.get(entity1), entity0, vm.get(entity0), am.get(entity0), em.get(entity0), normal);
+
+				if (collision0 instanceof GravityComponent) {
+					logger.debug("Computing collision between " + object0.getName() + " and " + object1.getName());
+					computeCollision(gravityMapper.get(object0), object1, velocityMapper.get(object1), accelerationMapper.get(object1), energyMapper.get(object1), normal);
+					return true;
+				}
+				if (collision1 instanceof GravityComponent) {
+					logger.debug("Computing collision between " + object1.getName() + " and " + object0.getName());
+					computeCollision(gravityMapper.get(object1), object0, velocityMapper.get(object0), accelerationMapper.get(object0), energyMapper.get(object0), normal);
+					return true;
+				}
+
+				logger.debug("Computing hurt between " + object0.getName() + " and " + object1.getName());
+				computeCollision(collision0, object1, velocityMapper.get(object1), accelerationMapper.get(object1), energyMapper.get(object1), normal);
+				logger.debug("Computing hurt between " + object1.getName() + " and " + object0.getName());
+				computeCollision(collision1, object0, velocityMapper.get(object0), accelerationMapper.get(object0), energyMapper.get(object0), normal);
 				return true;
 			} catch (Exception e) {
-				logger.error("Error on contact added");
-				e.printStackTrace();
+				logger.error("Error on contact between " + object0.getName() + " and " + object1.getName() + ":" + e.getMessage());
 				return false;
 			}
 		}
@@ -108,15 +121,15 @@ public class CollisionSystem extends IteratingSystem {
 		/**
 		 * Apply Collision Logic
 		 */
-		private void computeCollision(GravityComponent gravity,
+		private void computeCollision(CollisionComponent collision,
 									  Entity entity,
 									  VelocityComponent velocity,
 									  AccelerationComponent acceleration,
 									  EnergyComponent energyComponent,
 									  Vector3 normal) {
-			if (gravity != null) {
-				if (!gravity.collideWith(entity)) {
-					gravity.addCollision(entity);
+			if (collision != null) {
+				if (!collision.collideWith(entity)) {
+					collision.addCollision(entity);
 					if (energyComponent != null) {
 						energyComponent.hurt(velocity.getVelocity(), normal);
 					}
@@ -135,12 +148,12 @@ public class CollisionSystem extends IteratingSystem {
 		}
 
 		@Override
-		public void onContactEnded(btCollisionObject colObj0, btCollisionObject colObj1) {
+		public void onContactEnded(btCollisionObject collision0, btCollisionObject collision1) {
 			try {
-				entity0 = (Entity) colObj0.userData;
-				entity1 = (Entity) colObj1.userData;
-				endCollision(grm.get(entity0), entity1);
-				endCollision(grm.get(entity1), entity0);
+				object0 = (GameObject) collision0.userData;
+				object1 = (GameObject) collision1.userData;
+				endCollision(gravityMapper.get(object0), object1);
+				endCollision(gravityMapper.get(object1), object0);
 			} catch (Exception e) {
 				logger.error("Error on contact ended");
 				e.printStackTrace();
@@ -159,17 +172,18 @@ public class CollisionSystem extends IteratingSystem {
 	private btBroadphaseInterface broadphase;
 	private btCollisionWorld collisionWorld;
 
-	public CollisionSystem() {
-		super(all(GraphicComponent.class, CollisionComponent.class).get());
-	}
-
 	@Override
 	public void addedToEngine(Engine engine) {
 		super.addedToEngine(engine);
 
-		createCollisionObjects(getEntities());
-		ImmutableArray<Entity> refuelEntities = engine.getEntitiesFor(all(GraphicComponent.class, RechargeComponent.class).get());
-		createRefuelCollisionObjects(refuelEntities);
+		gravityEntities = engine.getEntitiesFor(all(GraphicComponent.class, GravityComponent.class).get());
+		createCollisionObjects(gravityEntities, GravityComponent.class);
+
+		rechargeEntities = engine.getEntitiesFor(all(GraphicComponent.class, RechargeComponent.class).get());
+		createCollisionObjects(rechargeEntities, RechargeComponent.class);
+
+		hurtEntities = engine.getEntitiesFor(all(GraphicComponent.class, HurtComponent.class).get());
+		createCollisionObjects(hurtEntities, HurtComponent.class);
 
 		collisionConfig = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfig);
@@ -179,33 +193,18 @@ public class CollisionSystem extends IteratingSystem {
 		broadphase = new btDbvtBroadphase();
 		collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
 
-		addToCollisionWorld(getEntities());
-		addRefuelToCollisionWorld(refuelEntities);
+		addToCollisionWorld(gravityEntities, GravityComponent.class);
+		addToCollisionWorld(rechargeEntities, RechargeComponent.class);
+		addToCollisionWorld(hurtEntities, HurtComponent.class);
 	}
 
 	/**
 	 * Initialize every {@link CollisionComponent}
 	 */
-	protected void createCollisionObjects(ImmutableArray<Entity> entities) {
+	protected void createCollisionObjects(ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
 		for (Entity entity : entities) {
-			CollisionComponent collision = cm.get(entity);
-			GraphicComponent graphic = gm.get(entity);
-			btCollisionObject collisionObject = new btCollisionObject();
-			btCollisionShape shape = new btSphereShape(collision.getRadius());
-			collision.setCollisionShape(shape);
-			collision.setWorldTransform(graphic.getInstance().transform);
-			collision.setCollisionFlags(collisionObject.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-			collision.userData = entity;
-		}
-	}
-
-	/**
-	 * Initialize every {@link CollisionComponent}
-	 */
-	protected void createRefuelCollisionObjects(ImmutableArray<Entity> entities) {
-		for (Entity entity : entities) {
-			RechargeComponent collision = rm.get(entity);
-			GraphicComponent graphic = gm.get(entity);
+			CollisionComponent collision = entity.getComponent(collisionType);
+			GraphicComponent graphic = graphicMapper.get(entity);
 			btCollisionObject collisionObject = new btCollisionObject();
 			btCollisionShape shape = new btSphereShape(collision.getRadius());
 			collision.setCollisionShape(shape);
@@ -218,38 +217,30 @@ public class CollisionSystem extends IteratingSystem {
 	/**
 	 * Add collision objects to the {@link btCollisionWorld}
 	 */
-	private void addToCollisionWorld(ImmutableArray<Entity> entities) {
+	private void addToCollisionWorld(ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
 		for (Entity entity : entities) {
-			CollisionComponent collision = cm.get(entity);
+			CollisionComponent collision = entity.getComponent(collisionType);
 			collisionWorld.addCollisionObject(collision);
 		}
 	}
-
-	/**
-	 * Add refuel objects to the {@link btCollisionWorld}
-	 */
-	private void addRefuelToCollisionWorld(ImmutableArray<Entity> entities) {
-		for (Entity entity : entities) {
-			RechargeComponent collision = rm.get(entity);
-			collisionWorld.addCollisionObject(collision);
-		}
-	}
-
-	protected GraphicComponent m_graphic;
-	protected CollisionComponent m_collision;
-	protected RechargeComponent m_refuel;
 
 	@Override
-	protected void processEntity(Entity entity, float deltaTime) {
-		// Get components
-		m_graphic = gm.get(entity);
-		m_collision = cm.get(entity);
-		m_refuel = rm.get(entity);
-		// Update collision and refuel position
-		m_collision.setTransform(m_graphic.getInstance().transform);
-		if (m_refuel != null) m_refuel.setTransform(m_graphic.getInstance().transform);
+	public void update(float deltaTime) {
+		for (Entity entity : gravityEntities) {
+			updateCollisionPosition(gravityMapper.get(entity), graphicMapper.get(entity));
+		}
+		for (Entity entity : rechargeEntities) {
+			updateCollisionPosition(rechargeMapper.get(entity), graphicMapper.get(entity));
+		}
+		for (Entity entity : hurtEntities) {
+			updateCollisionPosition(hurtMapper.get(entity), graphicMapper.get(entity));
+		}
 
 		collisionWorld.performDiscreteCollisionDetection();
+	}
+
+	protected void updateCollisionPosition(CollisionComponent collision, GraphicComponent graphic) {
+		collision.setTransform(graphic.getInstance().transform);
 	}
 
 	@Override
@@ -264,8 +255,14 @@ public class CollisionSystem extends IteratingSystem {
 		dispatcher.dispose();
 		collisionConfig.dispose();
 
-		for (Entity entity : engine.getEntitiesFor(all(CollisionComponent.class).get())) {
-			cm.get(entity).dispose();
+		for (Entity entity : gravityEntities) {
+			gravityMapper.get(entity).dispose();
+		}
+		for (Entity entity : rechargeEntities) {
+			rechargeMapper.get(entity).dispose();
+		}
+		for (Entity entity : hurtEntities) {
+			hurtMapper.get(entity).dispose();
 		}
 	}
 }
