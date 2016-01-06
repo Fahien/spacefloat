@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
@@ -14,9 +15,11 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import me.fahien.spacefloat.camera.MainCamera;
+import me.fahien.spacefloat.camera.MainOrthographicCamera;
+import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
+import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.utils.SpaceFloatPreferences;
 
 /**
@@ -30,18 +33,18 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	public static int LOGGER_LEVEL = Logger.DEBUG;
+	public static int LOGGER_LEVEL = Logger.INFO;
 
 	private static final String SYSTEM_PATH = "system/";
 	private static final String SYSTEM_FONT = SYSTEM_PATH + "font.fnt";
 	private static final String SYSTEM_HUD = SYSTEM_PATH + "hud.atlas";
 
-	public static Logger logger;
+	public static Logger logger = new Logger(SpaceFloatGame.class.getSimpleName(), LOGGER_LEVEL);
 
 	private AssetManager assetManager;
 
 	private Engine engine;
-	private MainCamera camera;
+	private Camera camera;
 	private ParticleSystem particleSystem;
 
 	private BitmapFont font;
@@ -58,6 +61,7 @@ public class SpaceFloatGame extends Game {
 	 * Loads the {@link SpaceFloatPreferences}
 	 */
 	public void loadPreferences() {
+		logger.info("Loading preferences");
 		SpaceFloatPreferences preferences = new SpaceFloatPreferences();
 		preferences.load();
 		preferences.save();
@@ -67,7 +71,8 @@ public class SpaceFloatGame extends Game {
 	 * Initializes the {@link Logger}
 	 */
 	public void initLogger() {
-		logger = new Logger(SpaceFloatGame.class.getSimpleName(), LOGGER_LEVEL);
+		Gdx.app.setLogLevel(LOGGER_LEVEL);
+		logger.setLevel(LOGGER_LEVEL);
 	}
 
 	/**
@@ -92,10 +97,14 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
-	 * Initializes the {@link MainCamera}
+	 * Initializes the {@link Camera}
 	 */
 	public void initCamera() {
-		camera = new MainCamera();
+		if (CameraSystem.CAMERA_TYPE.equals("perspective")) {
+			camera = new MainPerspectiveCamera();
+		} else {
+			camera = new MainOrthographicCamera();
+		}
 	}
 
 	/**
@@ -186,11 +195,10 @@ public class SpaceFloatGame extends Game {
 
 	@Override
 	public void create() {
-		loadPreferences();
 		Gdx.app.setLogLevel(LOGGER_LEVEL);
-		initLogger();
 		logger.info(logo);
-		logger.debug("Initializing Game");
+		loadPreferences();
+		initLogger();
 		initAssetManager();
 		loadFont();
 		loadHud();

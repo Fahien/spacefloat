@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -26,7 +26,6 @@ public class SpaceFloatScreen implements Screen {
 	public static final int WIDTH = 480;
 	public static final int HEIGHT = 270;
 
-	/** Initializes flag */
 	private boolean initialized;
 	private SpaceFloatGame game;
 	private ParticleSystem particleSystem;
@@ -34,7 +33,7 @@ public class SpaceFloatScreen implements Screen {
 	private BitmapFont font;
 	private TextureAtlas hud;
 	private Engine engine;
-	private MainCamera camera;
+	private Camera camera;
 	private Viewport viewport;
 	private Stage stage;
 
@@ -137,16 +136,16 @@ public class SpaceFloatScreen implements Screen {
 	}
 
 	/**
-	 * Returns the {@link MainCamera}
+	 * Returns the {@link Camera}
 	 */
-	public MainCamera getCamera() {
+	public Camera getCamera() {
 		return camera;
 	}
 
 	/**
-	 * Sets the {@link MainCamera}
+	 * Sets the {@link Camera}
 	 */
-	public void setCamera(MainCamera camera) {
+	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
 

@@ -2,12 +2,12 @@ package me.fahien.spacefloat.screen;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import me.fahien.spacefloat.actor.HudFactory;
-import me.fahien.spacefloat.camera.MainCamera;
 import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
@@ -49,7 +49,7 @@ public class MainScreen extends SpaceFloatScreen {
 	@Override
 	public void show() {
 		logger.debug("Getting the main camera");
-		MainCamera mainCamera = getCamera();
+		Camera mainCamera = getCamera();
 		logger.debug("Injecting camera into camera system");
 		cameraSystem.setCamera(mainCamera);
 		logger.debug("Injecting camera into render system");

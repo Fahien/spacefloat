@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Vector3;
 
-import me.fahien.spacefloat.camera.MainCamera;
+import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
@@ -43,7 +44,7 @@ public class RenderSystem extends EntitySystem {
 
 	private ImmutableArray<Entity> entities;
 
-	private MainCamera camera;
+	private Camera camera;
 	private ParticleSystem particleSystem;
 
 	private Environment environment;
@@ -55,9 +56,9 @@ public class RenderSystem extends EntitySystem {
 	protected ModelInstance instance;
 
 	/**
-	 * Sets the {@link MainCamera}
+	 * Sets the {@link Camera}
 	 */
-	public void setCamera(MainCamera camera) {
+	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
 

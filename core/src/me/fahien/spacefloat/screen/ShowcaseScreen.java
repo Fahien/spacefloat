@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -44,7 +44,7 @@ public class ShowcaseScreen extends SpaceFloatScreen {
 	private static final String LEFT_ARROW_TXT = "<";
 	private static final float ARROW_SIZE = 64.0f;
 
-	private PerspectiveCamera camera;
+	private Camera camera;
 
 	private Stage stage;
 	private FontActor titleActor;

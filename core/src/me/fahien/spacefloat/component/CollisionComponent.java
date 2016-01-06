@@ -31,7 +31,6 @@ public abstract class CollisionComponent extends btCollisionObject implements Co
 		collisions = new ObjectSet<>();
 	}
 
-
 	/**
 	 * Adds a collision
 	 */
