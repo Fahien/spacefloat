@@ -122,29 +122,37 @@ public class CollisionSystem extends EntitySystem {
 		 * Apply Collision Logic
 		 */
 		private void computeCollision(CollisionComponent collision,
-									  Entity entity,
+									  GameObject object,
 									  VelocityComponent velocity,
 									  AccelerationComponent acceleration,
 									  EnergyComponent energyComponent,
 									  Vector3 normal) {
-			if (collision != null) {
-				if (!collision.collideWith(entity)) {
-					collision.addCollision(entity);
+				// If the collision is starting
+				if (!collision.collideWith(object)) {
+					// Add entity to collision array
+					logger.debug("Adding object to collisions");
+					collision.addCollision(object);
+					// If the entity has an energy component
 					if (energyComponent != null) {
+						// Activate shield
+						logger.debug("Activating shield");
 						energyComponent.hurt(velocity.getVelocity(), normal);
 					}
+					// If has a velocity
 					if (velocity != null) {
+						// Hurt velocity
+						logger.debug("Hurting velocity");
 						velocity.hurt(normal);
 					}
 				} else {
 					if (velocity != null) {
+						logger.debug("Velocity collide");
 						velocity.collide(normal);
 					}
 				}
 				if (acceleration != null) {
 					acceleration.collide(normal);
 				}
-			}
 		}
 
 		@Override
@@ -160,9 +168,9 @@ public class CollisionSystem extends EntitySystem {
 			}
 		}
 
-		private void endCollision(GravityComponent gravity, Entity entity) {
+		private void endCollision(GravityComponent gravity, GameObject object) {
 			if (gravity != null) {
-				gravity.removeCollision(entity);
+				gravity.removeCollision(object);
 			}
 		}
 	}

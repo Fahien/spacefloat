@@ -7,16 +7,16 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector3;
 
-import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.TransformComponent;
+import me.fahien.spacefloat.entity.GameObject;
 
 import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.hurtMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Gravity {@link EntitySystem}
@@ -26,7 +26,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityM
 public class GravitySystem extends IteratingSystem {
 	public static final float MAX_DISTANCE = 2048f;
 
-	private Entity player;
+	private GameObject player;
 	private Vector3 playerVelocity;
 	private Vector3 playerPosition;
 	private Vector3 distanceVector;
@@ -38,39 +38,40 @@ public class GravitySystem extends IteratingSystem {
 	@Override
 	public void addedToEngine(Engine engine) {
 		super.addedToEngine(engine);
+		logger.info("Registering into the GravitySystem " + getEntities().size() + " game objects with a GravityComponent and a TransformComponent");
 		ImmutableArray<Entity> entities = engine.getEntitiesFor(all(PlayerComponent.class).get());
 		if (entities.size() > 0) {
-			player = entities.first();
+			player = (GameObject) entities.first();
 			playerVelocity = velocityMapper.get(player).getVelocity();
 			playerPosition = transformMapper.get(player).getPosition();
 			distanceVector = new Vector3();
 		}
 	}
 
-	protected GravityComponent m_gravity;
-	protected TransformComponent m_transform;
-	protected CollisionComponent m_playerCollision;
-
 	@Override
 	protected void processEntity(Entity entity, float deltaTime) {
-		m_gravity = gravityMapper.get(entity);
+		computeGravity(gravityMapper.get(entity), transformMapper.get(entity));
+	}
+
+	private void computeGravity(GravityComponent gravity, TransformComponent transform) {
 		// If the mass is zero do nothing
-		if (m_gravity.getMass() == 0f) return;
+		if (gravity.getMass() == 0f) return;
+
 		// If the planet collide with player do not apply gravity
-		if (m_gravity.collideWith(player)) return;
-		m_transform = transformMapper.get(entity);
-		m_playerCollision = hurtMapper.get(player);
+		if (gravity.collideWith(player)) return;
+
 		// Set distance vector equal to the planet position
-		distanceVector.set(m_transform.getPosition());
+		distanceVector.set(transform.getPosition());
 		// Calculate the distance from the player
 		float distance = distanceVector.dst(playerPosition);
 		// If is within the area and is not collided
-		if (distance < MAX_DISTANCE && distance > m_gravity.getRadius() + m_playerCollision.getRadius() / 2) {
+		if (distance < MAX_DISTANCE && distance > gravity.getRadius()) {
 			// Compute the attractive vector
 			distanceVector.sub(playerPosition);
-			distance = GravityComponent.G * m_gravity.getMass();
+			distance = GravityComponent.G * gravity.getMass();
 			distanceVector.nor().scl(distance);
 			playerVelocity.add(distanceVector);
+			logger.debug("Computing attraction on " + player.getName() + " - velocity: " + playerVelocity);
 		}
 	}
 }

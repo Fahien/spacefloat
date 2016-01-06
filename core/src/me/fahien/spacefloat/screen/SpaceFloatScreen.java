@@ -194,7 +194,6 @@ public class SpaceFloatScreen implements Screen {
 	 * Update is called before drawing the stage
 	 */
 	public void update(float delta) {
-		logger.debug("Updating stage");
 		stage.act(delta);
 	}
 
@@ -206,9 +205,7 @@ public class SpaceFloatScreen implements Screen {
 			logger.debug("Exiting");
 			Gdx.app.exit();
 		}
-		logger.debug("Updating");
 		update(delta);
-		logger.debug("Drawing stage");
 		if (stage != null) stage.draw();
 	}
 

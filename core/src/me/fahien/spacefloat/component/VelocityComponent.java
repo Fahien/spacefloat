@@ -1,12 +1,13 @@
 package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.utils.JsonString;
+
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Velocity {@link Component}
@@ -15,8 +16,8 @@ import me.fahien.spacefloat.utils.JsonString;
  */
 public class VelocityComponent implements Component, Json.Serializable {
 
-	public static final int BOUNCE_LIMIT = 8;
-	public static final float ABSORBE_FACTOR = 0.25f;
+	public static final int BOUNCE_LIMIT = 64;
+	public static final float ABSORBE_FACTOR = 0.5f;
 	private Vector3 velocity;
 	private Vector3 eulerAnglesVelocity;
 
@@ -44,10 +45,14 @@ public class VelocityComponent implements Component, Json.Serializable {
 	 */
 	public void hurt(Vector3 normal) {
 		normal.nor();
-		float dot = MathUtils.clamp(2 * velocity.dot(normal), 0.5f, 2f);
+		logger.debug("Normal: " + normal);
+		float dot = 2 * velocity.dot(normal);
 		normal.scl(dot);
+		logger.debug("Pre hurt velocity: " + velocity);
 		velocity.sub(normal).scl(ABSORBE_FACTOR);
+		logger.debug("Hurted velocity: " + velocity);
 		if (velocity.len2() < BOUNCE_LIMIT) {
+			logger.debug("Hurt absorbed");
 			velocity.set(Vector3.Zero);
 		}
 	}
@@ -58,9 +63,15 @@ public class VelocityComponent implements Component, Json.Serializable {
 	public void collide(Vector3 normal) {
 		normal.nor();
 		float dot = velocity.dot(normal);
-		if (dot < 0) {
+		logger.debug("Colliding dot: " + dot);
+		if (dot > 0) {
 			normal.scl(dot);
 			velocity.sub(normal);
+			logger.debug("Velocity after colliding: " + velocity);
+			if (velocity.len2() < BOUNCE_LIMIT) {
+				logger.debug("Hurt absorbed");
+				velocity.set(Vector3.Zero);
+			}
 		}
 	}
 

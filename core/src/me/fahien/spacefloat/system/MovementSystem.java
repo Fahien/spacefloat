@@ -1,22 +1,15 @@
 package me.fahien.spacefloat.system;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector3;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
-import me.fahien.spacefloat.component.GraphicComponent;
-import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 
 import static com.badlogic.ashley.core.Family.all;
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.accelerationMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
 
 /**

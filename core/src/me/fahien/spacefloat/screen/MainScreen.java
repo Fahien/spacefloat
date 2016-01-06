@@ -103,7 +103,6 @@ public class MainScreen extends SpaceFloatScreen {
 	@Override
 	public void update(float delta) {
 		super.update(delta);
-		logger.debug("Updating engine");
 		engine.update(delta);
 	}
 

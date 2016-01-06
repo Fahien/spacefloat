@@ -53,6 +53,7 @@ public class CameraSystem extends PlayerSystem {
 		// Get the player position
 		if (player != null) {
 			playerPosition = transformMapper.get(player).getPosition();
+			camera.position.set(playerPosition);
 			camera.position.add(cameraOffset);
 			camera.lookAt(playerPosition);
 		}

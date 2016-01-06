@@ -7,6 +7,8 @@ import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.utils.JsonString;
 
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
+
 /**
  * The Acceleration {@link Component}
  *
@@ -59,9 +61,11 @@ public class AccelerationComponent implements Component, Json.Serializable {
 	public void collide(Vector3 normal) {
 		normal.nor();
 		float dot = acceleration.dot(normal);
+		logger.debug("Colliding dot: " + dot);
 		if (dot < 0) {
 			normal.scl(dot);
 			acceleration.sub(normal);
+			logger.debug("Acceleration after colliding: " + acceleration);
 		}
 	}
 }
