@@ -20,6 +20,7 @@ import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
+import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
@@ -31,8 +32,10 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMa
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.reactorMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Rendering {@link EntitySystem}
@@ -40,6 +43,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityM
  * @author Fahien
  */
 public class RenderSystem extends EntitySystem {
+	private static final int RENDER_PRIORITY = 2;
 
 	private ImmutableArray<Entity> entities;
 
@@ -53,6 +57,10 @@ public class RenderSystem extends EntitySystem {
 	// Temp variables
 	protected GraphicComponent m_graphicComponent;
 	protected ModelInstance instance;
+
+	public RenderSystem() {
+		super(RENDER_PRIORITY);
+	}
 
 	/**
 	 * Sets the {@link Camera}
@@ -73,8 +81,9 @@ public class RenderSystem extends EntitySystem {
 		super.addedToEngine(engine);
 
 		// Get the Entities
-		Family family = Family.all(GraphicComponent.class).get();
+		Family family = Family.all(GraphicComponent.class, TransformComponent.class).get();
 		entities = engine.getEntitiesFor(family);
+		setModelInstancesTransform(entities);
 
 		// Initialize the camera
 		camera.update();
@@ -86,14 +95,32 @@ public class RenderSystem extends EntitySystem {
 
 		// Initialize the model batch
 		batch = new ModelBatch();
+
 		// Initialize the shape renderer
 		shapeRenderer = new SpaceFloatShapeRenderer();
+	}
+
+	/**
+	 * Sets the {@link ModelInstance}s initial transform
+	 */
+	private void setModelInstancesTransform(ImmutableArray<Entity> entities) {
+		logger.debug("Setting model instances initial transform");
+		for (Entity entity : entities) {
+			// Get graphic and transform components
+			GraphicComponent graphicComponent = graphicMapper.get(entity);
+			TransformComponent transformComponent = transformMapper.get(entity);
+			// Set the model instance initial rotation before position
+			graphicComponent.setFromEulerAnglesRad(transformComponent.getEulerAngles());
+			// Set the model instance initial position after rotation
+			graphicComponent.setPosition(transformComponent.getPosition());
+		}
 	}
 
 	protected TransformComponent m_transformComponent;
 	protected VelocityComponent m_velocityComponent;
 	protected AccelerationComponent m_accelerationComponent;
 	protected CollisionComponent m_collisionComponent;
+	protected RigidbodyComponent m_rigidbodyComponent;
 	protected ReactorComponent m_reactorComponent;
 	protected RechargeComponent m_rechargeComponent;
 
@@ -116,26 +143,30 @@ public class RenderSystem extends EntitySystem {
 			m_reactorComponent = reactorMapper.get(entity);
 			m_graphicComponent = graphicMapper.get(entity);
 
-			// Render velocity line
-			renderVelocity(m_transformComponent, m_velocityComponent);
-
 			// Render gravity radius
 			if (gravityMapper.get(entity) != null) renderGravity(m_transformComponent);
 
-			// Render collision radius
-			m_collisionComponent = gravityMapper.get(entity);
-			renderCollision(m_collisionComponent, RED);
-
-			// Render refuel radius
-			m_rechargeComponent = rechargeMapper.get(entity);
-			renderCollision(m_rechargeComponent, GREEN);
+			// Render velocity line
+			renderVelocity(m_transformComponent, m_velocityComponent);
 
 			// Render reactor particle effect
-			renderReactor(m_accelerationComponent, m_graphicComponent, m_reactorComponent);
+			// renderReactor(m_accelerationComponent, m_graphicComponent, m_reactorComponent);
 
 			// Render models
 			instance = m_graphicComponent.getInstance();
 			if (instance != null) batch.render(instance, environment);
+
+			// Render gravity collision radius
+			m_collisionComponent = gravityMapper.get(entity);
+			renderCollision(m_collisionComponent, RED);
+
+			// Render rigidbody radius
+			m_rigidbodyComponent = rigidMapper.get(entity);
+			renderRigidbody(m_rigidbodyComponent, RED);
+
+			// Render refuel radius
+			m_rechargeComponent = rechargeMapper.get(entity);
+			renderCollision(m_rechargeComponent, GREEN);
 		}
 
 		// Render Particles
@@ -218,16 +249,19 @@ public class RenderSystem extends EntitySystem {
 		shapeRenderer.end();
 	}
 
-	/**
-	 * Renders reactor particle effect
-	 */
-	private void renderReactor(AccelerationComponent acceleration, GraphicComponent graphic, ReactorComponent reactor) {
-		if (acceleration == null) return;
-		if (acceleration.getAcceleration().equals(Vector3.Zero)) {
-			reactor.stop(particleSystem);
-		} else {
-			reactor.start(particleSystem, graphic.getInstance().transform);
-		}
+	private <T extends RigidbodyComponent> void renderRigidbody(T rigidbody, Color color) {
+		// Return if collision is null
+		if (rigidbody == null) return;
+		// Begin shape renderer with line shape type
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		// Set center point equals to collision position
+		rigidbody.getPosition(m_collisionCenter);
+		// Set shape renderer color RED
+		shapeRenderer.setColor(color);
+		// Draw a circle
+		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, rigidbody.getRadius());
+		// End shape renderer
+		shapeRenderer.end();
 	}
 
 	@Override

@@ -45,7 +45,7 @@ public abstract class SpaceshipController extends PlayerSystem {
 			TransformComponent transform = tm.get(player);
 			if (accelerationComponent != null && transform != null) {
 				acceleration = accelerationComponent.getAcceleration();
-				Vector3 eulerAngles = transform.getRotation();
+				Vector3 eulerAngles = transform.getEulerAngles();
 				InputProcessor inputProcessor = createInputProcessor(pm.get(player), acceleration, eulerAngles);
 				inputMultiplexer.addProcessor(inputProcessor);
 			} else {

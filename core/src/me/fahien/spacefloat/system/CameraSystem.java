@@ -6,7 +6,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 
+import me.fahien.spacefloat.component.GraphicComponent;
+
 import static com.badlogic.gdx.math.MathUtils.clamp;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -23,7 +26,7 @@ public class CameraSystem extends PlayerSystem {
 	public static float CAMERA_ZOOM = 2f;
 	public static String CAMERA_TYPE = "orthographic";
 
-	private Vector3 playerPosition;
+	private GraphicComponent playerGraphic;
 	private Camera camera;
 	private Vector3 cameraOffset;
 
@@ -52,10 +55,10 @@ public class CameraSystem extends PlayerSystem {
 	public void addedToEngine(Engine engine, Entity player, InputMultiplexer inputMultiplexer) {
 		// Get the player position
 		if (player != null) {
-			playerPosition = transformMapper.get(player).getPosition();
-			camera.position.set(playerPosition);
+			playerGraphic = graphicMapper.get(player);
+			playerGraphic.getPosition(camera.position);
 			camera.position.add(cameraOffset);
-			camera.lookAt(playerPosition);
+			camera.lookAt(transformMapper.get(player).getPosition());
 		}
 		camera.update();
 	}
@@ -63,7 +66,7 @@ public class CameraSystem extends PlayerSystem {
 	@Override
 	public void update(float deltaTime) {
 		// Follow the player
-		camera.position.set(playerPosition);
+		playerGraphic.getPosition(camera.position);
 		camera.position.add(cameraOffset);
 		camera.update();
 	}

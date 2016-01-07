@@ -18,4 +18,5 @@ public class ComponentMapperEnumerator {
 	public static ComponentMapper<AccelerationComponent> accelerationMapper = ComponentMapper.getFor(AccelerationComponent.class);
 	public static ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);
 	public static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
+	public static ComponentMapper<RigidbodyComponent> rigidMapper = ComponentMapper.getFor(RigidbodyComponent.class);
 }

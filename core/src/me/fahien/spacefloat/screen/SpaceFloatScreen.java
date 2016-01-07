@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.game.SpaceFloatGame;
 
+import static java.lang.Math.min;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -205,6 +206,7 @@ public class SpaceFloatScreen implements Screen {
 			logger.debug("Exiting");
 			Gdx.app.exit();
 		}
+		delta = min(0.00001f, delta);
 		update(delta);
 		if (stage != null) stage.draw();
 	}

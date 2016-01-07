@@ -15,7 +15,7 @@ import me.fahien.spacefloat.utils.JsonString;
 public class TransformComponent implements Component, Json.Serializable {
 
 	private Vector3 position;
-	private Vector3 rotation;
+	private Vector3 eulerAngles;
 
 	public TransformComponent() {
 		this(new Vector3(), new Vector3());
@@ -26,9 +26,9 @@ public class TransformComponent implements Component, Json.Serializable {
 		this(position, new Vector3());
 	}
 
-	public TransformComponent(Vector3 position, Vector3 rotation) {
+	public TransformComponent(Vector3 position, Vector3 eulerAngles) {
 		this.position = position;
-		this.rotation = rotation;
+		this.eulerAngles = eulerAngles;
 	}
 
 	/**
@@ -39,10 +39,10 @@ public class TransformComponent implements Component, Json.Serializable {
 	}
 
 	/**
-	 * Returns the rotation
+	 * Returns the eulerAngles
 	 */
-	public Vector3 getRotation() {
-		return rotation;
+	public Vector3 getEulerAngles() {
+		return eulerAngles;
 	}
 
 	@Override
@@ -50,9 +50,9 @@ public class TransformComponent implements Component, Json.Serializable {
 		json.writeValue(JsonString.JSON_X, position.x);
 		json.writeValue(JsonString.JSON_Y, position.y);
 		json.writeValue(JsonString.JSON_Z, position.z);
-		json.writeValue(JsonString.YAW, rotation.x);
-		json.writeValue(JsonString.PITCH, rotation.y);
-		json.writeValue(JsonString.ROLL, rotation.z);
+		json.writeValue(JsonString.YAW, eulerAngles.x);
+		json.writeValue(JsonString.PITCH, eulerAngles.y);
+		json.writeValue(JsonString.ROLL, eulerAngles.z);
 	}
 
 	@Override
@@ -60,8 +60,8 @@ public class TransformComponent implements Component, Json.Serializable {
 		position.x = jsonData.getFloat(JsonString.JSON_X);
 		position.y = jsonData.getFloat(JsonString.JSON_Y);
 		position.z = jsonData.getFloat(JsonString.JSON_Z);
-		rotation.x = jsonData.getFloat(JsonString.YAW);
-		rotation.y = jsonData.getFloat(JsonString.PITCH);
-		rotation.z = jsonData.getFloat(JsonString.ROLL);
+		eulerAngles.x = jsonData.getFloat(JsonString.YAW);
+		eulerAngles.y = jsonData.getFloat(JsonString.PITCH);
+		eulerAngles.z = jsonData.getFloat(JsonString.ROLL);
 	}
 }

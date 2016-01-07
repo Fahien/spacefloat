@@ -44,7 +44,7 @@ public class TransformSystem extends IteratingSystem {
 		for (Entity entity : getEntities()) {
 			m_graphicComponent = graphicMapper.get(entity);
 			m_transformComponent = transformMapper.get(entity);
-			m_graphicComponent.setFromEulerAngles(m_transformComponent.getRotation());
+			m_graphicComponent.setFromEulerAnglesRad(m_transformComponent.getEulerAngles());
 			m_graphicComponent.setPosition(m_transformComponent.getPosition());
 		}
 	}
@@ -57,7 +57,7 @@ public class TransformSystem extends IteratingSystem {
 		m_velocityComponent = velocityMapper.get(entity);
 
 		// Get the rotation
-		m_rotation = m_transformComponent.getRotation();
+		m_rotation = m_transformComponent.getEulerAngles();
 		// Get the rotation velocity
 		m_rotationVelocity = m_velocityComponent.getEulerAnglesVelocity();
 

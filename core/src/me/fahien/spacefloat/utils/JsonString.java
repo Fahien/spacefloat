@@ -25,4 +25,6 @@ public class JsonString {
 	public static final String CHARGEMAX = "chargeMax";
 	public static final String CHARGE = "charge";
 	public static final String HANDLER = "handler";
+	public static final String GROUP = "group";
+	public static final String MASK = "mask";
 }

@@ -2,6 +2,7 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -54,16 +55,33 @@ public class GraphicComponent implements Component, Json.Serializable {
 	}
 
 	/**
-	 * Sets the instance position
+	 * Returns the {@link ModelInstance} transform
 	 */
-	public void setPosition(Vector3 position) {
-		instance.transform.setTranslation(position);
+	public Matrix4 getTransform() {
+		if (instance != null) {
+			return instance.transform;
+		}
+		return null;
 	}
 
 	/**
-	 * Sets the instance rotation
+	 * Returns the {@link ModelInstance} position
 	 */
-	public void setFromEulerAngles(Vector3 eulerAngles) {
+	public void getPosition(Vector3 position) {
+		instance.transform.getTranslation(position);
+	}
+
+	/**
+	 * Sets the {@link ModelInstance} position
+	 */
+	public void setPosition(Vector3 position) {
+		instance.transform.trn(position);
+	}
+
+	/**
+	 * Sets the {@link ModelInstance} rotation
+	 */
+	public void setFromEulerAnglesRad(Vector3 eulerAngles) {
 		instance.transform.setFromEulerAnglesRad(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 	}
 

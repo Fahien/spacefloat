@@ -71,7 +71,6 @@ public class GravitySystem extends IteratingSystem {
 			distance = GravityComponent.G * gravity.getMass();
 			distanceVector.nor().scl(distance);
 			playerVelocity.add(distanceVector);
-			logger.debug("Computing attraction on " + player.getName() + " - velocity: " + playerVelocity);
 		}
 	}
 }

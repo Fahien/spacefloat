@@ -73,6 +73,13 @@ public class EnergyComponent implements Component, Json.Serializable {
 	}
 
 	/**
+	 * Tests whether has charge
+	 */
+	public boolean hasCharge() {
+		return charge > 0f;
+	}
+
+	/**
 	 * Returns the charge upper limit
 	 */
 	public float getChargeMax() {

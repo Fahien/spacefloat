@@ -12,8 +12,7 @@ import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
-import me.fahien.spacefloat.controller.SpaceshipController;
-import me.fahien.spacefloat.controller.SpaceshipController2D;
+import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.CollisionSystem;
 import me.fahien.spacefloat.system.GravitySystem;
@@ -37,7 +36,7 @@ public class MainScreen extends SpaceFloatScreen {
 	private MovementSystem movementSystem;
 	private CollisionSystem collisionSystem;
 	private TransformSystem transformSystem;
-	private SpaceshipController spaceshipController;
+	private ReactorController reactorController;
 
 	public MainScreen() {
 		cameraSystem = new CameraSystem();
@@ -46,7 +45,7 @@ public class MainScreen extends SpaceFloatScreen {
 		movementSystem = new MovementSystem();
 		collisionSystem = new CollisionSystem();
 		transformSystem = new TransformSystem();
-		spaceshipController = new SpaceshipController2D();
+		reactorController = new ReactorController();
 	}
 
 	@Override
@@ -57,24 +56,23 @@ public class MainScreen extends SpaceFloatScreen {
 		cameraSystem.setCamera(mainCamera);
 		logger.debug("Injecting camera into render system");
 		renderSystem.setCamera(mainCamera);
+		logger.debug("Injecting particle system into reactor controller");
+		reactorController.setParticleSystem(getParticleSystem());
 		logger.debug("Injecting particle system into render system");
 		renderSystem.setParticleSystem(getParticleSystem());
 		logger.debug("Getting the engine");
 		engine = getEngine();
-		logger.debug("Adding spaceship controller to the engine");
-		engine.addSystem(spaceshipController);
-		logger.debug("Adding movement system to the engine");
-		engine.addSystem(movementSystem);
+		/** The RenderSystem must be added before the CollisionSystem */
+		logger.debug("Adding render system to the engine");
+		engine.addSystem(renderSystem);
 		logger.debug("Adding collision system to the engine");
 		engine.addSystem(collisionSystem);
 		logger.debug("Adding gravity system to the engine");
-		engine.addSystem(gravitySystem);
-		logger.debug("Adding transform system to the engine");
-		engine.addSystem(transformSystem);
+		//engine.addSystem(gravitySystem);
+		logger.debug("Adding reactor controller to the engine");
+		engine.addSystem(reactorController);
 		logger.debug("Adding camera system to the engine");
 		engine.addSystem(cameraSystem);
-		logger.debug("Adding render system to the engine");
-		engine.addSystem(renderSystem);
 		super.show();
 	}
 
@@ -116,7 +114,7 @@ public class MainScreen extends SpaceFloatScreen {
 		engine.removeSystem(movementSystem);
 		engine.removeSystem(gravitySystem);
 		engine.removeSystem(collisionSystem);
-		engine.removeSystem(spaceshipController);
+		engine.removeSystem(reactorController);
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import me.fahien.spacefloat.component.HurtComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
+import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -64,9 +65,9 @@ public class GameObjectServiceTest {
 		// Create a player component
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
-		// Create a collision component
-		HurtComponent collision = new HurtComponent();
-		spaceship.add(collision);
+		// Create a rigid component
+		RigidbodyComponent rigidbody = new RigidbodyComponent();
+		spaceship.add(rigidbody);
 		// Create a reactor component
 		ReactorComponent reactorComponent = new ReactorComponent(SPACESHIP_REACTOR);
 		spaceship.add(reactorComponent);
@@ -115,8 +116,8 @@ public class GameObjectServiceTest {
 		assertNotNull("The spaceship has no player component", player);
 		AccelerationComponent acceleration = spaceship.getComponent(AccelerationComponent.class);
 		assertNotNull("The spaceship has no acceleration component", acceleration);
-		HurtComponent hurt = spaceship.getComponent(HurtComponent.class);
-		assertNotNull("The spaceship has no hurt component", hurt);
+		RigidbodyComponent rigidbody = spaceship.getComponent(RigidbodyComponent.class);
+		assertNotNull("The spaceship has no rigid component", rigidbody);
 		ReactorComponent reactor = spaceship.getComponent(ReactorComponent.class);
 		assertNotNull("The spaceship has no reactor component", reactor);
 		EnergyComponent energy = spaceship.getComponent(EnergyComponent.class);

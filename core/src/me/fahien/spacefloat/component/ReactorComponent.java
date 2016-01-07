@@ -16,12 +16,13 @@ import static me.fahien.spacefloat.utils.JsonString.JSON_NAME;
  */
 public class ReactorComponent implements Component, Json.Serializable {
 	public static final String PARTICLES_DIR = "particles/";
+	public static float REACTOR_CONSUMES = 0.5f;
 
 	private String name;
 	private ParticleEffect reactor;
 	private ParticleEffect effect;
 
-	private boolean playing;
+	private boolean burning;
 
 	public ReactorComponent() {}
 
@@ -58,30 +59,37 @@ public class ReactorComponent implements Component, Json.Serializable {
 	}
 
 	/**
-	 * Starts or updates the reactor
+	 * Tests whether is burning
 	 */
-	public void start(ParticleSystem particleSystem, Matrix4 transform) {
-		if (playing) {
-			effect.setTransform(transform);
-			return;
-		}
-
-		effect = reactor.copy();
-		effect.setTransform(transform);
-		effect.init();
-		effect.start();  // optional: particle will begin playing immediately
-		particleSystem.add(effect);
-		playing = true;
+	public boolean isBurning() {
+		return burning;
 	}
 
 	/**
-	 * Stops the reactor
+	 * Starts or updates the reactor {@link ParticleEffect}
+	 */
+	public void start(ParticleSystem particleSystem, Matrix4 transform) {
+		effect = reactor.copy();
+		effect.setTransform(transform);
+		effect.init();
+		effect.start();  // optional: particle will begin burning immediately
+		particleSystem.add(effect);
+		burning = true;
+	}
+
+	/**
+	 * Stops the reactor {@link ParticleEffect}
 	 */
 	public void stop(ParticleSystem particleSystem) {
-		if (!playing) return;
-
 		particleSystem.remove(effect);
-		playing = false;
+		burning = false;
+	}
+
+	/**
+	 * Updates the reactor {@link ParticleEffect} transform
+	 */
+	public void setTransform(Matrix4 transform) {
+		effect.setTransform(transform);
 	}
 
 	@Override
