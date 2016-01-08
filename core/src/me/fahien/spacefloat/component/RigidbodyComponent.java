@@ -202,4 +202,12 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		group = jsonData.getShort(JsonKey.GROUP);
 		mask = jsonData.getShort(JsonKey.MASK);
 	}
+
+	public Vector3 getLinearVelocity() {
+		return rigidbody.getLinearVelocity();
+	}
+
+	public void setLinearVelocity(Vector3 linearVelocity) {
+		rigidbody.setLinearVelocity(linearVelocity);
+	}
 }

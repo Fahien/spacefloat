@@ -15,7 +15,6 @@ import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.system.CollisionSystem;
-import me.fahien.spacefloat.system.GravitySystem;
 import me.fahien.spacefloat.system.MovementSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 import me.fahien.spacefloat.system.TransformSystem;
@@ -32,7 +31,6 @@ public class MainScreen extends SpaceFloatScreen {
 	private Engine engine;
 	private CameraController cameraSystem;
 	private RenderSystem renderSystem;
-	private GravitySystem gravitySystem;
 	private MovementSystem movementSystem;
 	private CollisionSystem collisionSystem;
 	private TransformSystem transformSystem;
@@ -41,7 +39,6 @@ public class MainScreen extends SpaceFloatScreen {
 	public MainScreen() {
 		cameraSystem = new CameraController();
 		renderSystem = new RenderSystem();
-		gravitySystem = new GravitySystem();
 		movementSystem = new MovementSystem();
 		collisionSystem = new CollisionSystem();
 		transformSystem = new TransformSystem();
@@ -112,7 +109,6 @@ public class MainScreen extends SpaceFloatScreen {
 		engine.removeSystem(renderSystem);
 		engine.removeSystem(transformSystem);
 		engine.removeSystem(movementSystem);
-		engine.removeSystem(gravitySystem);
 		engine.removeSystem(collisionSystem);
 		engine.removeSystem(reactorController);
 	}

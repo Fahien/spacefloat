@@ -15,26 +15,20 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Vector3;
 
-import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
-import me.fahien.spacefloat.component.ReactorComponent;
-import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
-import me.fahien.spacefloat.component.VelocityComponent;
-import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.utils.ShapeRenderer;
 import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.accelerationMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.reactorMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.hurtMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -53,10 +47,6 @@ public class RenderSystem extends EntitySystem {
 	private Environment environment;
 	private ModelBatch batch;
 	private ShapeRenderer shapeRenderer;
-
-	// Temp variables
-	protected GraphicComponent m_graphicComponent;
-	protected ModelInstance instance;
 
 	public RenderSystem() {
 		super(RENDER_PRIORITY);
@@ -116,16 +106,11 @@ public class RenderSystem extends EntitySystem {
 		}
 	}
 
-	protected TransformComponent m_transformComponent;
-	protected VelocityComponent m_velocityComponent;
-	protected AccelerationComponent m_accelerationComponent;
+	// Temp variables
+	protected GraphicComponent m_graphicComponent;
+	protected ModelInstance m_modelInstance;
 	protected CollisionComponent m_collisionComponent;
 	protected RigidbodyComponent m_rigidbodyComponent;
-	protected ReactorComponent m_reactorComponent;
-	protected RechargeComponent m_rechargeComponent;
-
-	private static final Color RED = new Color(1f, 0f, 0f, 1f);
-	private static final Color GREEN = new Color(0f, 1f, 0f, 1f);
 
 	@Override
 	public void update(float deltaTime) {
@@ -137,36 +122,32 @@ public class RenderSystem extends EntitySystem {
 
 		// Render the model instances
 		for (Entity entity : entities) {
-			m_transformComponent = transformMapper.get(entity);
-			m_velocityComponent = velocityMapper.get(entity);
-			m_accelerationComponent = accelerationMapper.get(entity);
-			m_reactorComponent = reactorMapper.get(entity);
 			m_graphicComponent = graphicMapper.get(entity);
-
-			// Render gravity radius
-			if (gravityMapper.get(entity) != null) renderGravity(m_transformComponent);
-
-			// Render velocity line
-			renderVelocity(m_transformComponent, m_velocityComponent);
-
-			// Render reactor particle effect
-			// renderReactor(m_accelerationComponent, m_graphicComponent, m_reactorComponent);
-
 			// Render models
-			instance = m_graphicComponent.getInstance();
-			if (instance != null) batch.render(instance, environment);
+			m_modelInstance = m_graphicComponent.getInstance();
+			if (m_modelInstance != null) batch.render(m_modelInstance, environment);
 
-			// Render gravity collision radius
 			m_collisionComponent = gravityMapper.get(entity);
-			renderCollision(m_collisionComponent, RED);
+			// Render gravity radius
+			renderCollision(m_collisionComponent, Color.PURPLE);
 
-			// Render rigidbody radius
+			m_collisionComponent = planetMapper.get(entity);
+			// Render planet radius
+			renderCollision(m_collisionComponent, Color.RED);
+
+			m_rigidbodyComponent = hurtMapper.get(entity);
+			// Render hurt radius
+			renderRigidbody(m_rigidbodyComponent, Color.MAGENTA);
+
 			m_rigidbodyComponent = rigidMapper.get(entity);
-			renderRigidbody(m_rigidbodyComponent, RED);
+			// Render rigidbody radius
+			renderRigidbody(m_rigidbodyComponent, Color.RED);
+			// Render velocity line
+			renderVelocity(m_rigidbodyComponent, Color.BLUE);
 
-			// Render refuel radius
-			m_rechargeComponent = rechargeMapper.get(entity);
-			renderRecharge(m_rechargeComponent, GREEN);
+			m_collisionComponent = rechargeMapper.get(entity);
+			// Render recharge radius
+			renderCollision(m_collisionComponent, Color.GREEN);
 		}
 
 		// Render Particles
@@ -180,51 +161,27 @@ public class RenderSystem extends EntitySystem {
 		batch.end();
 	}
 
-	protected Vector3 m_velocityCenter;
-	protected Vector3 m_a = new Vector3();
-	protected Vector3 m_b = new Vector3();
+	protected Vector3 m_position = new Vector3();
 	protected Vector3 m_velocity;
 
 	/**
 	 * Renders velocity line
 	 */
-	private void renderVelocity(TransformComponent transformComponent, VelocityComponent velocityComponent) {
-		if (velocityComponent == null) return;
-		m_velocity = velocityComponent.getVelocity();
+	private void renderVelocity(RigidbodyComponent rigidbodyComponent, Color color) {
+		// Return if rigid body is null
+		if (rigidbodyComponent == null) return;
+		// Get the rigid body velocity
+		m_velocity = rigidbodyComponent.getLinearVelocity();
+		// Return if velocity is zero
 		if (m_velocity.equals(Vector3.Zero)) return;
-		if (m_velocity.len2() < 1.0f) return;
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		m_velocityCenter = transformComponent.getPosition();
-
-		m_a.x = m_velocityCenter.x - m_velocity.x * SpaceFloatScreen.WIDTH;
-		m_a.y = m_velocityCenter.y - m_velocity.y * SpaceFloatScreen.WIDTH;
-		m_a.z = m_velocityCenter.z - m_velocity.z * SpaceFloatScreen.WIDTH;
-		m_b.x = m_velocityCenter.x + m_velocity.x * SpaceFloatScreen.WIDTH;
-		m_b.y = m_velocityCenter.y + m_velocity.y * SpaceFloatScreen.WIDTH;
-		m_b.z = m_velocityCenter.z + m_velocity.z * SpaceFloatScreen.WIDTH;
-		// Set shape renderer color BLUE
-		shapeRenderer.setColor(0, 0, 1, 1);
-		// Draw a line
-		shapeRenderer.line(m_a, m_b);
-		shapeRenderer.end();
-	}
-
-	protected Vector3 m_gravityCenter;
-
-	/**
-	 * Renders gravity radius
-	 */
-	private void renderGravity(TransformComponent transform) {
-		// Return if components are null
-		if (transform == null) return;
 		// Begin shape renderer with line shape type
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		// Set center point equals to collision position
-		m_gravityCenter = transform.getPosition();
-		// Set shape renderer color PURPLE
-		shapeRenderer.setColor(1, 0, 1, 1);
-		// Draw a circle
-		shapeRenderer.circle(m_gravityCenter.x, m_gravityCenter.z, GravitySystem.MAX_DISTANCE);
+		// Set shape renderer color
+		shapeRenderer.setColor(color);
+		// Get the rigid body position
+		rigidbodyComponent.getPosition(m_position);
+		// Draw a line
+		shapeRenderer.line(m_position, m_velocity);
 		// End shape renderer
 		shapeRenderer.end();
 	}
@@ -245,24 +202,6 @@ public class RenderSystem extends EntitySystem {
 		shapeRenderer.setColor(color);
 		// Draw a circle
 		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, collision.getRadius());
-		// End shape renderer
-		shapeRenderer.end();
-	}
-
-	/**
-	 * Render recharge radius
-	 */
-	private <T extends RechargeComponent> void renderRecharge(T recharge, Color color) {
-		// Return if recharge is null
-		if (recharge == null) return;
-		// Begin shape renderer with line shape type
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		// Set center point equals to recharge position
-		recharge.getPosition(m_collisionCenter);
-		// Set shape renderer color RED
-		shapeRenderer.setColor(color);
-		// Draw a circle
-		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, recharge.getRadius());
 		// End shape renderer
 		shapeRenderer.end();
 	}

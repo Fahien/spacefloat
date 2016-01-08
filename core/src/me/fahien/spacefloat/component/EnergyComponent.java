@@ -1,13 +1,12 @@
 package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.utils.JsonKey;
-
-import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Energy {@link Component}
@@ -109,6 +108,6 @@ public class EnergyComponent implements Component, Json.Serializable {
 	 * Recharges energy
 	 */
 	public void recharge() {
-		logger.debug("Recharging energy");
+		addCharge(Gdx.graphics.getDeltaTime());
 	}
 }

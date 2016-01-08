@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
-import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
@@ -23,15 +23,16 @@ import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.HurtComponent;
+import me.fahien.spacefloat.component.PlanetComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.entity.GameObject;
 
 import static com.badlogic.ashley.core.Family.all;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.hurtMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -45,6 +46,7 @@ public class CollisionSystem extends EntitySystem {
 	private static final int COLLISION_PRIORITY = 1;
 	public static float RECHARGE_POWER = 0.125f;
 
+	private ImmutableArray<Entity> planetEntities;
 	private ImmutableArray<Entity> gravityEntities;
 	private ImmutableArray<Entity> rechargeEntities;
 	private ImmutableArray<Entity> hurtEntities;
@@ -67,11 +69,14 @@ public class CollisionSystem extends EntitySystem {
 	public void addedToEngine(Engine engine) {
 		super.addedToEngine(engine);
 
+		planetEntities = engine.getEntitiesFor(all(GraphicComponent.class, PlanetComponent.class).get());
+		createCollisionObjects(planetEntities, PlanetComponent.class);
+
 		gravityEntities = engine.getEntitiesFor(all(GraphicComponent.class, GravityComponent.class).get());
 		createCollisionObjects(gravityEntities, GravityComponent.class);
 
 		rechargeEntities = engine.getEntitiesFor(all(GraphicComponent.class, RechargeComponent.class).get());
-		createGhostObjects(rechargeEntities, RechargeComponent.class);
+		createCollisionObjects(rechargeEntities, RechargeComponent.class);
 
 		hurtEntities = engine.getEntitiesFor(all(GraphicComponent.class, HurtComponent.class).get());
 		createRigidbodies(hurtEntities, HurtComponent.class);
@@ -88,8 +93,9 @@ public class CollisionSystem extends EntitySystem {
 
 		contactListener = new SpaceFloatContactListener();
 
+		addCollisionObjectsToDynamicsWorld(planetEntities, PlanetComponent.class);
 		addCollisionObjectsToDynamicsWorld(gravityEntities, GravityComponent.class);
-		addGhostObjectsToDynamicsWorld(rechargeEntities, RechargeComponent.class);
+		addCollisionObjectsToDynamicsWorld(rechargeEntities, RechargeComponent.class);
 
 		addRigidbodiesToDynamicsWorld(hurtEntities, HurtComponent.class);
 		addRigidbodiesToDynamicsWorld(rigidEntities, RigidbodyComponent.class);
@@ -108,28 +114,9 @@ public class CollisionSystem extends EntitySystem {
 			// Get the graphic component
 			GraphicComponent graphic = graphicMapper.get(entity);
 			// Set transform
-			collisionComponent.setTransform(graphic.getTransform());
+			collisionComponent.setWorldTransform(graphic.getTransform());
 			// Set user data
-			collisionComponent.getCollisionObject().userData = entity;
-		}
-	}
-
-	/**
-	 * Initialize every {@link RechargeComponent}
-	 */
-	protected void createGhostObjects(ImmutableArray<Entity> entities, Class<? extends RechargeComponent> rechargeType) {
-		logger.debug("Creating collision objects for " + rechargeType.getSimpleName());
-		for (Entity entity : entities) {
-			// Get the collision component
-			RechargeComponent rechargeComponent = entity.getComponent(rechargeType);
-			// Create the collision object
-			rechargeComponent.createGhostObject();
-			// Get the graphic component
-			GraphicComponent graphic = graphicMapper.get(entity);
-			// Set transform
-			rechargeComponent.setTransform(graphic.getTransform());
-			// Set user data
-			rechargeComponent.getGhostObject().userData = entity;
+			collisionComponent.userData = entity;
 		}
 	}
 
@@ -158,17 +145,7 @@ public class CollisionSystem extends EntitySystem {
 	private void addCollisionObjectsToDynamicsWorld(ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
 		for (Entity entity : entities) {
 			CollisionComponent collisionComponent = entity.getComponent(collisionType);
-			dynamicsWorld.addCollisionObject(collisionComponent.getCollisionObject(), collisionComponent.getGroup(), collisionComponent.getMask());
-		}
-	}
-
-	/**
-	 * Adds {@link btGhostObject}s to the {@link btDynamicsWorld}
-	 */
-	private void addGhostObjectsToDynamicsWorld(ImmutableArray<Entity> entities, Class<? extends RechargeComponent> collisionType) {
-		for (Entity entity : entities) {
-			RechargeComponent rechargeComponent = entity.getComponent(collisionType);
-			dynamicsWorld.addCollisionObject(rechargeComponent.getGhostObject(), rechargeComponent.getGroup(), rechargeComponent.getMask());
+			dynamicsWorld.addCollisionObject(collisionComponent, collisionComponent.getGroup(), collisionComponent.getMask());
 		}
 	}
 
@@ -184,34 +161,39 @@ public class CollisionSystem extends EntitySystem {
 
 	@Override
 	public void update(float delta) {
+		for (Entity entity : planetEntities) {
+			updateCollisionObjects(planetMapper.get(entity), graphicMapper.get(entity));
+		}
 		for (Entity entity : gravityEntities) {
-			updateCollisionObjectsPosition(gravityMapper.get(entity), graphicMapper.get(entity));
+			updateCollisionObjects(gravityMapper.get(entity), graphicMapper.get(entity));
 		}
 		for (Entity entity : rechargeEntities) {
-			updateGhostObjectsPosition(rechargeMapper.get(entity), graphicMapper.get(entity));
+			updateCollisionObjects(rechargeMapper.get(entity), graphicMapper.get(entity));
 		}
 		dynamicsWorld.stepSimulation(delta, 5, 0.000001f);
 		for (Entity entity : hurtEntities) {
-			updateModelInstancesTransform(hurtMapper.get(entity), graphicMapper.get(entity));
+			updateModelInstances(hurtMapper.get(entity), graphicMapper.get(entity));
 		}
 		for (Entity entity : rigidEntities) {
-			updateModelInstancesTransform(rigidMapper.get(entity), graphicMapper.get(entity));
+			updateModelInstances(rigidMapper.get(entity), graphicMapper.get(entity));
 		}
 
 	}
 
-	protected void updateCollisionObjectsPosition(CollisionComponent collision, GraphicComponent graphic) {
+	/**
+	 * Updates {@link btCollisionObject}s transform
+	 */
+	protected void updateCollisionObjects(CollisionComponent collision, GraphicComponent graphic) {
 		collision.setTransform(graphic.getTransform());
-	}
-
-	protected void updateGhostObjectsPosition(RechargeComponent recharge, GraphicComponent graphic) {
-		recharge.setTransform(graphic.getTransform());
 	}
 
 	protected Matrix4 m_transform;
 	protected Vector3 m_position = new Vector3();
 
-	protected void updateModelInstancesTransform(RigidbodyComponent rigidbody, GraphicComponent graphic) {
+	/**
+	 * Updates {@link ModelInstance}s transform
+	 */
+	protected void updateModelInstances(RigidbodyComponent rigidbody, GraphicComponent graphic) {
 		m_transform = graphic.getTransform();
 		rigidbody.getTransform(m_transform);
 		m_transform.getTranslation(m_position);
@@ -253,21 +235,20 @@ public class CollisionSystem extends EntitySystem {
 	 * @author Fahien
 	 */
 	class SpaceFloatContactListener extends ContactListener {
-		private GameObject object0;
-		private GameObject object1;
 
 		@Override
 		public boolean onContactAdded(btCollisionObject collision0, int partId0, int index0, btCollisionObject collision1, int partId1, int index1) {
-			object0 = (GameObject) collision0.userData;
-			object1 = (GameObject) collision1.userData;
-			if (collision0 instanceof btGhostObject) {
-				energyMapper.get(object1).recharge();
+			if (collision0 instanceof CollisionComponent) {
+				handleCollision((CollisionComponent) collision0, collision1);
 			}
-			if (collision1 instanceof btGhostObject) {
-				energyMapper.get(object0).recharge();
+			if (collision1 instanceof CollisionComponent) {
+				handleCollision((CollisionComponent) collision1, collision0);
 			}
-			logger.debug("Computing collision between " + object0.getName() + " and " + object1.getName());
 			return true;
+		}
+
+		private void handleCollision(CollisionComponent component, btCollisionObject collision) {
+			component.collideWith((GameObject) collision.userData);
 		}
 
 		/*

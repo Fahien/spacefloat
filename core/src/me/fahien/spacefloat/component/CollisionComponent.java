@@ -8,7 +8,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectSet;
 
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.utils.JsonKey;
@@ -18,16 +17,14 @@ import me.fahien.spacefloat.utils.JsonKey;
  *
  * @author Fahien
  */
-public abstract class CollisionComponent implements Component, Json.Serializable {
+public abstract class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
 	private static final float DEFAULT_RADIUS = 128.0f;
 	private final static short DEFAULT_GROUP = 1 << 1; // 10
 	private final static short DEFAULT_MASK = 0; // Nothing
 
-	private ObjectSet<GameObject> collisions;
 	private float radius;
 
-	private btCollisionShape shape;
-	protected btCollisionObject collisionObject;
+	protected btCollisionShape shape;
 	private short group;
 	private short mask;
 
@@ -43,28 +40,6 @@ public abstract class CollisionComponent implements Component, Json.Serializable
 		this.radius = radius;
 		this.group = group;
 		this.mask = mask;
-		collisions = new ObjectSet<>();
-	}
-
-	/**
-	 * Adds a collision
-	 */
-	public void addCollision(GameObject object) {
-		collisions.add(object);
-	}
-
-	/**
-	 * Tests whether collide with an entity
-	 */
-	public boolean collideWith(GameObject object) {
-		return collisions.contains(object);
-	}
-
-	/**
-	 * Removes a collision
-	 */
-	public void removeCollision(GameObject object) {
-		collisions.remove(object);
 	}
 
 	/**
@@ -85,18 +60,9 @@ public abstract class CollisionComponent implements Component, Json.Serializable
 	 * Creates the {@link btCollisionObject}
 	 */
 	public void createCollisionObject() {
-		if (collisionObject != null) return;
 		if (shape == null) createShape();
-		collisionObject = new btCollisionObject();
-		collisionObject.setCollisionShape(shape);
-		collisionObject.setCollisionFlags(collisionObject.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-	}
-
-	/**
-	 * Returns the {@link btCollisionObject}
-	 */
-	public btCollisionObject getCollisionObject() {
-		return collisionObject;
+		setCollisionShape(shape);
+		setCollisionFlags(getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 	}
 
 	/**
@@ -117,28 +83,26 @@ public abstract class CollisionComponent implements Component, Json.Serializable
 	 * Returns the {@link btCollisionObject} position
 	 */
 	public void getPosition(Vector3 position) {
-		collisionObject.getWorldTransform().getTranslation(position);
-	}
-
-	/**
-	 * Returns the {@link btCollisionObject} transform
-	 */
-	public void getTransform(Matrix4 transform) {
-		collisionObject.getWorldTransform(transform);
+		getWorldTransform().getTranslation(position);
 	}
 
 	/**
 	 * Sets the {@link btCollisionObject} transform
 	 */
 	public void setTransform(Matrix4 transform) {
-		collisionObject.setWorldTransform(transform);
+		setWorldTransform(transform);
 	}
+
+	/**
+	 * Collides with another {@link GameObject}
+	 */
+	public abstract void collideWith(final GameObject gameObject);
 
 	public void dispose() {
 		// Dispose Bullet shape
 		if (shape != null) shape.dispose();
 		// Dispose Bullet collision object
-		if (collisionObject != null) collisionObject.dispose();
+		super.dispose();
 	}
 
 	@Override
