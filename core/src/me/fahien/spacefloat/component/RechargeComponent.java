@@ -9,7 +9,7 @@ import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * The Recharge Component
@@ -108,16 +108,16 @@ public class RechargeComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.RADIUS, radius);
-		json.writeValue(JsonString.GROUP, group);
-		json.writeValue(JsonString.MASK, mask);
+		json.writeValue(JsonKey.RADIUS, radius);
+		json.writeValue(JsonKey.GROUP, group);
+		json.writeValue(JsonKey.MASK, mask);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		radius = jsonData.getFloat(JsonString.RADIUS);
-		group = jsonData.getShort(JsonString.GROUP);
-		mask = jsonData.getShort(JsonString.MASK);
+		radius = jsonData.getFloat(JsonKey.RADIUS);
+		group = jsonData.getShort(JsonKey.GROUP);
+		mask = jsonData.getShort(JsonKey.MASK);
 	}
 
 	/**

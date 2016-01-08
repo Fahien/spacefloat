@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectSet;
 
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * The Collision {@link Component}
@@ -143,15 +143,15 @@ public abstract class CollisionComponent implements Component, Json.Serializable
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.RADIUS, radius);
-		json.writeValue(JsonString.GROUP, group);
-		json.writeValue(JsonString.MASK, mask);
+		json.writeValue(JsonKey.RADIUS, radius);
+		json.writeValue(JsonKey.GROUP, group);
+		json.writeValue(JsonKey.MASK, mask);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		radius = jsonData.getFloat(JsonString.RADIUS);
-		group = jsonData.getShort(JsonString.GROUP);
-		mask = jsonData.getShort(JsonString.MASK);
+		radius = jsonData.getFloat(JsonKey.RADIUS);
+		group = jsonData.getShort(JsonKey.GROUP);
+		mask = jsonData.getShort(JsonKey.MASK);
 	}
 }

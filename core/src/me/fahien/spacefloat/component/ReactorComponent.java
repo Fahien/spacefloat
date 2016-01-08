@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import static me.fahien.spacefloat.utils.JsonString.JSON_NAME;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * The Reactor {@link Component}
@@ -16,17 +16,24 @@ import static me.fahien.spacefloat.utils.JsonString.JSON_NAME;
  */
 public class ReactorComponent implements Component, Json.Serializable {
 	public static final String PARTICLES_DIR = "particles/";
-	public static float REACTOR_CONSUMES = 0.5f;
+	public static float DEFAULT_CONSUME = 64f;
+	public static float DEFAULT_POWER = 64f;
 
 	private String name;
 	private ParticleEffect reactor;
 	private ParticleEffect effect;
 
 	private boolean burning;
+	private float consume;
+	private float power;
 
-	public ReactorComponent() {}
+	public ReactorComponent() {
+		this.consume = DEFAULT_CONSUME;
+		this.power = DEFAULT_POWER;
+	}
 
 	public ReactorComponent(String name) {
+		this();
 		this.name = name;
 	}
 
@@ -59,6 +66,20 @@ public class ReactorComponent implements Component, Json.Serializable {
 	}
 
 	/**
+	 * Returns the consume
+	 */
+	public float getConsume() {
+		return consume;
+	}
+
+	/**
+	 * Returns the power
+	 */
+	public float getPower() {
+		return power;
+	}
+
+	/**
 	 * Tests whether is burning
 	 */
 	public boolean isBurning() {
@@ -69,6 +90,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	 * Starts or updates the reactor {@link ParticleEffect}
 	 */
 	public void start(ParticleSystem particleSystem, Matrix4 transform) {
+		if (isBurning()) return;
 		effect = reactor.copy();
 		effect.setTransform(transform);
 		effect.init();
@@ -81,6 +103,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	 * Stops the reactor {@link ParticleEffect}
 	 */
 	public void stop(ParticleSystem particleSystem) {
+		if (!isBurning()) return;
 		particleSystem.remove(effect);
 		burning = false;
 	}
@@ -94,11 +117,13 @@ public class ReactorComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JSON_NAME, name);
+		json.writeValue(JsonKey.NAME, name);
+		json.writeValue(JsonKey.CONSUME, consume);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		name = jsonData.getString(JSON_NAME);
+		name = jsonData.getString(JsonKey.NAME);
+		consume = jsonData.getFloat(JsonKey.CONSUME);
 	}
 }

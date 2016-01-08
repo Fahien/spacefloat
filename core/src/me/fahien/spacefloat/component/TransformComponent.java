@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * The Transform {@link Component}
@@ -47,21 +47,21 @@ public class TransformComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.JSON_X, position.x);
-		json.writeValue(JsonString.JSON_Y, position.y);
-		json.writeValue(JsonString.JSON_Z, position.z);
-		json.writeValue(JsonString.YAW, eulerAngles.x);
-		json.writeValue(JsonString.PITCH, eulerAngles.y);
-		json.writeValue(JsonString.ROLL, eulerAngles.z);
+		json.writeValue(JsonKey.X, position.x);
+		json.writeValue(JsonKey.Y, position.y);
+		json.writeValue(JsonKey.Z, position.z);
+		json.writeValue(JsonKey.YAW, eulerAngles.x);
+		json.writeValue(JsonKey.PITCH, eulerAngles.y);
+		json.writeValue(JsonKey.ROLL, eulerAngles.z);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		position.x = jsonData.getFloat(JsonString.JSON_X);
-		position.y = jsonData.getFloat(JsonString.JSON_Y);
-		position.z = jsonData.getFloat(JsonString.JSON_Z);
-		eulerAngles.x = jsonData.getFloat(JsonString.YAW);
-		eulerAngles.y = jsonData.getFloat(JsonString.PITCH);
-		eulerAngles.z = jsonData.getFloat(JsonString.ROLL);
+		position.x = jsonData.getFloat(JsonKey.X);
+		position.y = jsonData.getFloat(JsonKey.Y);
+		position.z = jsonData.getFloat(JsonKey.Z);
+		eulerAngles.x = jsonData.getFloat(JsonKey.YAW);
+		eulerAngles.y = jsonData.getFloat(JsonKey.PITCH);
+		eulerAngles.z = jsonData.getFloat(JsonKey.ROLL);
 	}
 }

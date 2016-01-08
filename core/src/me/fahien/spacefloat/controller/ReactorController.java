@@ -1,6 +1,5 @@
 package me.fahien.spacefloat.controller;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -16,7 +15,6 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
-import me.fahien.spacefloat.system.PlayerSystem;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
@@ -28,9 +26,10 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapp
  *
  * @author Fahien
  */
-public class ReactorController extends PlayerSystem {
+public class ReactorController extends PlayerController {
+	private static final int REACTOR_PRIORITY = 2;
 	private ParticleSystem particleSystem;
-	private Vector3 reactorPower;
+	private Vector3 force;
 	private float rotation;
 
 	private ReactorComponent reactor;
@@ -38,37 +37,49 @@ public class ReactorController extends PlayerSystem {
 	private GraphicComponent graphic;
 	private RigidbodyComponent rigidbody;
 
+	public ReactorController() {
+		super(REACTOR_PRIORITY);
+	}
+
 	public void setParticleSystem(ParticleSystem particleSystem) {
 		this.particleSystem = particleSystem;
 	}
 
 	@Override
-	public void addedToEngine(Engine engine, Entity player, InputMultiplexer inputMultiplexer) {
+	public void addedToEngine(Entity player, InputMultiplexer inputMultiplexer) {
 		reactor = reactorMapper.get(player);
 		energy = energyMapper.get(player);
 		graphic = graphicMapper.get(player);
 		rigidbody = rigidMapper.get(player);
 		inputMultiplexer.addProcessor(new ReactorInputAdapter());
 
-		reactorPower = new Vector3();
+		force = new Vector3();
 	}
 
 	protected Quaternion m_quaternion = new Quaternion();
 	protected Matrix4 m_rigidTransform = new Matrix4();
 	protected Vector3 m_position = new Vector3();
 
-	@Override
-	public void update(float deltaTime) {
+	private void rotateRigidbody() {
 		rigidbody.getTransform(m_rigidTransform);
 		m_rigidTransform.getTranslation(m_position);
 		m_quaternion.setEulerAnglesRad(rotation, 0, 0);
 		m_rigidTransform.set(m_quaternion);
 		m_rigidTransform.trn(m_position);
 		rigidbody.setTransform(m_rigidTransform);
+	}
 
-		if (reactor.isBurning()) {
-			reactor.setTransform(m_rigidTransform);
-			rigidbody.applyCentralForce(reactorPower.nor().scl(1000000000));
+	@Override
+	public void update(float delta) {
+		if (!energy.hasCharge()) {
+			reactor.stop(particleSystem);
+		} else {
+			rotateRigidbody();
+			if (reactor.isBurning()) {
+				reactor.setTransform(m_rigidTransform);
+				energy.addCharge(-reactor.getConsume() * 64 * delta);
+				rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));
+			}
 		}
 	}
 
@@ -98,8 +109,8 @@ public class ReactorController extends PlayerSystem {
 
 		@Override
 		public boolean mouseMoved(int screenX, int screenY) {
-			reactorPower.x = mouse.x = screenX - Gdx.graphics.getWidth() / 2;
-			reactorPower.z = mouse.y = screenY - Gdx.graphics.getHeight() / 2;
+			force.x = mouse.x = screenX - Gdx.graphics.getWidth() / 2;
+			force.z = mouse.y = screenY - Gdx.graphics.getHeight() / 2;
 			rotation = - SEMIPI - mouse.angleRad();
 			return true;
 		}

@@ -6,9 +6,9 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
-import static me.fahien.spacefloat.utils.JsonString.JSON_CLASS;
-import static me.fahien.spacefloat.utils.JsonString.JSON_COMPONENTS;
-import static me.fahien.spacefloat.utils.JsonString.JSON_NAME;
+import static me.fahien.spacefloat.utils.JsonKey.CLASS;
+import static me.fahien.spacefloat.utils.JsonKey.COMPONENTS;
+import static me.fahien.spacefloat.utils.JsonKey.NAME;
 
 /**
  * The SpaceFloat {@link Entity}
@@ -41,20 +41,20 @@ public class GameObject extends Entity implements Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JSON_NAME, name);
-		json.writeValue(JSON_COMPONENTS, getComponents());
+		json.writeValue(NAME, name);
+		json.writeValue(COMPONENTS, getComponents());
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		name = jsonData.getString(JSON_NAME);
-		JsonValue components = jsonData.get(JSON_COMPONENTS);
+		name = jsonData.getString(NAME);
+		JsonValue components = jsonData.get(COMPONENTS);
 		if (components != null) {
 			components = components.child;
 			if (components != null) {
 				for (JsonValue jsonComponent = components.child; jsonComponent != null; jsonComponent = jsonComponent.next) {
 					try {
-						Component component = (Component) json.readValue(Class.forName(jsonComponent.getString(JSON_CLASS)), jsonComponent);
+						Component component = (Component) json.readValue(Class.forName(jsonComponent.getString(CLASS)), jsonComponent);
 						add(component);
 					} catch (ClassNotFoundException e) {
 						logger.error("Error reading components of a game object", e);

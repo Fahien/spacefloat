@@ -43,7 +43,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public class RenderSystem extends EntitySystem {
-	private static final int RENDER_PRIORITY = 2;
+	private static final int RENDER_PRIORITY = 3;
 
 	private ImmutableArray<Entity> entities;
 

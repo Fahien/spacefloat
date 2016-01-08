@@ -7,13 +7,13 @@ import com.badlogic.gdx.utils.Json;
  *
  * @author Fahien
  */
-public class JsonString {
-	public static final String JSON_NAME = "name";
-	public static final String JSON_COMPONENTS = "components";
-	public static final String JSON_CLASS = "class";
-	public static final String JSON_X = "x";
-	public static final String JSON_Y = "y";
-	public static final String JSON_Z = "z";
+public class JsonKey {
+	public static final String NAME = "name";
+	public static final String COMPONENTS = "components";
+	public static final String CLASS = "class";
+	public static final String X = "x";
+	public static final String Y = "y";
+	public static final String Z = "z";
 	public static final String YAW = "yaw";
 	public static final String PITCH = "pitch";
 	public static final String ROLL = "roll";
@@ -27,4 +27,5 @@ public class JsonString {
 	public static final String HANDLER = "handler";
 	public static final String GROUP = "group";
 	public static final String MASK = "mask";
+	public static final String CONSUME = "consume";
 }

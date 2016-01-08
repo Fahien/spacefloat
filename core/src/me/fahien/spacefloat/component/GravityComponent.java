@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * The Gravity {@link Component}
@@ -35,12 +35,12 @@ public class GravityComponent extends CollisionComponent {
 	@Override
 	public void write(Json json) {
 		super.write(json);
-		json.writeValue(JsonString.MASS, mass);
+		json.writeValue(JsonKey.MASS, mass);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
-		mass = jsonData.getFloat(JsonString.MASS);
+		mass = jsonData.getFloat(JsonKey.MASS);
 	}
 }

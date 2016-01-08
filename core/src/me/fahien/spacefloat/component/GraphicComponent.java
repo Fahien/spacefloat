@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import static me.fahien.spacefloat.utils.JsonString.JSON_NAME;
+import static me.fahien.spacefloat.utils.JsonKey.NAME;
 
 /**
  * The Graphic {@link Component}
@@ -87,12 +87,12 @@ public class GraphicComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JSON_NAME, name);
+		json.writeValue(NAME, name);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		name = jsonData.getString(JSON_NAME);
+		name = jsonData.getString(NAME);
 	}
 
 	public void setTransform(Matrix4 transform) {

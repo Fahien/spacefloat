@@ -13,7 +13,7 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.controller.ReactorController;
-import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.system.CollisionSystem;
 import me.fahien.spacefloat.system.GravitySystem;
 import me.fahien.spacefloat.system.MovementSystem;
@@ -30,7 +30,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public class MainScreen extends SpaceFloatScreen {
 
 	private Engine engine;
-	private CameraSystem cameraSystem;
+	private CameraController cameraSystem;
 	private RenderSystem renderSystem;
 	private GravitySystem gravitySystem;
 	private MovementSystem movementSystem;
@@ -39,7 +39,7 @@ public class MainScreen extends SpaceFloatScreen {
 	private ReactorController reactorController;
 
 	public MainScreen() {
-		cameraSystem = new CameraSystem();
+		cameraSystem = new CameraController();
 		renderSystem = new RenderSystem();
 		gravitySystem = new GravitySystem();
 		movementSystem = new MovementSystem();

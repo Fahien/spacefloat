@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -40,22 +40,22 @@ public class AccelerationComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.JSON_X, acceleration.x);
-		json.writeValue(JsonString.JSON_Y, acceleration.y);
-		json.writeValue(JsonString.JSON_Z, acceleration.z);
-		json.writeValue(JsonString.YAW, eulerAnglesAcceleration.x);
-		json.writeValue(JsonString.PITCH, eulerAnglesAcceleration.y);
-		json.writeValue(JsonString.ROLL, eulerAnglesAcceleration.z);
+		json.writeValue(JsonKey.X, acceleration.x);
+		json.writeValue(JsonKey.Y, acceleration.y);
+		json.writeValue(JsonKey.Z, acceleration.z);
+		json.writeValue(JsonKey.YAW, eulerAnglesAcceleration.x);
+		json.writeValue(JsonKey.PITCH, eulerAnglesAcceleration.y);
+		json.writeValue(JsonKey.ROLL, eulerAnglesAcceleration.z);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		acceleration.x = jsonData.getFloat(JsonString.JSON_X);
-		acceleration.y = jsonData.getFloat(JsonString.JSON_Y);
-		acceleration.z = jsonData.getFloat(JsonString.JSON_Z);
-		eulerAnglesAcceleration.x = jsonData.getFloat(JsonString.YAW);
-		eulerAnglesAcceleration.y = jsonData.getFloat(JsonString.PITCH);
-		eulerAnglesAcceleration.z = jsonData.getFloat(JsonString.ROLL);
+		acceleration.x = jsonData.getFloat(JsonKey.X);
+		acceleration.y = jsonData.getFloat(JsonKey.Y);
+		acceleration.z = jsonData.getFloat(JsonKey.Z);
+		eulerAnglesAcceleration.x = jsonData.getFloat(JsonKey.YAW);
+		eulerAnglesAcceleration.y = jsonData.getFloat(JsonKey.PITCH);
+		eulerAnglesAcceleration.z = jsonData.getFloat(JsonKey.ROLL);
 	}
 
 	public void collide(Vector3 normal) {

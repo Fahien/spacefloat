@@ -1,4 +1,4 @@
-package me.fahien.spacefloat.system;
+package me.fahien.spacefloat.controller;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
@@ -15,11 +15,15 @@ import me.fahien.spacefloat.component.PlayerComponent;
  *
  * @author Fahien
  */
-public abstract class PlayerSystem extends EntitySystem {
+public abstract class PlayerController extends EntitySystem {
 
 	private Entity player;
 
 	private static InputMultiplexer inputMultiplexer = new InputMultiplexer();
+
+	public PlayerController(int priority) {
+		super(priority);
+	}
 
 	/**
 	 * Returns the player
@@ -39,9 +43,9 @@ public abstract class PlayerSystem extends EntitySystem {
 			player = entities.get(0);
 		}
 
-		addedToEngine(engine, player, inputMultiplexer);
+		addedToEngine(player, inputMultiplexer);
 		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
-	public abstract void addedToEngine(Engine engine, Entity player, InputMultiplexer inputMultiplexer);
+	public abstract void addedToEngine(Entity player, InputMultiplexer inputMultiplexer);
 }

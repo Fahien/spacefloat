@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * The Player {@link Component}
@@ -81,15 +81,15 @@ public class PlayerComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.FUELMAX, fuelMax);
-		json.writeValue(JsonString.FUEL, fuel);
-		json.writeValue(JsonString.MONEY, money);
+		json.writeValue(JsonKey.FUELMAX, fuelMax);
+		json.writeValue(JsonKey.FUEL, fuel);
+		json.writeValue(JsonKey.MONEY, money);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		fuelMax = jsonData.getInt(JsonString.FUELMAX);
-		fuel = jsonData.getFloat(JsonString.FUEL);
-		money = jsonData.getInt(JsonString.MONEY);
+		fuelMax = jsonData.getInt(JsonKey.FUELMAX);
+		fuel = jsonData.getFloat(JsonKey.FUEL);
+		money = jsonData.getInt(JsonKey.MONEY);
 	}
 }

@@ -8,10 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import me.fahien.spacefloat.component.EnergyComponent;
-import me.fahien.spacefloat.controller.SpaceshipController;
-import me.fahien.spacefloat.controller.SpaceshipController2D;
 import me.fahien.spacefloat.game.GdxTestRunner;
-import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.system.CollisionSystem;
 
 /**
@@ -38,10 +36,8 @@ public class SpaceFloatPreferencesTest {
 	@Test
 	public void couldCreatePreferences() {
 		Preferences prefs = preferences.getPreferences();
-		prefs.putFloat(SpaceFloatPreferences.CAMERA_ZOOM, CameraSystem.CAMERA_ZOOM);
-		prefs.putFloat(SpaceFloatPreferences.ACCELERATION, SpaceshipController2D.ACCELERATION);
+		prefs.putFloat(SpaceFloatPreferences.CAMERA_ZOOM, CameraController.CAMERA_ZOOM);
 		prefs.putFloat(SpaceFloatPreferences.RECHARGE_POWER, CollisionSystem.RECHARGE_POWER);
-		prefs.putFloat(SpaceFloatPreferences.REACTOR_CONSUME, SpaceshipController.REACTOR_CONSUMES);
 		prefs.putFloat(SpaceFloatPreferences.SHIELD_CONSUME, EnergyComponent.SHIELD_CONSUME);
 	}
 }

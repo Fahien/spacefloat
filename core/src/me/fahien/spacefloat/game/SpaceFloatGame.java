@@ -19,7 +19,7 @@ import me.fahien.spacefloat.camera.MainOrthographicCamera;
 import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
-import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.utils.SpaceFloatPreferences;
 
 /**
@@ -100,7 +100,7 @@ public class SpaceFloatGame extends Game {
 	 * Initializes the {@link Camera}
 	 */
 	public void initCamera() {
-		if (CameraSystem.CAMERA_TYPE.equals("perspective")) {
+		if (CameraController.CAMERA_TYPE.equals("perspective")) {
 			camera = new MainPerspectiveCamera();
 		} else {
 			camera = new MainOrthographicCamera();

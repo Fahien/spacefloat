@@ -3,7 +3,7 @@ package me.fahien.spacefloat.camera;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
-import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.controller.CameraController;
 
 /**
  * Main {@link OrthographicCamera}
@@ -12,12 +12,12 @@ import me.fahien.spacefloat.system.CameraSystem;
  */
 public class MainOrthographicCamera extends OrthographicCamera {
 	private static final float NEAR = 1f;
-	private static final float FAR = 2048f * CameraSystem.CAMERA_ZOOM;
+	private static final float FAR = 2048f * CameraController.CAMERA_ZOOM;
 
 	public MainOrthographicCamera() {
 		super(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		near = NEAR;
 		far = FAR;
-		zoom = CameraSystem.CAMERA_ZOOM;
+		zoom = CameraController.CAMERA_ZOOM;
 	}
 }

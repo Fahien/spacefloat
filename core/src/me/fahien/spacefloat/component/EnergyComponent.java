@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -95,14 +95,14 @@ public class EnergyComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.CHARGEMAX, chargeMax);
-		json.writeValue(JsonString.CHARGE, charge);
+		json.writeValue(JsonKey.CHARGEMAX, chargeMax);
+		json.writeValue(JsonKey.CHARGE, charge);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		chargeMax = jsonData.getInt(JsonString.CHARGEMAX);
-		charge = jsonData.getFloat(JsonString.CHARGE);
+		chargeMax = jsonData.getInt(JsonKey.CHARGEMAX);
+		charge = jsonData.getFloat(JsonKey.CHARGE);
 	}
 
 	/**

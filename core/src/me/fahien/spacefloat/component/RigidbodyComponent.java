@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody.btRigidBodyConstruct
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.utils.JsonString;
+import me.fahien.spacefloat.utils.JsonKey;
 
 /**
  * Rigidbody {@link Component}
@@ -189,17 +189,17 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 
 	@Override
 	public void write(Json json) {
-		json.writeValue(JsonString.MASS, mass);
-		json.writeValue(JsonString.RADIUS, radius);
-		json.writeValue(JsonString.GROUP, group);
-		json.writeValue(JsonString.MASK, mask);
+		json.writeValue(JsonKey.MASS, mass);
+		json.writeValue(JsonKey.RADIUS, radius);
+		json.writeValue(JsonKey.GROUP, group);
+		json.writeValue(JsonKey.MASK, mask);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
-		mass = jsonData.getFloat(JsonString.MASS);
-		radius = jsonData.getFloat(JsonString.RADIUS);
-		group = jsonData.getShort(JsonString.GROUP);
-		mask = jsonData.getShort(JsonString.MASK);
+		mass = jsonData.getFloat(JsonKey.MASS);
+		radius = jsonData.getFloat(JsonKey.RADIUS);
+		group = jsonData.getShort(JsonKey.GROUP);
+		mask = jsonData.getShort(JsonKey.MASK);
 	}
 }
