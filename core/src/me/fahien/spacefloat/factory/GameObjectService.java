@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Json;
 
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.game.SpaceFloat;
-import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 

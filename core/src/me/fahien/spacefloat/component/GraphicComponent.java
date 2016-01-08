@@ -94,4 +94,8 @@ public class GraphicComponent implements Component, Json.Serializable {
 	public void read(Json json, JsonValue jsonData) {
 		name = jsonData.getString(JSON_NAME);
 	}
+
+	public void setTransform(Matrix4 transform) {
+		instance.transform = transform;
+	}
 }

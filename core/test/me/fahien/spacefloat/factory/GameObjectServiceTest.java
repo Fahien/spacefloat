@@ -39,6 +39,10 @@ public class GameObjectServiceTest {
 	private static final String ENERGYSTATION_GRAPHIC = "energy_station.g3db";
 	private static final float  ENERGYSTATION_RADIUS = 100f;
 
+	private static final float SPACESHIP_MASS = 1f;
+	private static final float SPACESHIP_RADIUS = 100f;
+	private static final short SPACESHIP_GROUP = 1;
+
 	private GameObjectService gameObjectService;
 
 	@Before
@@ -66,7 +70,11 @@ public class GameObjectServiceTest {
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
 		// Create a rigid component
-		RigidbodyComponent rigidbody = new RigidbodyComponent();
+		RigidbodyComponent rigidbody = new RigidbodyComponent(
+				SPACESHIP_MASS,
+				SPACESHIP_RADIUS,
+				SPACESHIP_GROUP,
+				(short) (HurtComponent.HURT_GROUP|GravityComponent.PLANET_GROUP|RechargeComponent.RECHARGE_GROUP));
 		spaceship.add(rigidbody);
 		// Create a reactor component
 		ReactorComponent reactorComponent = new ReactorComponent(SPACESHIP_REACTOR);

@@ -166,7 +166,7 @@ public class RenderSystem extends EntitySystem {
 
 			// Render refuel radius
 			m_rechargeComponent = rechargeMapper.get(entity);
-			renderCollision(m_rechargeComponent, GREEN);
+			renderRecharge(m_rechargeComponent, GREEN);
 		}
 
 		// Render Particles
@@ -245,6 +245,24 @@ public class RenderSystem extends EntitySystem {
 		shapeRenderer.setColor(color);
 		// Draw a circle
 		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, collision.getRadius());
+		// End shape renderer
+		shapeRenderer.end();
+	}
+
+	/**
+	 * Render recharge radius
+	 */
+	private <T extends RechargeComponent> void renderRecharge(T recharge, Color color) {
+		// Return if recharge is null
+		if (recharge == null) return;
+		// Begin shape renderer with line shape type
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		// Set center point equals to recharge position
+		recharge.getPosition(m_collisionCenter);
+		// Set shape renderer color RED
+		shapeRenderer.setColor(color);
+		// Draw a circle
+		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, recharge.getRadius());
 		// End shape renderer
 		shapeRenderer.end();
 	}

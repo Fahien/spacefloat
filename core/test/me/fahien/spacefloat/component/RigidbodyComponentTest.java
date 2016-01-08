@@ -70,14 +70,13 @@ public class RigidbodyComponentTest {
 	@Test
 	public void couldSetTransform() {
 		rigidbody.createRigidbody();
-		rigidbody.setMotionStateTransform(new Matrix4());
+		rigidbody.setTransform(new Matrix4());
 		assertNotNull("The rigidbody is null", rigidbody.getRigidbody());
-		assertNotNull("The motion state is null", rigidbody.getRigidbody().getMotionState());
 	}
 
 	@Test
 	public void couldApplyAForce() {
-		rigidbody.createRigidbody(new Matrix4());
+		rigidbody.createRigidbody();
 		rigidbody.getRigidbody().applyCentralForce(new Vector3(0f, 0f, -1f));
 	}
 
@@ -95,10 +94,6 @@ public class RigidbodyComponentTest {
 		btRigidBody rigidBody = rigidbody.getRigidbody();
 		if (rigidBody != null) {
 			assertTrue("The rigidbody is not disposed", rigidBody.isDisposed());
-		}
-		RigidbodyComponent.SpaceFloatMotionState motionState = rigidbody.getMotionState();
-		if (motionState != null) {
-			assertTrue("The motion state is not disposed", motionState.isDisposed());
 		}
 	}
 }

@@ -9,7 +9,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody.btRigidBodyConstructionInfo;
-import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -36,14 +35,15 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	private btRigidBodyConstructionInfo constructionInfo;
 	private btRigidBody rigidbody;
 
-	public final SpaceFloatMotionState motionState;
-
 	public RigidbodyComponent() {
-		motionState = new SpaceFloatMotionState();
-		mass = DEFAULT_MASS;
-		radius = DEFAULT_RADIUS;
-		group = DEFAULT_GROUP;
-		mask = ALL_FLAG;
+		this(DEFAULT_MASS, DEFAULT_RADIUS, DEFAULT_GROUP, ALL_FLAG);
+	}
+
+	public RigidbodyComponent(float mass, float radius, short group, short mask) {
+		this.mass = mass;
+		this.radius = radius;
+		this.group = group;
+		this.mask = mask;
 	}
 
 	/**
@@ -116,14 +116,6 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	}
 
 	/**
-	 * Creates a {@link btRigidBody} with this transform
-	 */
-	public void createRigidbody(Matrix4 transform) {
-		createRigidbody();
-		setMotionStateTransform(transform);
-	}
-
-	/**
 	 * Creates the {@link btRigidBody}
 	 */
 	public void createRigidbody() {
@@ -153,22 +145,6 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	 */
 	public short getMask() {
 		return mask;
-	}
-
-	/**
-	 * Returns the {@link SpaceFloatMotionState}
-	 */
-	public SpaceFloatMotionState getMotionState() {
-		return motionState;
-	}
-
-	/**
-	 * Sets the {@link SpaceFloatMotionState} transform
-	 */
-	protected void setMotionStateTransform(Matrix4 transform) {
-		if (motionState.transform != transform) motionState.transform = transform;
-		rigidbody.setMotionState(motionState);
-		rigidbody.proceedToTransform(transform);
 	}
 
 	/**
@@ -209,8 +185,6 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		if (constructionInfo != null) constructionInfo.dispose();
 		// Dispose Bullet rigid body
 		if (rigidbody != null) rigidbody.dispose();
-		// Dispose the motion state
-		motionState.dispose();
 	}
 
 	@Override
@@ -227,23 +201,5 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		radius = jsonData.getFloat(JsonString.RADIUS);
 		group = jsonData.getShort(JsonString.GROUP);
 		mask = jsonData.getShort(JsonString.MASK);
-	}
-
-	/**
-	 * Space Float {@link btMotionState}
-	 */
-	@Deprecated
-	static class SpaceFloatMotionState extends btMotionState {
-		protected Matrix4 transform;
-
-		@Override
-		public void getWorldTransform (Matrix4 worldTrans) {
-			worldTrans.set(transform);
-		}
-
-		@Override
-		public void setWorldTransform (Matrix4 worldTrans) {
-			transform.set(worldTrans);
-		}
 	}
 }
