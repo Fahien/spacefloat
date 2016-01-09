@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
@@ -222,18 +223,18 @@ public class BulletSystem extends EntitySystem {
 	class SpaceFloatContactListener extends ContactListener {
 
 		@Override
-		public boolean onContactAdded(btCollisionObject collision0, int partId0, int index0, btCollisionObject collision1, int partId1, int index1) {
+		public boolean onContactAdded(btManifoldPoint collisionPoint, btCollisionObject collision0, int partId0, int index0, btCollisionObject collision1, int partId1, int index1) {
 			if (collision0 instanceof CollisionComponent) {
-				handleCollision((CollisionComponent) collision0, collision1);
+				handleCollision(collisionPoint, (CollisionComponent) collision0, collision1);
 			}
 			if (collision1 instanceof CollisionComponent) {
-				handleCollision((CollisionComponent) collision1, collision0);
+				handleCollision(collisionPoint, (CollisionComponent) collision1, collision0);
 			}
 			return true;
 		}
 
-		private void handleCollision(CollisionComponent component, btCollisionObject collision) {
-			component.collideWith((GameObject) collision.userData);
+		private void handleCollision(btManifoldPoint collisionPoint, CollisionComponent component, btCollisionObject collision) {
+			component.collideWith(collisionPoint, (GameObject) collision.userData);
 		}
 	}
 }

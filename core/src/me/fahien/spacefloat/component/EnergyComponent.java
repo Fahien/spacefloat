@@ -2,10 +2,10 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
+import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.utils.JsonKey;
 
 /**
@@ -14,10 +14,10 @@ import me.fahien.spacefloat.utils.JsonKey;
  * @author Fahien
  */
 public class EnergyComponent implements Component, Json.Serializable {
-	protected static final float CHARGE_MAX_DEFAULT = 32f;
+	protected static final float CHARGE_MAX_DEFAULT = 128f;
 	protected static final float CHARGE_MAX_LOWER_LIMIT = 1f;
 	protected static final float CHARGE_MIN = 0f;
-	public static float SHIELD_CONSUME = 0.0005f;
+	public static float SHIELD_CONSUME = 32768;
 
 	private float charge;
 	private float chargeMax;
@@ -62,11 +62,8 @@ public class EnergyComponent implements Component, Json.Serializable {
 	/**
 	 * Absorb an hurt according to velocity and collision normal
 	 */
-	public void hurt(Vector3 velocity, Vector3 normal) {
-		normal.nor();
-		float dot = 2 * velocity.dot(normal);
-		normal.scl(dot);
-		float charge = -normal.len2() * SHIELD_CONSUME;
+	public void hurt(float impulse) {
+		float charge = - impulse / SHIELD_CONSUME;
 		if (charge > -2.0f) return;
 		addCharge(charge);
 	}

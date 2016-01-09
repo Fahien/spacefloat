@@ -57,7 +57,7 @@ public class GameObject extends Entity implements Json.Serializable {
 						Component component = (Component) json.readValue(Class.forName(jsonComponent.getString(CLASS)), jsonComponent);
 						add(component);
 					} catch (ClassNotFoundException e) {
-						logger.error("Error reading components of a game object", e);
+						logger.error("Error reading components of game object: " + name, e);
 					}
 				}
 			}

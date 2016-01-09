@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
+import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 
 import me.fahien.spacefloat.entity.GameObject;
 
@@ -53,7 +54,7 @@ public class RechargeComponent extends CollisionComponent {
 	protected EnergyComponent m_energyComponent;
 
 	@Override
-	public void collideWith(GameObject gameObject) {
+	public void collideWith(btManifoldPoint collisionPoint, GameObject gameObject) {
 		m_energyComponent = energyMapper.get(gameObject);
 		if (m_energyComponent != null) {
 			m_energyComponent.recharge();

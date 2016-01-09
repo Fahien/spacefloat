@@ -1,0 +1,1 @@
+{name:PlatformPlanet3,components:{array:[{class:me.fahien.spacefloat.component.GraphicComponent,name:platformbase.g3db},{class:me.fahien.spacefloat.component.TransformComponent,x:-3500,y:-100,z:-1000,yaw:0,pitch:0,roll:0},{class:me.fahien.spacefloat.component.VelocityComponent,x:0,y:0,z:0,yaw:0,pitch:0,roll:0}],iterable:null}}

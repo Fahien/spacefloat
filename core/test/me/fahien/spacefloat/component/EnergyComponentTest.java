@@ -1,7 +1,5 @@
 package me.fahien.spacefloat.component;
 
-import com.badlogic.gdx.math.Vector3;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +27,7 @@ public class EnergyComponentTest {
 
 	@Test
 	public void setChargeProperly() {
-		energy.setCharge(64.0f);
+		energy.setCharge(128.0f);
 		assertEquals("The charge is not equals to chargeMax", energy.getChargeMax(), energy.getCharge(), 0f);
 		energy.setCharge(-1f);
 		assertEquals("The charge is not equals to 0", EnergyComponent.CHARGE_MIN, energy.getCharge(), 0f);
@@ -38,7 +36,7 @@ public class EnergyComponentTest {
 	@Test
 	public void absorbeHurts() {
 		energy.setCharge(5f);
-		energy.hurt(new Vector3(100f, 100f, 100f), new Vector3(-1f, -1f, -1f));
+		energy.hurt(500000f);
 		assertTrue("The charge is not less than 5",  energy.getCharge() < 5f);
 	}
 

@@ -5,12 +5,15 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.utils.JsonKey;
+
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 
 /**
  * The Collision {@link Component}
@@ -93,10 +96,18 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 		setWorldTransform(transform);
 	}
 
+	protected EnergyComponent m_energyComponent;
+
 	/**
 	 * Collides with another {@link GameObject}
 	 */
-	public void collideWith(final GameObject gameObject){}
+	public void collideWith(btManifoldPoint collisionPoint, final GameObject gameObject){
+		m_energyComponent = energyMapper.get(gameObject);
+		if (m_energyComponent != null) {
+			// Activate SHIELD
+			m_energyComponent.hurt(collisionPoint.getAppliedImpulse());
+		}
+	}
 
 	public void dispose() {
 		// Dispose Bullet shape

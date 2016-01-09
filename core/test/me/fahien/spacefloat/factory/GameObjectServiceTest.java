@@ -34,14 +34,15 @@ public class GameObjectServiceTest {
 	private static final String SPACESHIP_GRAPHIC = "cargo.g3db";
 	private static final String SPACESHIP_REACTOR = "reactor.pfx";
 	private static final float SPACESHIP_MASS = 1f;
-	private static final float SPACESHIP_RADIUS = 100f;
+	private static final float SPACESHIP_RADIUS = 80f;
 	private static final short SPACESHIP_GROUP = 1;
+	private static final Vector3 SPACESHIP_POSITION = new Vector3(1700,0,1700);
 
 	private static final String EARTH_NAME = "Earth";
 
 	private static final String ENERGY_STATION_NAME = "EnergyStation";
 	private static final String ENERGY_STATION_GRAPHIC = "energy_station.g3db";
-	public static final float ENERGY_STATION_MASS = 1f;
+	public static final float ENERGY_STATION_MASS = 10f;
 	public static final float ENERGY_STATION_RADIUS = 100f;
 
 
@@ -60,7 +61,7 @@ public class GameObjectServiceTest {
 		GraphicComponent graphic = new GraphicComponent(SPACESHIP_GRAPHIC);
 		spaceship.add(graphic);
 		// Create a transform component
-		TransformComponent position = new TransformComponent();
+		TransformComponent position = new TransformComponent(SPACESHIP_POSITION);
 		spaceship.add(position);
 		// Create a velocity component
 		VelocityComponent velocity = new VelocityComponent();
@@ -96,7 +97,7 @@ public class GameObjectServiceTest {
 		GraphicComponent graphic = new GraphicComponent(ENERGY_STATION_GRAPHIC);
 		energyStation.add(graphic);
 		// Create a transform component
-		TransformComponent transform = new TransformComponent(new Vector3(1000f, 0f, 0f));
+		TransformComponent transform = new TransformComponent(new Vector3(-2000f, 0f, -3000f));
 		energyStation.add(transform);
 		// Create a velocity component
 		VelocityComponent velocity = new VelocityComponent();

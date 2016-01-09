@@ -3,7 +3,6 @@ package me.fahien.spacefloat.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
-import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.BulletSystem;
@@ -43,7 +42,6 @@ public class SpaceFloatPreferences {
 		preferences.putString(CAMERA_TYPE, CameraController.CAMERA_TYPE);
 		preferences.putFloat(CAMERA_ZOOM, CameraController.CAMERA_ZOOM);
 		preferences.putFloat(RECHARGE_POWER, BulletSystem.RECHARGE_POWER);
-		preferences.putFloat(SHIELD_CONSUME, EnergyComponent.SHIELD_CONSUME);
 		preferences.flush();
 	}
 
@@ -55,6 +53,5 @@ public class SpaceFloatPreferences {
 		CameraController.CAMERA_TYPE = preferences.getString(CAMERA_TYPE, CameraController.CAMERA_TYPE);
 		CameraController.setCameraZoom(preferences.getFloat(CAMERA_ZOOM, CameraController.CAMERA_ZOOM));
 		BulletSystem.RECHARGE_POWER = preferences.getFloat(RECHARGE_POWER, BulletSystem.RECHARGE_POWER);
-		EnergyComponent.SHIELD_CONSUME = preferences.getFloat(SHIELD_CONSUME, EnergyComponent.SHIELD_CONSUME);
 	}
 }
