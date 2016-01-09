@@ -65,6 +65,13 @@ public class GraphicComponent implements Component, Json.Serializable {
 	}
 
 	/**
+	 * Sets the {@link ModelInstance} transform
+	 */
+	public void setTransform(Matrix4 transform) {
+		instance.transform = transform;
+	}
+
+	/**
 	 * Returns the {@link ModelInstance} position
 	 */
 	public void getPosition(Vector3 position) {
@@ -93,9 +100,5 @@ public class GraphicComponent implements Component, Json.Serializable {
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		name = jsonData.getString(NAME);
-	}
-
-	public void setTransform(Matrix4 transform) {
-		instance.transform = transform;
 	}
 }

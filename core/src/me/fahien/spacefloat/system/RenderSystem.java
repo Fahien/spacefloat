@@ -22,9 +22,9 @@ import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.utils.ShapeRenderer;
 import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.collisionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.hurtMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
@@ -96,8 +96,9 @@ public class RenderSystem extends EntitySystem {
 	private void setModelInstancesTransform(ImmutableArray<Entity> entities) {
 		logger.debug("Setting model instances initial transform");
 		for (Entity entity : entities) {
-			// Get graphic and transform components
+			// Get the graphic component
 			GraphicComponent graphicComponent = graphicMapper.get(entity);
+			// Get the transform component
 			TransformComponent transformComponent = transformMapper.get(entity);
 			// Set the model instance initial rotation before position
 			graphicComponent.setFromEulerAnglesRad(transformComponent.getEulerAngles());
@@ -135,9 +136,9 @@ public class RenderSystem extends EntitySystem {
 			// Render planet radius
 			renderCollision(m_collisionComponent, Color.RED);
 
-			m_rigidbodyComponent = hurtMapper.get(entity);
+			m_collisionComponent = collisionMapper.get(entity);
 			// Render hurt radius
-			renderRigidbody(m_rigidbodyComponent, Color.MAGENTA);
+			renderCollision(m_collisionComponent, Color.MAGENTA);
 
 			m_rigidbodyComponent = rigidMapper.get(entity);
 			// Render rigidbody radius
@@ -165,15 +166,15 @@ public class RenderSystem extends EntitySystem {
 	protected Vector3 m_velocity;
 
 	/**
-	 * Renders velocity line
+	 * Renders rigid body velocity line
 	 */
-	private void renderVelocity(RigidbodyComponent rigidbodyComponent, Color color) {
+	private <T extends RigidbodyComponent> void renderVelocity(T rigidbodyComponent, Color color) {
 		// Return if rigid body is null
 		if (rigidbodyComponent == null) return;
 		// Get the rigid body velocity
 		m_velocity = rigidbodyComponent.getLinearVelocity();
-		// Return if velocity is zero
-		if (m_velocity.equals(Vector3.Zero)) return;
+		// Return if velocity is near zero
+		if (m_velocity.len2() < 1.0f) return;
 		// Begin shape renderer with line shape type
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		// Set shape renderer color
@@ -186,7 +187,7 @@ public class RenderSystem extends EntitySystem {
 		shapeRenderer.end();
 	}
 
-	protected Vector3 m_collisionCenter = new Vector3();
+	protected Vector3 m_center = new Vector3();
 
 	/**
 	 * Render collision radius
@@ -197,11 +198,11 @@ public class RenderSystem extends EntitySystem {
 		// Begin shape renderer with line shape type
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		// Set center point equals to collision position
-		collision.getPosition(m_collisionCenter);
+		collision.getPosition(m_center);
 		// Set shape renderer color RED
 		shapeRenderer.setColor(color);
 		// Draw a circle
-		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, collision.getRadius());
+		shapeRenderer.circle(m_center.x, m_center.z, collision.getRadius());
 		// End shape renderer
 		shapeRenderer.end();
 	}
@@ -212,11 +213,11 @@ public class RenderSystem extends EntitySystem {
 		// Begin shape renderer with line shape type
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		// Set center point equals to collision position
-		rigidbody.getPosition(m_collisionCenter);
+		rigidbody.getPosition(m_center);
 		// Set shape renderer color RED
 		shapeRenderer.setColor(color);
 		// Draw a circle
-		shapeRenderer.circle(m_collisionCenter.x, m_collisionCenter.z, rigidbody.getRadius());
+		shapeRenderer.circle(m_center.x, m_center.z, rigidbody.getRadius());
 		// End shape renderer
 		shapeRenderer.end();
 	}

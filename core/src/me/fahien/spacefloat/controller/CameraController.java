@@ -18,7 +18,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public class CameraController extends PlayerController {
-	private static final int CAMERA_PRIORITY = 1;
+	private static final int CAMERA_PRIORITY = 2;
 	private static final float CAMERA_OFFSET = 1024f;
 	private static final float CAMERA_ZOOM_MIN = 1f;
 	private static final float CAMERA_ZOOM_MAX = 8f;

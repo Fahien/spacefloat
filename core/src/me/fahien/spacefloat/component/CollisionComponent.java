@@ -17,7 +17,7 @@ import me.fahien.spacefloat.utils.JsonKey;
  *
  * @author Fahien
  */
-public abstract class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
+public class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
 	private static final float DEFAULT_RADIUS = 128.0f;
 	private final static short DEFAULT_GROUP = 1 << 1; // 10
 	private final static short DEFAULT_MASK = 0; // Nothing
@@ -96,7 +96,7 @@ public abstract class CollisionComponent extends btCollisionObject implements Co
 	/**
 	 * Collides with another {@link GameObject}
 	 */
-	public abstract void collideWith(final GameObject gameObject);
+	public void collideWith(final GameObject gameObject){}
 
 	public void dispose() {
 		// Dispose Bullet shape

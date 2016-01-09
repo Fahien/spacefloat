@@ -7,7 +7,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -63,26 +62,16 @@ public class ReactorController extends PlayerController {
 	}
 
 	protected Quaternion m_quaternion = new Quaternion();
-	protected Matrix4 m_rigidTransform = new Matrix4();
-	protected Vector3 m_position = new Vector3();
-
-	private void rotateRigidbody() {
-		rigidbody.getTransform(m_rigidTransform);
-		m_rigidTransform.getTranslation(m_position);
-		m_quaternion.setEulerAnglesRad(rotation, 0, 0);
-		m_rigidTransform.set(m_quaternion);
-		m_rigidTransform.trn(m_position);
-		rigidbody.setTransform(m_rigidTransform);
-	}
 
 	@Override
 	public void update(float delta) {
 		if (!energy.hasCharge()) {
 			reactor.stop(particleSystem);
 		} else {
-			rotateRigidbody();
+			m_quaternion.setEulerAnglesRad(rotation, 0, 0);
+			rigidbody.rotate(m_quaternion);
 			if (reactor.isBurning()) {
-				reactor.setTransform(m_rigidTransform);
+				reactor.setTransform(rigidbody.getTransform());
 				energy.addCharge(-reactor.getConsume() * 64 * delta);
 				rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));
 			}

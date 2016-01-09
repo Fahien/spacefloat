@@ -4,17 +4,20 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.component.ComponentMapperEnumerator;
 import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -84,6 +87,9 @@ public class MainScreen extends SpaceFloatScreen {
 		// Get the player from a PlayerController
 		Entity player = cameraController.getPlayer();
 		if (player != null) {
+			RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
+			Vector3 velocity = rigidbodyComponent.getLinearVelocity();
+			stage.addActor(factory.getVelocityActor(font, velocity));
 			/*
 			AccelerationComponent accelerationComponent = player.getComponent(AccelerationComponent.class);
 			VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);

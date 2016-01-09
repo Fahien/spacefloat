@@ -9,22 +9,24 @@ import com.badlogic.gdx.utils.JsonValue;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.utils.JsonKey;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
+
 /**
  * The Gravity {@link Component}
  *
  * @author Fahien
  */
 public class GravityComponent extends CollisionComponent {
-	public static final float G = 64f;
+	public static final float G = 1024*1024*16f;
 	private static final float DEFAULT_MASS = 64f;
-	private static final float PLANET_RADIUS = 128.0f;
-	public static final short PLANET_GROUP = 1 << 2;
-	private static final short DEFAULT_MASK = 1 | HurtComponent.HURT_GROUP;
+	private static final float GRAVITY_RADIUS = 128.0f;
+	public static final short GRAVITY_GROUP = 1 << 2; // 4 - Planet
+	private static final short DEFAULT_MASK = 1 | 2; // 1 - Player + 2 - Object
 
 	private float mass;
 
 	public GravityComponent() {
-		super(PLANET_RADIUS, PLANET_GROUP, DEFAULT_MASK);
+		super(GRAVITY_RADIUS, GRAVITY_GROUP, DEFAULT_MASK);
 		this.mass = DEFAULT_MASS;
 	}
 
@@ -37,19 +39,14 @@ public class GravityComponent extends CollisionComponent {
 
 	@Override
 	public void collideWith(GameObject gameObject) {
-		collideWith(ComponentMapperEnumerator.rigidMapper.get(gameObject));
-		collideWith(ComponentMapperEnumerator.hurtMapper.get(gameObject));
-
+		collideWith(rigidMapper.get(gameObject));
 	}
 
 	protected Vector3 gravity = new Vector3();
 	protected Vector3 rigidbodyPosition = new Vector3();
-	protected Vector3 rigidbodyVelocity;
 
 	private void collideWith(RigidbodyComponent rigidbodyComponent) {
 		if (rigidbodyComponent != null) {
-			// Get velocity of the rigid body
-			rigidbodyVelocity = rigidbodyComponent.getLinearVelocity();
 			// Set gravity vector equal to this collision object position
 			getPosition(gravity);
 			// Get the rigid body position
@@ -57,17 +54,8 @@ public class GravityComponent extends CollisionComponent {
 			// Compute the attractive vector
 			gravity.sub(rigidbodyPosition).nor().scl(G * mass);
 			// Apply attraction
-			rigidbodyVelocity.add(gravity);
-			// Update rigid body velocity
-			rigidbodyComponent.setLinearVelocity(rigidbodyVelocity);
+			rigidbodyComponent.applyCentralForce(gravity);
 		}
-	}
-
-	/**
-	 * Returns the mass
-	 */
-	public float getMass() {
-		return mass;
 	}
 
 	@Override

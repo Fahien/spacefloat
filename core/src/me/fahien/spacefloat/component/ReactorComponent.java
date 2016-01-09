@@ -16,8 +16,8 @@ import me.fahien.spacefloat.utils.JsonKey;
  */
 public class ReactorComponent implements Component, Json.Serializable {
 	public static final String PARTICLES_DIR = "particles/";
-	public static float DEFAULT_CONSUME = 64f;
-	public static float DEFAULT_POWER = 64f;
+	public static float DEFAULT_CONSUME = 32f;
+	public static float DEFAULT_POWER = 128f;
 
 	private String name;
 	private ParticleEffect reactor;

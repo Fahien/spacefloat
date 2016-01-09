@@ -2,6 +2,7 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -23,7 +24,7 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	private static final Vector3 localInertia = new Vector3();
 	private final static float DEFAULT_MASS = 1f;
 	private final static float DEFAULT_RADIUS = 10f;
-	private final static short DEFAULT_GROUP = 1;
+	private final static short DEFAULT_GROUP = 1; // 1 - Player
 	private final static short ALL_FLAG = -1;
 
 	private float mass;
@@ -34,6 +35,10 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	private btCollisionShape shape;
 	private btRigidBodyConstructionInfo constructionInfo;
 	private btRigidBody rigidbody;
+
+	protected Matrix4 bt_transform = new Matrix4();
+	protected Vector3 bt_position = new Vector3();
+	protected Vector3 bt_velocity = new Vector3();
 
 	public RigidbodyComponent() {
 		this(DEFAULT_MASS, DEFAULT_RADIUS, DEFAULT_GROUP, ALL_FLAG);
@@ -150,8 +155,8 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	/**
 	 * Returns the {@link btRigidBody} transform
 	 */
-	public void getTransform(Matrix4 transform) {
-		rigidbody.getWorldTransform(transform);
+	public Matrix4 getTransform() {
+		return bt_transform;
 	}
 
 	/**
@@ -172,7 +177,33 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	 * Returns the {@link btRigidBody} position
 	 */
 	public void getPosition(Vector3 position) {
-		rigidbody.getWorldTransform().getTranslation(position);
+		bt_transform.getTranslation(position);
+	}
+
+	public Vector3 getLinearVelocity() {
+		return bt_velocity;
+	}
+
+	/**
+	 * Updates local transform
+	 */
+	public void update() {
+		rigidbody.getWorldTransform(bt_transform);
+		bt_transform.getTranslation(bt_position);
+		bt_velocity.set(rigidbody.getLinearVelocity());
+		// Adjust y to zero
+		bt_position.y = 0f;
+		bt_transform.setTranslation(bt_position);
+		rigidbody.setWorldTransform(bt_transform);
+	}
+
+	/**
+	 * Rotate rigid body
+	 */
+	public void rotate(Quaternion quaternion) {
+		bt_transform.set(quaternion);
+		bt_transform.trn(bt_position);
+		rigidbody.setWorldTransform(bt_transform);
 	}
 
 	/**
@@ -201,13 +232,5 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		radius = jsonData.getFloat(JsonKey.RADIUS);
 		group = jsonData.getShort(JsonKey.GROUP);
 		mask = jsonData.getShort(JsonKey.MASK);
-	}
-
-	public Vector3 getLinearVelocity() {
-		return rigidbody.getLinearVelocity();
-	}
-
-	public void setLinearVelocity(Vector3 linearVelocity) {
-		rigidbody.setLinearVelocity(linearVelocity);
 	}
 }

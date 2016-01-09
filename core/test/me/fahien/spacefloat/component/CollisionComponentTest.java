@@ -31,10 +31,10 @@ public class CollisionComponentTest {
 	public void aGameObjectCouldHaveACollisionComponentAndARechargeComponent() {
 		GameObject energyStation = new GameObject();
 		energyStation.setName(TEST_NAME);
-		energyStation.add(new HurtComponent());
+		energyStation.add(new CollisionComponent());
 		energyStation.add(new RechargeComponent());
 		engine.addEntity(energyStation);
-		for (Entity entity : engine.getEntitiesFor(all(HurtComponent.class).get())) {
+		for (Entity entity : engine.getEntitiesFor(all(CollisionComponent.class).get())) {
 			logger.info(((GameObject) entity).getName());
 		}
 	}
