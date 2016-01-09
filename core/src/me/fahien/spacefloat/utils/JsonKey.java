@@ -28,4 +28,5 @@ public class JsonKey {
 	public static final String GROUP = "group";
 	public static final String MASK = "mask";
 	public static final String CONSUME = "consume";
+	public static final String POWER = "power";
 }

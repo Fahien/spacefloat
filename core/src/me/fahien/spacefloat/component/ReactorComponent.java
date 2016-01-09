@@ -23,17 +23,13 @@ public class ReactorComponent implements Component, Json.Serializable {
 	private ParticleEffect reactor;
 	private ParticleEffect effect;
 
+	private float consume = DEFAULT_CONSUME;
+	private float power = DEFAULT_POWER;
 	private boolean burning;
-	private float consume;
-	private float power;
 
-	public ReactorComponent() {
-		this.consume = DEFAULT_CONSUME;
-		this.power = DEFAULT_POWER;
-	}
+	public ReactorComponent() {}
 
 	public ReactorComponent(String name) {
-		this();
 		this.name = name;
 	}
 
@@ -63,6 +59,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	 */
 	public void setReactor(ParticleEffect reactor) {
 		this.reactor = reactor;
+		this.effect = reactor.copy();
 	}
 
 	/**
@@ -73,10 +70,24 @@ public class ReactorComponent implements Component, Json.Serializable {
 	}
 
 	/**
+	 * Sets the consume
+	 */
+	public void setConsume(float consume) {
+		this.consume = consume;
+	}
+
+	/**
 	 * Returns the power
 	 */
 	public float getPower() {
 		return power;
+	}
+
+	/**
+	 * Sets the power
+	 */
+	public void setPower(float power) {
+		this.power = power;
 	}
 
 	/**
@@ -90,8 +101,8 @@ public class ReactorComponent implements Component, Json.Serializable {
 	 * Starts or updates the reactor {@link ParticleEffect}
 	 */
 	public void start(ParticleSystem particleSystem, Matrix4 transform) {
+		if (effect == null) return;
 		if (isBurning()) return;
-		effect = reactor.copy();
 		effect.setTransform(transform);
 		effect.init();
 		effect.start();  // optional: particle will begin burning immediately
@@ -103,6 +114,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	 * Stops the reactor {@link ParticleEffect}
 	 */
 	public void stop(ParticleSystem particleSystem) {
+		if (effect == null) return;
 		if (!isBurning()) return;
 		particleSystem.remove(effect);
 		burning = false;
@@ -115,15 +127,25 @@ public class ReactorComponent implements Component, Json.Serializable {
 		effect.setTransform(transform);
 	}
 
+	/**
+	 * Disposes resources
+	 */
+	public void dispose() {
+		if (effect != null) effect.dispose();
+		if (reactor!= null) reactor.dispose();
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JsonKey.NAME, name);
 		json.writeValue(JsonKey.CONSUME, consume);
+		json.writeValue(JsonKey.POWER, power);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		name = jsonData.getString(JsonKey.NAME);
 		consume = jsonData.getFloat(JsonKey.CONSUME);
+		power = jsonData.getFloat(JsonKey.POWER);
 	}
 }

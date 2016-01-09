@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.game.GdxTestRunner;
 import me.fahien.spacefloat.controller.CameraController;
-import me.fahien.spacefloat.system.CollisionSystem;
+import me.fahien.spacefloat.system.BulletSystem;
 
 /**
  * The {@link SpaceFloatPreferences} Test Case
@@ -37,7 +37,7 @@ public class SpaceFloatPreferencesTest {
 	public void couldCreatePreferences() {
 		Preferences prefs = preferences.getPreferences();
 		prefs.putFloat(SpaceFloatPreferences.CAMERA_ZOOM, CameraController.CAMERA_ZOOM);
-		prefs.putFloat(SpaceFloatPreferences.RECHARGE_POWER, CollisionSystem.RECHARGE_POWER);
+		prefs.putFloat(SpaceFloatPreferences.RECHARGE_POWER, BulletSystem.RECHARGE_POWER);
 		prefs.putFloat(SpaceFloatPreferences.SHIELD_CONSUME, EnergyComponent.SHIELD_CONSUME);
 	}
 }

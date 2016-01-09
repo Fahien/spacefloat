@@ -3,6 +3,7 @@ package me.fahien.spacefloat.actor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 
 import me.fahien.spacefloat.component.EnergyComponent;
 
@@ -36,7 +37,7 @@ public class EnergyHudActor extends HudActor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
-		int pointCount = (int)(energy.getCharge() / energy.getChargeMax() * POINT_MAX);
+		int pointCount = MathUtils.ceil(energy.getCharge() / energy.getChargeMax() * POINT_MAX);
 		for (int i = 0; i < pointCount; i++) {
 			batch.draw(point,
 					getX() + POINT_INITIAL_OFFSET + i * POINT_X_OFFSET,

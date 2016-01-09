@@ -1,5 +1,6 @@
 package me.fahien.spacefloat.controller;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -54,6 +55,11 @@ public class ReactorController extends PlayerController {
 		inputMultiplexer.addProcessor(new ReactorInputAdapter());
 
 		force = new Vector3();
+	}
+
+	@Override
+	public void removedFromEngine(Engine engine) {
+		reactor.dispose();
 	}
 
 	protected Quaternion m_quaternion = new Quaternion();
@@ -117,7 +123,11 @@ public class ReactorController extends PlayerController {
 
 		@Override
 		public boolean touchDragged(int screenX, int screenY, int pointer) {
-			return mouseMoved(screenX, screenY);
+			if (energy.hasCharge()) {
+				reactor.start(particleSystem, graphic.getTransform());
+				return mouseMoved(screenX, screenY);
+			}
+			return false;
 		}
 	}
 }

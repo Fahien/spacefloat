@@ -4,21 +4,17 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import me.fahien.spacefloat.actor.HudFactory;
-import me.fahien.spacefloat.component.AccelerationComponent;
+import me.fahien.spacefloat.component.ComponentMapperEnumerator;
 import me.fahien.spacefloat.component.EnergyComponent;
-import me.fahien.spacefloat.component.TransformComponent;
-import me.fahien.spacefloat.component.VelocityComponent;
-import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.controller.CameraController;
-import me.fahien.spacefloat.system.CollisionSystem;
-import me.fahien.spacefloat.system.MovementSystem;
+import me.fahien.spacefloat.controller.ReactorController;
+import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.RenderSystem;
-import me.fahien.spacefloat.system.TransformSystem;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -29,57 +25,66 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public class MainScreen extends SpaceFloatScreen {
 
 	private Engine engine;
-	private CameraController cameraSystem;
+	private CameraController cameraController;
 	private RenderSystem renderSystem;
-	private MovementSystem movementSystem;
-	private CollisionSystem collisionSystem;
-	private TransformSystem transformSystem;
+	private BulletSystem bulletSystem;
 	private ReactorController reactorController;
 
 	public MainScreen() {
-		cameraSystem = new CameraController();
+		cameraController = new CameraController();
 		renderSystem = new RenderSystem();
-		movementSystem = new MovementSystem();
-		collisionSystem = new CollisionSystem();
-		transformSystem = new TransformSystem();
+		bulletSystem = new BulletSystem();
 		reactorController = new ReactorController();
 	}
 
-	@Override
-	public void show() {
+	private void injectSystemsDependencies() {
 		logger.debug("Getting the main camera");
 		Camera mainCamera = getCamera();
-		logger.debug("Injecting camera into camera system");
-		cameraSystem.setCamera(mainCamera);
+		logger.debug("Injecting camera into camera controller");
+		cameraController.setCamera(mainCamera);
 		logger.debug("Injecting camera into render system");
 		renderSystem.setCamera(mainCamera);
 		logger.debug("Injecting particle system into reactor controller");
 		reactorController.setParticleSystem(getParticleSystem());
 		logger.debug("Injecting particle system into render system");
 		renderSystem.setParticleSystem(getParticleSystem());
-		logger.debug("Getting the engine");
-		engine = getEngine();
-		/** The RenderSystem must be added before the CollisionSystem */
+	}
+
+	private void addSystemsToEngine(Engine engine) {
+		/** The RenderSystem must be added before the BulletSystem */
 		logger.debug("Adding render system to the engine");
 		engine.addSystem(renderSystem);
-		logger.debug("Adding collision system to the engine");
-		engine.addSystem(collisionSystem);
-		logger.debug("Adding gravity system to the engine");
-		//engine.addSystem(gravitySystem);
+		logger.debug("Adding bullet system to the engine");
+		engine.addSystem(bulletSystem);
 		logger.debug("Adding reactor controller to the engine");
 		engine.addSystem(reactorController);
-		logger.debug("Adding camera system to the engine");
-		engine.addSystem(cameraSystem);
-		super.show();
+		logger.debug("Adding camera controller to the engine");
+		engine.addSystem(cameraController);
 	}
 
 	@Override
+	public void show() {
+		injectSystemsDependencies();
+		logger.debug("Getting the engine");
+		engine = getEngine();
+		addSystemsToEngine(engine);
+		super.show();
+	}
+
+
+
+	@Override
 	public void populate(Stage stage) {
+		// Create the Hud factory
 		HudFactory factory = new HudFactory();
+		// Get the current font
 		BitmapFont font = getFont();
+		// Add the Fps Actor to the Stage
 		stage.addActor(factory.getFpsActor(font));
-		Entity player = cameraSystem.getPlayer();
+		// Get the player from a PlayerController
+		Entity player = cameraController.getPlayer();
 		if (player != null) {
+			/*
 			AccelerationComponent accelerationComponent = player.getComponent(AccelerationComponent.class);
 			VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);
 			Vector3 velocity = velocityComponent.getVelocity();
@@ -88,7 +93,8 @@ public class MainScreen extends SpaceFloatScreen {
 			stage.addActor(factory.getAccelerationActor(font, acceleration));
 			Vector3 position = player.getComponent(TransformComponent.class).getPosition();
 			stage.addActor(factory.getPositionActor(font, position));
-			EnergyComponent energyComponent = player.getComponent(EnergyComponent.class);
+			*/
+			EnergyComponent energyComponent = energyMapper.get(player);
 			stage.addActor(factory.getFuelActor(getHud(), energyComponent));
 		} else {
 			logger.error("Error creating the HUD: player is null");
@@ -105,12 +111,10 @@ public class MainScreen extends SpaceFloatScreen {
 	public void hide() {
 		super.hide();
 		if (engine == null) return;
-		engine.removeSystem(cameraSystem);
-		engine.removeSystem(renderSystem);
-		engine.removeSystem(transformSystem);
-		engine.removeSystem(movementSystem);
-		engine.removeSystem(collisionSystem);
+		engine.removeSystem(cameraController);
+		engine.removeSystem(bulletSystem);
 		engine.removeSystem(reactorController);
+		engine.removeSystem(renderSystem);
 	}
 
 	@Override

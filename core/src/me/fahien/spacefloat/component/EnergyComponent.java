@@ -92,6 +92,13 @@ public class EnergyComponent implements Component, Json.Serializable {
 		this.chargeMax = (chargeMax < CHARGE_MAX_LOWER_LIMIT) ? CHARGE_MAX_LOWER_LIMIT : chargeMax;
 	}
 
+	/**
+	 * Recharges energy
+	 */
+	public void recharge() {
+		addCharge(Gdx.graphics.getDeltaTime());
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JsonKey.CHARGEMAX, chargeMax);
@@ -102,12 +109,5 @@ public class EnergyComponent implements Component, Json.Serializable {
 	public void read(Json json, JsonValue jsonData) {
 		chargeMax = jsonData.getInt(JsonKey.CHARGEMAX);
 		charge = jsonData.getFloat(JsonKey.CHARGE);
-	}
-
-	/**
-	 * Recharges energy
-	 */
-	public void recharge() {
-		addCharge(Gdx.graphics.getDeltaTime());
 	}
 }

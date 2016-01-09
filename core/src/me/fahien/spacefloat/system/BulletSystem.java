@@ -42,7 +42,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  *
  * @author Fahien
  */
-public class CollisionSystem extends EntitySystem {
+public class BulletSystem extends EntitySystem {
 	private static final int COLLISION_PRIORITY = 1;
 	public static float RECHARGE_POWER = 0.125f;
 
@@ -61,7 +61,7 @@ public class CollisionSystem extends EntitySystem {
 
 	private SpaceFloatContactListener contactListener;
 
-	public CollisionSystem() {
+	public BulletSystem() {
 		super(COLLISION_PRIORITY);
 	}
 
