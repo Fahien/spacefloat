@@ -3,6 +3,7 @@ package me.fahien.spacefloat.screen;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -35,6 +37,9 @@ public class SpaceFloatScreen implements Screen {
 	private TextureAtlas hud;
 	private Engine engine;
 	private Camera camera;
+
+	private InputMultiplexer inputMultiplexer;
+
 	private Viewport viewport;
 	private Stage stage;
 
@@ -151,6 +156,20 @@ public class SpaceFloatScreen implements Screen {
 	}
 
 	/**
+	 * Returns the {@link InputMultiplexer}
+	 */
+	public InputMultiplexer getInputMultiplexer() {
+		return inputMultiplexer;
+	}
+
+	/**
+	 * Sets the {@link InputMultiplexer}
+	 */
+	public void setInputMultiplexer(InputMultiplexer inputMultiplexer) {
+		this.inputMultiplexer = inputMultiplexer;
+	}
+
+	/**
 	 * Returns the {@link Viewport}
 	 */
 	public Viewport getViewport() {
@@ -239,8 +258,9 @@ public class SpaceFloatScreen implements Screen {
 		font = null;
 		hud = null;
 		assetManager = null;
+		inputMultiplexer = null;
 		viewport = null;
-		if (stage != null) stage.clear();
+		if (stage != null) stage.getRoot().clearChildren();
 		stage = null;
 		initialized = false;
 	}

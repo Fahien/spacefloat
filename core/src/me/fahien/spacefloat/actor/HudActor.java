@@ -19,8 +19,16 @@ public class HudActor extends Actor {
 		setHeight(region.getRegionHeight());
 	}
 
+	/**
+	 * Returns the {@link TextureRegion}
+	 */
+	public TextureRegion getRegion() {
+		return region;
+	}
+
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		batch.draw(region, getX(), getY(), getWidth(), getHeight());
+		super.draw(batch, parentAlpha);
+		batch.draw(region, getX(), getY(), region.getRegionWidth(), region.getRegionHeight());
 	}
 }

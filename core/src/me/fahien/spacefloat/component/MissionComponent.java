@@ -2,13 +2,19 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
+import me.fahien.spacefloat.actor.ControlMessageActor;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.utils.JsonKey;
 
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -49,8 +55,11 @@ public class MissionComponent extends CollisionComponent {
 
 	@Override
 	public void collideWith(final btManifoldPoint collisionPoint, final GameObject source, final GameObject target) {
+		SpaceFloatGame game = SpaceFloat.GAME.getGame();
+		Stage stage = game.getStage();
 		// If is not collected and collide with Player
 		if (!collected && target.isPlayer()) {
+
 			handlingTime -= Gdx.graphics.getDeltaTime();
 			if (handlingTime <= 0f) {
 				handlingTime = HANDLING_TIME;
@@ -59,14 +68,36 @@ public class MissionComponent extends CollisionComponent {
 				SpaceFloat.GAME.getGame().getEngine().removeEntity(source);
 				target.add(this);
 				logger.debug("Parcel collected");
+				logger.debug("Creating message");
+				ControlMessageActor controlMessageActor = new ControlMessageActor(game.getHud(), game.getFont(), "Hello! This is Mission Control! A new parcel has just arrived. Come here!\nQuick!");
+				controlMessageActor.addListener(new InputListener() {
+					@Override
+					public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+						event.getTarget().addAction(removeActor());
+						logger.debug("Removing actor");
+						return true;
+					}
+				});
+				stage.addActor(controlMessageActor);
 			}
 		} else if (!delivered && destination.equals(target.getName())) {
+
 			handlingTime -= Gdx.graphics.getDeltaTime();
 			if (handlingTime <= 0f) {
 				handlingTime = HANDLING_TIME;
 				delivered = true;
 				source.remove(MissionComponent.class);
-				logger.debug("Parcel delivered");
+				logger.debug("Parcel delivered");logger.debug("Creating message");
+				ControlMessageActor controlMessageActor = new ControlMessageActor(game.getHud(), game.getFont(), "Compliments!");
+				controlMessageActor.addListener(new InputListener() {
+					@Override
+					public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+						event.getTarget().addAction(removeActor());
+						logger.debug("Removing actor");
+						return true;
+					}
+				});
+				stage.addActor(controlMessageActor);
 			}
 		}
 	}

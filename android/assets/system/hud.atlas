@@ -2,17 +2,52 @@ hud.png
 format:RGBA8888
 filter: Nearest, Nearest
 repeat: none
-fuel
+energy
   rotate: false
-  xy: 125, 241
-  size: 99, 18
+  xy: 128, 240
+  size: 88, 16
   orig: 1, 1
   offset: 0, 0
   index: -1
-point
+point-normal
   rotate: false
-  xy: 137, 214
+  xy: 140, 213
   size: 3, 8
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+point-warning
+  rotate: false
+  xy: 132, 213
+  size: 3, 8
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+point-danger
+  rotate: false
+  xy: 128, 213
+  size: 3, 8
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+control-face
+  rotate: false
+  xy: 1, 1
+  size: 23, 32
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+control-background
+  rotate: false
+  xy: 24, 1
+  size: 8, 32
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+control-border
+  rotate: false
+  xy: 32, 1
+  size: 8, 32
   orig: 1, 1
   offset: 0, 0
   index: -1

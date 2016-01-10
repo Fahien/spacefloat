@@ -1,11 +1,13 @@
-package me.fahien.spacefloat.controller;
+package me.fahien.spacefloat.system;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.controller.PlayerController;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
@@ -17,7 +19,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  *
  * @author Fahien
  */
-public class CameraController extends PlayerController {
+public class CameraSystem extends PlayerController {
 	private static final int CAMERA_PRIORITY = 2;
 	private static final float CAMERA_OFFSET = 1024f;
 	private static final float CAMERA_ZOOM_MIN = 1f;
@@ -30,7 +32,7 @@ public class CameraController extends PlayerController {
 	private Camera camera;
 	private Vector3 cameraOffset;
 
-	public CameraController() {
+	public CameraSystem() {
 		super(CAMERA_PRIORITY);
 		cameraOffset = new Vector3(0f, CAMERA_OFFSET * CAMERA_ZOOM, 0f);
 	}
@@ -53,7 +55,10 @@ public class CameraController extends PlayerController {
 	}
 
 	@Override
-	public void addedToEngine(Entity player, InputMultiplexer inputMultiplexer) {
+	public void addedToEngine(Engine engine) {
+		super.addedToEngine(engine);
+
+		Entity player = getPlayer();
 		// Get the player position
 		if (player != null) {
 			playerGraphic = graphicMapper.get(player);

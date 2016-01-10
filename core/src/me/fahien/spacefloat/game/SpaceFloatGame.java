@@ -3,6 +3,7 @@ package me.fahien.spacefloat.game;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,7 +11,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -19,7 +24,7 @@ import me.fahien.spacefloat.camera.MainOrthographicCamera;
 import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
-import me.fahien.spacefloat.controller.CameraController;
+import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.utils.SpaceFloatPreferences;
 
 /**
@@ -49,6 +54,8 @@ public class SpaceFloatGame extends Game {
 
 	private BitmapFont font;
 	private TextureAtlas hud;
+
+	private InputMultiplexer inputMultiplexer;
 
 	private Viewport viewport;
 	private Stage stage;
@@ -100,7 +107,7 @@ public class SpaceFloatGame extends Game {
 	 * Initializes the {@link Camera}
 	 */
 	public void initCamera() {
-		if (CameraController.CAMERA_TYPE.equals("perspective")) {
+		if (CameraSystem.CAMERA_TYPE.equals("perspective")) {
 			camera = new MainPerspectiveCamera();
 		} else {
 			camera = new MainOrthographicCamera();
@@ -140,6 +147,20 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
+	 * Returns the {@link InputMultiplexer}
+	 */
+	public InputMultiplexer getInputMultiplexer() {
+		return inputMultiplexer;
+	}
+
+	/**
+	 * Returns the {@link Stage}
+	 */
+	public Stage getStage() {
+		return stage;
+	}
+
+	/**
 	 * Sets the screen using {@link ScreenEnumerator}
 	 */
 	public void setScreen(ScreenEnumerator screenEnumerator) {
@@ -165,6 +186,7 @@ public class SpaceFloatGame extends Game {
 		screen.setEngine(engine);
 		screen.setCamera(camera);
 		screen.setParticleSystem(particleSystem);
+		screen.setInputMultiplexer(inputMultiplexer);
 		screen.setViewport(viewport);
 		screen.setStage(stage);
 		screen.setGame(this);
@@ -184,6 +206,15 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
+	 * Initializes the {@link InputMultiplexer}
+	 */
+	private void initInputMultiplexer() {
+		logger.debug("Creating input multiplexer");
+		inputMultiplexer = new InputMultiplexer();
+		Gdx.input.setInputProcessor(inputMultiplexer);
+	}
+
+	/**
 	 * Initializes the {@link Viewport} and the {@link Stage}
 	 */
 	private void initViewportAndStage() {
@@ -191,6 +222,8 @@ public class SpaceFloatGame extends Game {
 		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
 		logger.debug("Creating stage");
 		stage = new Stage(viewport);
+		stage.setDebugAll(true);
+		inputMultiplexer.addProcessor(stage);
 	}
 
 	@Override
@@ -204,6 +237,7 @@ public class SpaceFloatGame extends Game {
 		loadHud();
 		initCamera();
 		initParticleSystem();
+		initInputMultiplexer();
 		initViewportAndStage();
 		Bullet.init();
 		setScreen(ScreenEnumerator.LOADING);

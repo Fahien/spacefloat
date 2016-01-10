@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 
 import me.fahien.spacefloat.component.PlayerComponent;
@@ -19,7 +18,7 @@ public abstract class PlayerController extends EntitySystem {
 
 	private Entity player;
 
-	private static InputMultiplexer inputMultiplexer = new InputMultiplexer();
+	private InputMultiplexer inputMultiplexer;
 
 	public PlayerController(int priority) {
 		super(priority);
@@ -32,6 +31,20 @@ public abstract class PlayerController extends EntitySystem {
 		return player;
 	}
 
+	/**
+	 * Returns the {@link InputMultiplexer}
+	 */
+	public InputMultiplexer getInputMultiplexer() {
+		return inputMultiplexer;
+	}
+
+	/**
+	 * Sets the {@link InputMultiplexer}
+	 */
+	public void setInputMultiplexer(InputMultiplexer inputMultiplexer) {
+		this.inputMultiplexer = inputMultiplexer;
+	}
+
 	@Override
 	public void addedToEngine(Engine engine) {
 		super.addedToEngine(engine);
@@ -42,10 +55,5 @@ public abstract class PlayerController extends EntitySystem {
 		if (entities.size() > 0) {
 			player = entities.get(0);
 		}
-
-		addedToEngine(player, inputMultiplexer);
-		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
-
-	public abstract void addedToEngine(Entity player, InputMultiplexer inputMultiplexer);
 }

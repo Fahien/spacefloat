@@ -8,12 +8,11 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import me.fahien.spacefloat.actor.HudFactory;
-import me.fahien.spacefloat.component.ComponentMapperEnumerator;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
-import me.fahien.spacefloat.controller.CameraController;
 import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.system.BulletSystem;
+import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
@@ -28,25 +27,26 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public class MainScreen extends SpaceFloatScreen {
 
 	private Engine engine;
-	private CameraController cameraController;
+	private CameraSystem cameraSystem;
 	private RenderSystem renderSystem;
 	private BulletSystem bulletSystem;
 	private ReactorController reactorController;
 
 	public MainScreen() {
-		cameraController = new CameraController();
+		cameraSystem = new CameraSystem();
 		renderSystem = new RenderSystem();
 		bulletSystem = new BulletSystem();
 		reactorController = new ReactorController();
 	}
 
 	private void injectSystemsDependencies() {
-		logger.debug("Getting the main camera");
 		Camera mainCamera = getCamera();
-		logger.debug("Injecting camera into camera controller");
-		cameraController.setCamera(mainCamera);
+		logger.debug("Injecting camera into camera system");
+		cameraSystem.setCamera(mainCamera);
 		logger.debug("Injecting camera into render system");
 		renderSystem.setCamera(mainCamera);
+		logger.debug("Injecting input multiplexer into reactor controller");
+		reactorController.setInputMultiplexer(getInputMultiplexer());
 		logger.debug("Injecting particle system into reactor controller");
 		reactorController.setParticleSystem(getParticleSystem());
 		logger.debug("Injecting particle system into render system");
@@ -61,14 +61,13 @@ public class MainScreen extends SpaceFloatScreen {
 		engine.addSystem(bulletSystem);
 		logger.debug("Adding reactor controller to the engine");
 		engine.addSystem(reactorController);
-		logger.debug("Adding camera controller to the engine");
-		engine.addSystem(cameraController);
+		logger.debug("Adding camera system to the engine");
+		engine.addSystem(cameraSystem);
 	}
 
 	@Override
 	public void show() {
 		injectSystemsDependencies();
-		logger.debug("Getting the engine");
 		engine = getEngine();
 		addSystemsToEngine(engine);
 		super.show();
@@ -85,7 +84,7 @@ public class MainScreen extends SpaceFloatScreen {
 		// Add the Fps Actor to the Stage
 		stage.addActor(factory.getFpsActor(font));
 		// Get the player from a PlayerController
-		Entity player = cameraController.getPlayer();
+		Entity player = cameraSystem.getPlayer();
 		if (player != null) {
 			RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
 			Vector3 velocity = rigidbodyComponent.getLinearVelocity();
@@ -117,7 +116,7 @@ public class MainScreen extends SpaceFloatScreen {
 	public void hide() {
 		super.hide();
 		if (engine == null) return;
-		engine.removeSystem(cameraController);
+		engine.removeSystem(cameraSystem);
 		engine.removeSystem(bulletSystem);
 		engine.removeSystem(reactorController);
 		engine.removeSystem(renderSystem);

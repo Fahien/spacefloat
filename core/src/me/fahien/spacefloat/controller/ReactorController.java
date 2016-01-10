@@ -46,12 +46,15 @@ public class ReactorController extends PlayerController {
 	}
 
 	@Override
-	public void addedToEngine(Entity player, InputMultiplexer inputMultiplexer) {
+	public void addedToEngine(Engine engine) {
+		super.addedToEngine(engine);
+
+		Entity player = getPlayer();
 		reactor = reactorMapper.get(player);
 		energy = energyMapper.get(player);
 		graphic = graphicMapper.get(player);
 		rigidbody = rigidMapper.get(player);
-		inputMultiplexer.addProcessor(new ReactorInputAdapter());
+		getInputMultiplexer().addProcessor(new ReactorInputAdapter());
 
 		force = new Vector3();
 	}
