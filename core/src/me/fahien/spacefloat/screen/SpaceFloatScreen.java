@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static java.lang.Math.min;
@@ -33,8 +33,11 @@ public class SpaceFloatScreen implements Screen {
 	private SpaceFloatGame game;
 	private ParticleSystem particleSystem;
 	private AssetManager assetManager;
+
 	private BitmapFont font;
 	private TextureAtlas hud;
+	private HudFactory hudFactory;
+
 	private Engine engine;
 	private Camera camera;
 
@@ -53,7 +56,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets initialized
 	 */
-	public void setInitialized(boolean initialized) {
+	public void setInitialized(final boolean initialized) {
 		this.initialized = initialized;
 	}
 
@@ -67,7 +70,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link SpaceFloatGame}
 	 */
-	public void setGame(SpaceFloatGame game) {
+	public void setGame(final SpaceFloatGame game) {
 		this.game = game;
 	}
 
@@ -81,7 +84,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link AssetManager}
 	 */
-	public void setAssetManager(AssetManager assetManager) {
+	public void setAssetManager(final AssetManager assetManager) {
 		this.assetManager = assetManager;
 	}
 
@@ -95,7 +98,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link ParticleSystem}
 	 */
-	public void setParticleSystem(ParticleSystem particleSystem) {
+	public void setParticleSystem(final ParticleSystem particleSystem) {
 		this.particleSystem = particleSystem;
 	}
 
@@ -109,15 +112,8 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link BitmapFont}
 	 */
-	public void setFont(BitmapFont font) {
+	public void setFont(final BitmapFont font) {
 		this.font = font;
-	}
-
-	/**
-	 * Sets the HUD {@link TextureAtlas}
-	 */
-	public void setHud(TextureAtlas hud) {
-		this.hud = hud;
 	}
 
 	/**
@@ -125,6 +121,27 @@ public class SpaceFloatScreen implements Screen {
 	 */
 	public TextureAtlas getHud() {
 		return hud;
+	}
+
+	/**
+	 * Sets the HUD {@link TextureAtlas}
+	 */
+	public void setHud(final TextureAtlas hud) {
+		this.hud = hud;
+	}
+
+	/**
+	 * Returns the {@link HudFactory}
+	 */
+	public HudFactory getHudFactory() {
+		return hudFactory;
+	}
+
+	/**
+	 * sets the {@link HudFactory}
+	 */
+	public void setHudFactory(final HudFactory hudFactory) {
+		this.hudFactory = hudFactory;
 	}
 
 	/**
@@ -137,7 +154,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the Ashley {@link Engine}
 	 */
-	public void setEngine(Engine engine) {
+	public void setEngine(final Engine engine) {
 		this.engine = engine;
 	}
 
@@ -151,7 +168,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link Camera}
 	 */
-	public void setCamera(Camera camera) {
+	public void setCamera(final Camera camera) {
 		this.camera = camera;
 	}
 
@@ -165,7 +182,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link InputMultiplexer}
 	 */
-	public void setInputMultiplexer(InputMultiplexer inputMultiplexer) {
+	public void setInputMultiplexer(final InputMultiplexer inputMultiplexer) {
 		this.inputMultiplexer = inputMultiplexer;
 	}
 
@@ -179,7 +196,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link Viewport}
 	 */
-	public void setViewport(Viewport viewport) {
+	public void setViewport(final Viewport viewport) {
 		this.viewport = viewport;
 	}
 
@@ -193,14 +210,14 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link Stage}
 	 */
-	public void setStage(Stage stage) {
+	public void setStage(final Stage stage) {
 		this.stage = stage;
 	}
 
 	/**
 	 * Populates the {@link Stage}
 	 */
-	public void populate(Stage stage) {}
+	public void populate(final Stage stage) {}
 
 	@Override
 	public void show() {
@@ -257,6 +274,7 @@ public class SpaceFloatScreen implements Screen {
 		engine = null;
 		font = null;
 		hud = null;
+		hudFactory = null;
 		assetManager = null;
 		inputMultiplexer = null;
 		viewport = null;

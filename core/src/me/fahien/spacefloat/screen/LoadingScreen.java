@@ -25,7 +25,7 @@ import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.factory.GameObjectService;
+import me.fahien.spacefloat.entity.GameObjectFactory;
 import me.fahien.spacefloat.game.SpaceFloat;
 
 import static com.badlogic.ashley.core.Family.all;
@@ -75,7 +75,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 * Loads the {@link GameObject}s
 	 */
 	protected void loadObjects(Engine engine) {
-		GameObjectService factory = new GameObjectService();
+		GameObjectFactory factory = new GameObjectFactory();
 		Array<GameObject> objects = factory.loadObjects();
 		for (GameObject object : objects) {
 			engine.addEntity(object);

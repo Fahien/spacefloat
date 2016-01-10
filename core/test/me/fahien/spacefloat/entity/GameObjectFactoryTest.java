@@ -1,4 +1,4 @@
-package me.fahien.spacefloat.factory;
+package me.fahien.spacefloat.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -19,18 +19,17 @@ import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
-import me.fahien.spacefloat.entity.GameObject;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * The {@link GameObjectService} Test Case
+ * The {@link GameObjectFactory} Test Case
  *
  * @author Fahien
  */
-public class GameObjectServiceTest {
+public class GameObjectFactoryTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
 	private static final String SPACESHIP_GRAPHIC = "cargo.g3db";
 	private static final String SPACESHIP_REACTOR = "reactor.pfx";
@@ -51,11 +50,11 @@ public class GameObjectServiceTest {
 	private static final String PARCEL_ONE_DESTINATION = "Earth";
 
 
-	private GameObjectService gameObjectService;
+	private GameObjectFactory gameObjectFactory;
 
 	@Before
 	public void before() {
-		gameObjectService = new GameObjectService();
+		gameObjectFactory = new GameObjectFactory();
 	}
 
 	@Test
@@ -91,7 +90,7 @@ public class GameObjectServiceTest {
 		EnergyComponent energy = new EnergyComponent();
 		spaceship.add(energy);
 		// Save the spaceship
-		gameObjectService.save(spaceship);
+		gameObjectFactory.save(spaceship);
 	}
 
 	@Test
@@ -118,7 +117,7 @@ public class GameObjectServiceTest {
 		RechargeComponent recharge = new RechargeComponent();
 		energyStation.add(recharge);
 		// Save the energy station
-		gameObjectService.save(energyStation);
+		gameObjectFactory.save(energyStation);
 	}
 
 	@Test
@@ -134,12 +133,12 @@ public class GameObjectServiceTest {
 		MissionComponent mission = new MissionComponent("Earth");
 		parcelOne.add(mission);
 		// Save the parce
-		gameObjectService.save(parcelOne);
+		gameObjectFactory.save(parcelOne);
 	}
 
 	@Test
 	public void couldLoadTheSpaceship() {
-		GameObject spaceship = gameObjectService.load(SPACESHIP_NAME);
+		GameObject spaceship = gameObjectFactory.load(SPACESHIP_NAME);
 		assertEquals("The name is not equal to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
 		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
 		assertNotNull("The spaceship has no graphic component", graphic);
@@ -162,7 +161,7 @@ public class GameObjectServiceTest {
 
 	@Test
 	public void couldLoadTheEnergyStation() {
-		GameObject energyStation = gameObjectService.load(ENERGY_STATION_NAME);
+		GameObject energyStation = gameObjectFactory.load(ENERGY_STATION_NAME);
 		assertEquals("The energy station name is not equal to " + ENERGY_STATION_NAME, ENERGY_STATION_NAME, energyStation.getName());
 		GraphicComponent graphic = energyStation.getComponent(GraphicComponent.class);
 		assertNotNull("The energy station has no graphic component", graphic);
@@ -179,7 +178,7 @@ public class GameObjectServiceTest {
 
 	@Test
 	public void couldLoadTheParcelOne() {
-		GameObject parcelOne = gameObjectService.load(PARCEL_ONE_NAME);
+		GameObject parcelOne = gameObjectFactory.load(PARCEL_ONE_NAME);
 		assertEquals("The parcel name is not equal to " + PARCEL_ONE_NAME, PARCEL_ONE_NAME, parcelOne.getName());
 		GraphicComponent graphic = parcelOne.getComponent(GraphicComponent.class);
 		assertNotNull("The parcel has no graphic component", graphic);
@@ -193,7 +192,7 @@ public class GameObjectServiceTest {
 
 	@Test
 	public void couldLoadTheEarth() {
-		GameObject earth = gameObjectService.load(EARTH_NAME);
+		GameObject earth = gameObjectFactory.load(EARTH_NAME);
 		assertEquals("The name is not equal to " + EARTH_NAME, EARTH_NAME, earth.getName());
 		GravityComponent gravity = earth.getComponent(GravityComponent.class);
 		assertNotNull("The spaceship has no gravity component", gravity);
@@ -204,20 +203,20 @@ public class GameObjectServiceTest {
 	 */
 	private void createObjectList() {
 		String objectList = "";
-		FileHandle[] files = Gdx.files.local(GameObjectService.OBJECTS_DIR).list();
+		FileHandle[] files = Gdx.files.local(GameObjectFactory.OBJECTS_DIR).list();
 		for (FileHandle file : files) {
-			if (file.path().endsWith(GameObjectService.JSON_EXT)) {
+			if (file.path().endsWith(GameObjectFactory.JSON_EXT)) {
 				objectList += file.nameWithoutExtension() + "\n";
 			}
 		}
-		FileHandle fileList = Gdx.files.local(GameObjectService.OBJECT_LIST);
+		FileHandle fileList = Gdx.files.local(GameObjectFactory.OBJECT_LIST);
 		fileList.writeString(objectList, false);
 	}
 
 	@Test
 	public void couldLoadAllObjects() {
 		createObjectList();
-		Array<GameObject> objects = gameObjectService.loadObjects();
+		Array<GameObject> objects = gameObjectFactory.loadObjects();
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}
@@ -225,9 +224,9 @@ public class GameObjectServiceTest {
 	@Test
 	public void couldSaveAllObjects() {
 		createObjectList();
-		Array<GameObject> objects = gameObjectService.loadObjects();
-		gameObjectService.saveObjects(objects);
-		objects = gameObjectService.loadObjects();
+		Array<GameObject> objects = gameObjectFactory.loadObjects();
+		gameObjectFactory.saveObjects(objects);
+		objects = gameObjectFactory.loadObjects();
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}

@@ -3,7 +3,6 @@ package me.fahien.spacefloat.screen;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -78,29 +77,17 @@ public class MainScreen extends SpaceFloatScreen {
 	@Override
 	public void populate(Stage stage) {
 		// Create the Hud factory
-		HudFactory factory = new HudFactory();
-		// Get the current font
-		BitmapFont font = getFont();
+		HudFactory factory = getHudFactory();
 		// Add the Fps Actor to the Stage
-		stage.addActor(factory.getFpsActor(font));
+		stage.addActor(factory.getFpsActor());
 		// Get the player from a PlayerController
 		Entity player = cameraSystem.getPlayer();
 		if (player != null) {
 			RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
 			Vector3 velocity = rigidbodyComponent.getLinearVelocity();
-			stage.addActor(factory.getVelocityActor(font, velocity));
-			/*
-			AccelerationComponent accelerationComponent = player.getComponent(AccelerationComponent.class);
-			VelocityComponent velocityComponent = player.getComponent(VelocityComponent.class);
-			Vector3 velocity = velocityComponent.getVelocity();
-			stage.addActor(factory.getVelocityActor(font, velocity));
-			Vector3 acceleration = accelerationComponent.getAcceleration();
-			stage.addActor(factory.getAccelerationActor(font, acceleration));
-			Vector3 position = player.getComponent(TransformComponent.class).getPosition();
-			stage.addActor(factory.getPositionActor(font, position));
-			*/
+			stage.addActor(factory.getVelocityActor(velocity));
 			EnergyComponent energyComponent = energyMapper.get(player);
-			stage.addActor(factory.getFuelActor(getHud(), energyComponent));
+			stage.addActor(factory.getFuelActor(energyComponent));
 		} else {
 			logger.error("Error creating the HUD: player is null");
 		}

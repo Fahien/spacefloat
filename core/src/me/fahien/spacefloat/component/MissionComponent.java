@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.actor.ControlMessageActor;
+import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.game.SpaceFloat;
 import me.fahien.spacefloat.game.SpaceFloatGame;
@@ -55,8 +56,7 @@ public class MissionComponent extends CollisionComponent {
 
 	@Override
 	public void collideWith(final btManifoldPoint collisionPoint, final GameObject source, final GameObject target) {
-		SpaceFloatGame game = SpaceFloat.GAME.getGame();
-		Stage stage = game.getStage();
+
 		// If is not collected and collide with Player
 		if (!collected && target.isPlayer()) {
 
@@ -69,7 +69,10 @@ public class MissionComponent extends CollisionComponent {
 				target.add(this);
 				logger.debug("Parcel collected");
 				logger.debug("Creating message");
-				ControlMessageActor controlMessageActor = new ControlMessageActor(game.getHud(), game.getFont(), "Hello! This is Mission Control! A new parcel has just arrived. Come here!\nQuick!");
+				SpaceFloatGame game = SpaceFloat.GAME.getGame();
+				Stage stage = game.getStage();
+				HudFactory factory = game.getHudFactory();
+				ControlMessageActor controlMessageActor = factory.getMessageActor("Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!");
 				controlMessageActor.addListener(new InputListener() {
 					@Override
 					public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -88,7 +91,10 @@ public class MissionComponent extends CollisionComponent {
 				delivered = true;
 				source.remove(MissionComponent.class);
 				logger.debug("Parcel delivered");logger.debug("Creating message");
-				ControlMessageActor controlMessageActor = new ControlMessageActor(game.getHud(), game.getFont(), "Compliments!");
+				SpaceFloatGame game = SpaceFloat.GAME.getGame();
+				Stage stage = game.getStage();
+				HudFactory factory = game.getHudFactory();
+				ControlMessageActor controlMessageActor = factory.getMessageActor("Well done, space courier!");
 				controlMessageActor.addListener(new InputListener() {
 					@Override
 					public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

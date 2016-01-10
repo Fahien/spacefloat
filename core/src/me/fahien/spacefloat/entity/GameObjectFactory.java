@@ -1,11 +1,10 @@
-package me.fahien.spacefloat.factory;
+package me.fahien.spacefloat.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
-import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.game.SpaceFloat;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -15,14 +14,14 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  *
  * @author Fahien
  */
-public class GameObjectService {
+public class GameObjectFactory {
 	protected static final String OBJECTS_DIR = "objects/";
 	protected static final String OBJECT_LIST = OBJECTS_DIR + "objects.txt";
 	protected static final String JSON_EXT = ".json";
 
 	private Json json;
 
-	public GameObjectService() {
+	public GameObjectFactory() {
 		json = new Json();
 		SpaceFloat.GAME.getGame().initLogger();
 	}
@@ -32,13 +31,13 @@ public class GameObjectService {
 	 */
 	private void createLocalObjectList() {
 		String objectList = "";
-		FileHandle[] files = Gdx.files.local(GameObjectService.OBJECTS_DIR).list();
+		FileHandle[] files = Gdx.files.local(GameObjectFactory.OBJECTS_DIR).list();
 		for (FileHandle file : files) {
-			if (file.path().endsWith(GameObjectService.JSON_EXT)) {
+			if (file.path().endsWith(GameObjectFactory.JSON_EXT)) {
 				objectList += file.nameWithoutExtension() + "\n";
 			}
 		}
-		FileHandle fileList = Gdx.files.local(GameObjectService.OBJECT_LIST);
+		FileHandle fileList = Gdx.files.local(GameObjectFactory.OBJECT_LIST);
 		fileList.writeString(objectList, false);
 	}
 

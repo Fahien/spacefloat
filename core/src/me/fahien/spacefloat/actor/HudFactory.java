@@ -17,29 +17,41 @@ import me.fahien.spacefloat.screen.SpaceFloatScreen;
 public class HudFactory {
 	private static final String FPS_TXT = "FPS: ";
 	private static final String VEL_TXT = "VEL: ";
-	private static final String ROT_TXT = "ACC: ";
-	private static final String POS_TXT = "POS: ";
 	private static final float FPS_X = 4.0f;
 	private static final float FPS_Y = 8.0f;
 	private static final float VEL_X = SpaceFloatScreen.WIDTH - FPS_X;
 	private static final float VEL_Y = FPS_Y;
-	private static final float ROT_X = VEL_X;
-	private static final float ROT_Y = FPS_Y * 3;
-	private static final float POS_X = VEL_X;
-	private static final float POS_Y = FPS_Y * 6;
-	private static final float FUEL_X = FPS_X;
-	private static final float FUEL_Y = SpaceFloatScreen.HEIGHT - 22.0f;
+	private static final float ENERGY_X = FPS_X;
+	private static final float ENERGY_Y = SpaceFloatScreen.HEIGHT - 22.0f;
+	private static final float MESSAGE_X = 96f;
+	private static final float MESSAGE_Y = FPS_Y;
+
+	private TextureAtlas hud;
+	private BitmapFont font;
 
 	private FontActor fpsActor;
 	private FontActor velocityActor;
-	private FontActor positionActor;
-	private FontActor accelerationActor;
 	private HudActor fuelActor;
+	private ControlMessageActor messageActor;
+
+	/**
+	 * Sets the {@link TextureAtlas} HUD
+	 */
+	public void setHud(final TextureAtlas hud) {
+		this.hud = hud;
+	}
+
+	/**
+	 * Sets the {@link BitmapFont}
+	 */
+	public void setFont(final BitmapFont font) {
+		this.font = font;
+	}
 
 	/**
 	 * Returns the fps {@link FontActor}
 	 */
-	public FontActor getFpsActor(BitmapFont font) {
+	public FontActor getFpsActor() {
 		if (fpsActor == null) {
 			fpsActor = new FontActor(font, FPS_TXT + Gdx.graphics.getFramesPerSecond()) {
 				@Override
@@ -55,7 +67,7 @@ public class HudFactory {
 	/**
 	 * Returns the velocity {@link FontActor}
 	 */
-	public FontActor getVelocityActor(BitmapFont font, final Vector3 velocity) {
+	public FontActor getVelocityActor(final Vector3 velocity) {
 		if (velocityActor == null) {
 			velocityActor = new FontActor(font, VEL_TXT + velocity) {
 				@Override
@@ -70,50 +82,25 @@ public class HudFactory {
 	}
 
 	/**
-	 * Returns the position {@link FontActor}
-	 */
-	public FontActor getPositionActor(BitmapFont font, final Vector3 position) {
-		if (positionActor == null) {
-			positionActor = new FontActor(font, VEL_TXT + position) {
-				@Override
-				public void act(float delta) {
-					setText(POS_TXT +
-							"(" + (int)(position.x) + ", " +
-							(int)(position.y) + ", " +
-							(int)(position.z) + ")");
-				}
-			};
-			positionActor.setPosition(POS_X, POS_Y);
-			positionActor.setHalign(FontActor.Halign.RIGHT);
-		}
-		return positionActor;
-	}
-
-	/**
-	 * Returns the rotation velocity {@link FontActor}
-	 */
-	public FontActor getAccelerationActor(BitmapFont font, final Vector3 acceleration) {
-		if (accelerationActor == null) {
-			accelerationActor = new FontActor(font, ROT_TXT + acceleration) {
-				@Override
-				public void act(float delta) {
-					setText(ROT_TXT + (int) acceleration.len());
-				}
-			};
-			accelerationActor.setPosition(ROT_X, ROT_Y);
-			accelerationActor.setHalign(FontActor.Halign.RIGHT);
-		}
-		return accelerationActor;
-	}
-
-	/**
 	 * Returns the fuel {@link HudActor}
 	 */
-	public HudActor getFuelActor(TextureAtlas hud, EnergyComponent energy) {
+	public HudActor getFuelActor(final EnergyComponent energy) {
 		if (fuelActor == null) {
 			fuelActor = new EnergyHudActor(hud, energy);
-			fuelActor.setPosition(FUEL_X, FUEL_Y);
+			fuelActor.setPosition(ENERGY_X, ENERGY_Y);
 		}
 		return fuelActor;
+	}
+
+	/**
+	 * Returns the {@link ControlMessageActor}
+	 */
+	public ControlMessageActor getMessageActor(final String text) {
+		if (messageActor == null) {
+			messageActor = new ControlMessageActor(hud, font);
+			messageActor.setPosition(MESSAGE_X, MESSAGE_Y);
+		}
+		messageActor.setText(text);
+		return messageActor;
 	}
 }

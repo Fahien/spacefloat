@@ -11,15 +11,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.camera.MainOrthographicCamera;
 import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
@@ -54,6 +51,7 @@ public class SpaceFloatGame extends Game {
 
 	private BitmapFont font;
 	private TextureAtlas hud;
+	private HudFactory hudFactory;
 
 	private InputMultiplexer inputMultiplexer;
 
@@ -124,6 +122,13 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
+	 * Returns the {@link BitmapFont}
+	 */
+	public BitmapFont getFont() {
+		return font;
+	}
+
+	/**
 	 * Loads the HUD {@link TextureAtlas}
 	 */
 	public void loadHud() {
@@ -133,24 +138,35 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
-	 * Returns the {@link BitmapFont}
-	 */
-	public BitmapFont getFont() {
-		return font;
-	}
-
-	/**
 	 * Returns the HUD {@link TextureAtlas}
 	 */
 	public TextureAtlas getHud() {
 		return hud;
 	}
 
+	public void initHudFactory() {
+		hudFactory = new HudFactory();
+		hudFactory.setHud(hud);
+		hudFactory.setFont(font);
+	}
+
 	/**
-	 * Returns the {@link InputMultiplexer}
+	 * Returns the {@link HudFactory}
 	 */
-	public InputMultiplexer getInputMultiplexer() {
-		return inputMultiplexer;
+	public HudFactory getHudFactory() {
+		return hudFactory;
+	}
+
+	/**
+	 * Initializes the {@link Viewport} and the {@link Stage}
+	 */
+	private void initViewportAndStage() {
+		logger.debug("Creating viewport");
+		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
+		logger.debug("Creating stage");
+		stage = new Stage(viewport);
+		stage.setDebugAll(false);
+		inputMultiplexer.addProcessor(stage);
 	}
 
 	/**
@@ -158,6 +174,27 @@ public class SpaceFloatGame extends Game {
 	 */
 	public Stage getStage() {
 		return stage;
+	}
+
+	/**
+	 * Initializes the {@link ParticleSystem}
+	 */
+	private void initParticleSystem() {
+		logger.debug("Creating particle system");
+		particleSystem = ParticleSystem.get();
+		particleSystem.removeAll();
+		PointSpriteParticleBatch pointSpriteBatch = new PointSpriteParticleBatch();
+		pointSpriteBatch.setCamera(camera);
+		particleSystem.add(pointSpriteBatch);
+	}
+
+	/**
+	 * Initializes the {@link InputMultiplexer}
+	 */
+	private void initInputMultiplexer() {
+		logger.debug("Creating input multiplexer");
+		inputMultiplexer = new InputMultiplexer();
+		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	/**
@@ -183,6 +220,7 @@ public class SpaceFloatGame extends Game {
 		screen.setAssetManager(assetManager);
 		screen.setFont(font);
 		screen.setHud(hud);
+		screen.setHudFactory(hudFactory);
 		screen.setEngine(engine);
 		screen.setCamera(camera);
 		screen.setParticleSystem(particleSystem);
@@ -191,39 +229,6 @@ public class SpaceFloatGame extends Game {
 		screen.setStage(stage);
 		screen.setGame(this);
 		screen.setInitialized(true);
-	}
-
-	/**
-	 * Initializes the {@link ParticleSystem}
-	 */
-	private void initParticleSystem() {
-		logger.debug("Creating particle system");
-		particleSystem = ParticleSystem.get();
-		particleSystem.removeAll();
-		PointSpriteParticleBatch pointSpriteBatch = new PointSpriteParticleBatch();
-		pointSpriteBatch.setCamera(camera);
-		particleSystem.add(pointSpriteBatch);
-	}
-
-	/**
-	 * Initializes the {@link InputMultiplexer}
-	 */
-	private void initInputMultiplexer() {
-		logger.debug("Creating input multiplexer");
-		inputMultiplexer = new InputMultiplexer();
-		Gdx.input.setInputProcessor(inputMultiplexer);
-	}
-
-	/**
-	 * Initializes the {@link Viewport} and the {@link Stage}
-	 */
-	private void initViewportAndStage() {
-		logger.debug("Creating viewport");
-		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
-		logger.debug("Creating stage");
-		stage = new Stage(viewport);
-		stage.setDebugAll(true);
-		inputMultiplexer.addProcessor(stage);
 	}
 
 	@Override
@@ -235,6 +240,7 @@ public class SpaceFloatGame extends Game {
 		initAssetManager();
 		loadFont();
 		loadHud();
+		initHudFactory();
 		initCamera();
 		initParticleSystem();
 		initInputMultiplexer();
