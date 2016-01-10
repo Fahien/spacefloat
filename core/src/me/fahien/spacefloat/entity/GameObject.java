@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.playerMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 import static me.fahien.spacefloat.utils.JsonKey.CLASS;
 import static me.fahien.spacefloat.utils.JsonKey.COMPONENTS;
@@ -37,6 +38,13 @@ public class GameObject extends Entity implements Json.Serializable {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Tests whether this is the player
+	 */
+	public boolean isPlayer() {
+		return playerMapper.get(this) != null;
 	}
 
 	@Override

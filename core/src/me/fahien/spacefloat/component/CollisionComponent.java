@@ -65,7 +65,14 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	public void createCollisionObject() {
 		if (shape == null) createShape();
 		setCollisionShape(shape);
-		setCollisionFlags(getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		setCollisionFlags();
+	}
+
+	/**
+	 * Sets the {@link CollisionFlags}
+	 */
+	protected void setCollisionFlags() {
+		setCollisionFlags(getCollisionFlags() | CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 	}
 
 	/**
@@ -101,8 +108,8 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	/**
 	 * Collides with another {@link GameObject}
 	 */
-	public void collideWith(btManifoldPoint collisionPoint, final GameObject gameObject){
-		m_energyComponent = energyMapper.get(gameObject);
+	public void collideWith(btManifoldPoint collisionPoint, final GameObject source, final GameObject target){
+		m_energyComponent = energyMapper.get(target);
 		if (m_energyComponent != null) {
 			// Activate SHIELD
 			m_energyComponent.hurt(collisionPoint.getAppliedImpulse());

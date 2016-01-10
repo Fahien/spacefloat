@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSol
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
+import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.PlanetComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
@@ -29,6 +30,7 @@ import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.collisionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
@@ -47,6 +49,7 @@ public class BulletSystem extends EntitySystem {
 	private ImmutableArray<Entity> planetEntities;
 	private ImmutableArray<Entity> gravityEntities;
 	private ImmutableArray<Entity> rechargeEntities;
+	private ImmutableArray<Entity> missionEntities;
 	private ImmutableArray<Entity> rigidEntities;
 
 	private btDefaultCollisionConfiguration collisionConfig;
@@ -78,6 +81,9 @@ public class BulletSystem extends EntitySystem {
 		rechargeEntities = engine.getEntitiesFor(all(GraphicComponent.class, RechargeComponent.class).get());
 		createCollisionObjects(rechargeEntities, RechargeComponent.class);
 
+		missionEntities = engine.getEntitiesFor(all(GraphicComponent.class, MissionComponent.class).get());
+		createCollisionObjects(missionEntities, MissionComponent.class);
+
 		rigidEntities = engine.getEntitiesFor(all(GraphicComponent.class, RigidbodyComponent.class).get());
 		createRigidbodies(rigidEntities, RigidbodyComponent.class);
 
@@ -94,6 +100,7 @@ public class BulletSystem extends EntitySystem {
 		addCollisionObjectsToDynamicsWorld(planetEntities, PlanetComponent.class);
 		addCollisionObjectsToDynamicsWorld(gravityEntities, GravityComponent.class);
 		addCollisionObjectsToDynamicsWorld(rechargeEntities, RechargeComponent.class);
+		addCollisionObjectsToDynamicsWorld(missionEntities, MissionComponent.class);
 
 		addRigidbodiesToDynamicsWorld(rigidEntities, RigidbodyComponent.class);
 	}
@@ -174,6 +181,9 @@ public class BulletSystem extends EntitySystem {
 		for (Entity entity : rechargeEntities) {
 			updateCollisionObjects(rechargeMapper.get(entity), graphicMapper.get(entity));
 		}
+		for (Entity entity : missionEntities) {
+			updateCollisionObjects(missionMapper.get(entity), graphicMapper.get(entity));
+		}
 		dynamicsWorld.stepSimulation(delta, 5, 0.000001f);
 		for (Entity entity : rigidEntities) {
 			// Update rigid body after world simulation
@@ -210,6 +220,9 @@ public class BulletSystem extends EntitySystem {
 		for (Entity entity : rechargeEntities) {
 			rechargeMapper.get(entity).dispose();
 		}
+		for (Entity entity : missionEntities) {
+			missionMapper.get(entity).dispose();
+		}
 		for (Entity entity : rigidEntities) {
 			rigidMapper.get(entity).dispose();
 		}
@@ -225,16 +238,16 @@ public class BulletSystem extends EntitySystem {
 		@Override
 		public boolean onContactAdded(btManifoldPoint collisionPoint, btCollisionObject collision0, int partId0, int index0, btCollisionObject collision1, int partId1, int index1) {
 			if (collision0 instanceof CollisionComponent) {
-				handleCollision(collisionPoint, (CollisionComponent) collision0, collision1);
+				handleCollision(collisionPoint, (CollisionComponent) collision0, (GameObject) collision0.userData, (GameObject) collision1.userData);
 			}
 			if (collision1 instanceof CollisionComponent) {
-				handleCollision(collisionPoint, (CollisionComponent) collision1, collision0);
+				handleCollision(collisionPoint, (CollisionComponent) collision1, (GameObject) collision1.userData, (GameObject) collision0.userData);
 			}
 			return true;
 		}
 
-		private void handleCollision(btManifoldPoint collisionPoint, CollisionComponent component, btCollisionObject collision) {
-			component.collideWith(collisionPoint, (GameObject) collision.userData);
+		private void handleCollision(btManifoldPoint collisionPoint, CollisionComponent collision, GameObject source, GameObject target) {
+			collision.collideWith(collisionPoint, source, target);
 		}
 	}
 }

@@ -2,7 +2,6 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
@@ -32,15 +31,13 @@ public class GravityComponent extends CollisionComponent {
 	}
 
 	@Override
-	public void createCollisionObject() {
-		if (shape == null) createShape();
-		setCollisionShape(shape);
-		setCollisionFlags(btGhostObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+	protected void setCollisionFlags() {
+		setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
 	}
 
 	@Override
-	public void collideWith(btManifoldPoint collisionPoint, GameObject gameObject) {
-		collideWith(rigidMapper.get(gameObject));
+	public void collideWith(btManifoldPoint collisionPoint, GameObject source, GameObject target) {
+		collideWith(rigidMapper.get(target));
 	}
 
 	protected Vector3 gravity = new Vector3();

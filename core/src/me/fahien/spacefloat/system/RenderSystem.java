@@ -25,6 +25,7 @@ import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.collisionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
@@ -139,6 +140,10 @@ public class RenderSystem extends EntitySystem {
 			m_collisionComponent = collisionMapper.get(entity);
 			// Render hurt radius
 			renderCollision(m_collisionComponent, Color.MAGENTA);
+
+			m_collisionComponent = missionMapper.get(entity);
+			// Render hurt radius
+			renderCollision(m_collisionComponent, Color.GOLD);
 
 			m_rigidbodyComponent = rigidMapper.get(entity);
 			// Render rigidbody radius

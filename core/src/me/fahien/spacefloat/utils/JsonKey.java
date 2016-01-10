@@ -26,4 +26,7 @@ public class JsonKey {
 	public static final String MASK = "mask";
 	public static final String CONSUME = "consume";
 	public static final String POWER = "power";
+	public static final String DESTINATION = "destination";
+	public static final String COLLECTED = "collected";
+	public static final String DELIVERED = "delivered";
 }

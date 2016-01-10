@@ -13,6 +13,7 @@ public class ComponentMapperEnumerator {
 	public static ComponentMapper<EnergyComponent> energyMapper = ComponentMapper.getFor(EnergyComponent.class);
 	public static ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
 	public static ComponentMapper<GravityComponent> gravityMapper = ComponentMapper.getFor(GravityComponent.class);
+	public static ComponentMapper<MissionComponent> missionMapper = ComponentMapper.getFor(MissionComponent.class);
 	public static ComponentMapper<PlanetComponent> planetMapper = ComponentMapper.getFor(PlanetComponent.class);
 	public static ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
 	public static ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);

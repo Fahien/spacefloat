@@ -16,6 +16,7 @@ PlatformPlanet3S
 Planet3
 PlatformPlanet2
 PlatformPlanet3
+ParcelOne
 PlatformBaseUp
 PlatformBaseDownS
 SpaceBase

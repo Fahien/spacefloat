@@ -12,6 +12,7 @@ import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
+import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
@@ -44,6 +45,10 @@ public class GameObjectServiceTest {
 	private static final String ENERGY_STATION_GRAPHIC = "energy_station.g3db";
 	public static final float ENERGY_STATION_MASS = 10f;
 	public static final float ENERGY_STATION_RADIUS = 100f;
+
+	private static final String PARCEL_ONE_NAME = "ParcelOne";
+	private static final String PARCEL_ONE_GRAPHIC = "parcel.g3db";
+	private static final String PARCEL_ONE_DESTINATION = "Earth";
 
 
 	private GameObjectService gameObjectService;
@@ -109,20 +114,36 @@ public class GameObjectServiceTest {
 				(short)2, // Object
 				(short)(1|2|4)); // Player | Object | Planet
 		energyStation.add(rigidbody);
-		// Create e refuel component
-		RechargeComponent refuel = new RechargeComponent();
-		energyStation.add(refuel);
+		// Create e recharge component
+		RechargeComponent recharge = new RechargeComponent();
+		energyStation.add(recharge);
 		// Save the energy station
 		gameObjectService.save(energyStation);
 	}
 
 	@Test
+	public void couldSaveTheParcelOne() {
+		GameObject parcelOne = new GameObject(PARCEL_ONE_NAME);
+		// Create a graphic component
+		GraphicComponent graphic = new GraphicComponent(PARCEL_ONE_GRAPHIC);
+		parcelOne.add(graphic);
+		// Create a transform component
+		TransformComponent transform = new TransformComponent(new Vector3(1740,0,2310));
+		parcelOne.add(transform);
+		// Create a mission component
+		MissionComponent mission = new MissionComponent("Earth");
+		parcelOne.add(mission);
+		// Save the parce
+		gameObjectService.save(parcelOne);
+	}
+
+	@Test
 	public void couldLoadTheSpaceship() {
 		GameObject spaceship = gameObjectService.load(SPACESHIP_NAME);
-		assertEquals("The name is not equals to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
+		assertEquals("The name is not equal to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
 		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
 		assertNotNull("The spaceship has no graphic component", graphic);
-		assertEquals("The graphic name is not equals to " + SPACESHIP_GRAPHIC, SPACESHIP_GRAPHIC, graphic.getName());
+		assertEquals("The graphic name is not equal to " + SPACESHIP_GRAPHIC, SPACESHIP_GRAPHIC, graphic.getName());
 		TransformComponent transform = spaceship.getComponent(TransformComponent.class);
 		assertNotNull("The spaceship has no transform component", transform);
 		VelocityComponent velocity = spaceship.getComponent(VelocityComponent.class);
@@ -142,10 +163,10 @@ public class GameObjectServiceTest {
 	@Test
 	public void couldLoadTheEnergyStation() {
 		GameObject energyStation = gameObjectService.load(ENERGY_STATION_NAME);
-		assertEquals("The energy station name is not equals to " + ENERGY_STATION_NAME, ENERGY_STATION_NAME, energyStation.getName());
+		assertEquals("The energy station name is not equal to " + ENERGY_STATION_NAME, ENERGY_STATION_NAME, energyStation.getName());
 		GraphicComponent graphic = energyStation.getComponent(GraphicComponent.class);
 		assertNotNull("The energy station has no graphic component", graphic);
-		assertEquals("The energy station graphic name is not equals to " + ENERGY_STATION_GRAPHIC, ENERGY_STATION_GRAPHIC, graphic.getName());
+		assertEquals("The energy station graphic name is not equal to " + ENERGY_STATION_GRAPHIC, ENERGY_STATION_GRAPHIC, graphic.getName());
 		TransformComponent transform = energyStation.getComponent(TransformComponent.class);
 		assertNotNull("The energy station has no transform component", transform);
 		VelocityComponent velocity = energyStation.getComponent(VelocityComponent.class);
@@ -157,9 +178,23 @@ public class GameObjectServiceTest {
 	}
 
 	@Test
+	public void couldLoadTheParcelOne() {
+		GameObject parcelOne = gameObjectService.load(PARCEL_ONE_NAME);
+		assertEquals("The parcel name is not equal to " + PARCEL_ONE_NAME, PARCEL_ONE_NAME, parcelOne.getName());
+		GraphicComponent graphic = parcelOne.getComponent(GraphicComponent.class);
+		assertNotNull("The parcel has no graphic component", graphic);
+		assertEquals("The parcel graphic name is not equal to " + PARCEL_ONE_GRAPHIC, PARCEL_ONE_GRAPHIC, graphic.getName());
+		TransformComponent transform = parcelOne.getComponent(TransformComponent.class);
+		assertNotNull("The parcel has no transform component", transform);
+		MissionComponent mission = parcelOne.getComponent(MissionComponent.class);
+		assertNotNull("The parcel has no mission", mission);
+		assertEquals("The parcel mission destination is not equal to " + PARCEL_ONE_DESTINATION, PARCEL_ONE_DESTINATION, mission.getDestination());
+	}
+
+	@Test
 	public void couldLoadTheEarth() {
 		GameObject earth = gameObjectService.load(EARTH_NAME);
-		assertEquals("The name is not equals to " + EARTH_NAME, EARTH_NAME, earth.getName());
+		assertEquals("The name is not equal to " + EARTH_NAME, EARTH_NAME, earth.getName());
 		GravityComponent gravity = earth.getComponent(GravityComponent.class);
 		assertNotNull("The spaceship has no gravity component", gravity);
 	}

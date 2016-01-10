@@ -2,7 +2,6 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 
@@ -29,14 +28,9 @@ public class RechargeComponent extends CollisionComponent {
 		super(RECHARGE_RADIUS, RECHARGE_GROUP, SPACESHIP_MASK);
 	}
 
-	/**
-	 * Creates the {@link btCollisionObject}
-	 */
 	@Override
-	public void createCollisionObject() {
-		if (shape == null) createShape();
-		setCollisionShape(shape);
-		setCollisionFlags(btGhostObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+	protected void setCollisionFlags() {
+		setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
 	}
 
 	protected Matrix4 m_transform = new Matrix4();
@@ -54,8 +48,8 @@ public class RechargeComponent extends CollisionComponent {
 	protected EnergyComponent m_energyComponent;
 
 	@Override
-	public void collideWith(btManifoldPoint collisionPoint, GameObject gameObject) {
-		m_energyComponent = energyMapper.get(gameObject);
+	public void collideWith(btManifoldPoint collisionPoint, GameObject source, GameObject target) {
+		m_energyComponent = energyMapper.get(target);
 		if (m_energyComponent != null) {
 			m_energyComponent.recharge();
 		}
