@@ -17,8 +17,10 @@ import com.badlogic.gdx.math.Vector3;
 
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
+import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.utils.ShapeRenderer;
 import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 
@@ -27,6 +29,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMa
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.playerMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
@@ -39,6 +42,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  */
 public class RenderSystem extends EntitySystem {
 	private static final int RENDER_PRIORITY = 3;
+	private static final boolean debugAll = false;
 
 	private ImmutableArray<Entity> entities;
 
@@ -113,6 +117,7 @@ public class RenderSystem extends EntitySystem {
 	protected ModelInstance m_modelInstance;
 	protected CollisionComponent m_collisionComponent;
 	protected RigidbodyComponent m_rigidbodyComponent;
+	protected MissionComponent m_missionComponent;
 
 	@Override
 	public void update(float deltaTime) {
@@ -133,27 +138,35 @@ public class RenderSystem extends EntitySystem {
 			// Render gravity radius
 			renderCollision(m_collisionComponent, Color.PURPLE);
 
-			m_collisionComponent = planetMapper.get(entity);
-			// Render planet radius
-			renderCollision(m_collisionComponent, Color.RED);
-
-			m_collisionComponent = collisionMapper.get(entity);
-			// Render hurt radius
-			renderCollision(m_collisionComponent, Color.MAGENTA);
-
-			m_collisionComponent = missionMapper.get(entity);
-			// Render hurt radius
-			renderCollision(m_collisionComponent, Color.GOLD);
-
 			m_rigidbodyComponent = rigidMapper.get(entity);
-			// Render rigidbody radius
-			renderRigidbody(m_rigidbodyComponent, Color.RED);
-			// Render velocity line
-			renderVelocity(m_rigidbodyComponent, Color.BLUE);
+			m_missionComponent = missionMapper.get(entity);
+			renderDestination(m_rigidbodyComponent, m_missionComponent, Color.ORANGE);
 
-			m_collisionComponent = rechargeMapper.get(entity);
-			// Render recharge radius
-			renderCollision(m_collisionComponent, Color.GREEN);
+			if (playerMapper.get(entity) != null) {
+				renderVelocity(m_rigidbodyComponent, Color.BLUE);
+			}
+
+			if (debugAll) {
+				// Render rigidbody radius
+				renderRigidbody(m_rigidbodyComponent, Color.RED);
+				// Render velocity line
+
+				m_collisionComponent = planetMapper.get(entity);
+				// Render planet radius
+				renderCollision(m_collisionComponent, Color.RED);
+
+				m_collisionComponent = collisionMapper.get(entity);
+				// Render hurt radius
+				renderCollision(m_collisionComponent, Color.MAGENTA);
+
+				m_collisionComponent = missionMapper.get(entity);
+				// Render hurt radius
+				renderCollision(m_collisionComponent, Color.GOLD);
+
+				m_collisionComponent = rechargeMapper.get(entity);
+				// Render recharge radius
+				renderCollision(m_collisionComponent, Color.GREEN);
+			}
 		}
 
 		// Render Particles
@@ -165,6 +178,34 @@ public class RenderSystem extends EntitySystem {
 
 		// End the batch
 		batch.end();
+	}
+
+	protected Vector3 m_destination = new Vector3();
+
+	private void renderDestination(RigidbodyComponent rigidbody, MissionComponent mission, Color color) {
+		// Return if rigidbody or mission are null
+		if (rigidbody == null || mission == null) return;
+		// Return if pack is not collected or pack is delivered
+		if (!mission.isCollected() || mission.isDelivered()) return;
+		// Begin shape renderer with line shape type
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		// Set center point equals to collision position
+		rigidbody.getPosition(m_center);
+		// Set shape renderer color RED
+		for (Entity entity : getEngine().getEntities()) {
+			if (((GameObject) entity).getName().equals(mission.getDestination())) {
+				CollisionComponent destinationPlanet = planetMapper.get(entity);
+				destinationPlanet.getPosition(m_destination);
+				break;
+			}
+		}
+		m_destination.sub(m_center).nor().scl(100f);
+		m_center.add(m_destination);
+		shapeRenderer.setColor(color);
+		// Draw a circle
+		shapeRenderer.circle(m_center.x, m_center.z, 10f);
+		// End shape renderer
+		shapeRenderer.end();
 	}
 
 	protected Vector3 m_position = new Vector3();

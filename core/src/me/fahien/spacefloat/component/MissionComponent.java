@@ -54,12 +54,25 @@ public class MissionComponent extends CollisionComponent {
 		return destination;
 	}
 
+	/**
+	 * Tests whether is collected
+	 */
+	public boolean isCollected() {
+		return collected;
+	}
+
+	/**
+	 * Tests whether is delivered
+	 */
+	public boolean isDelivered() {
+		return delivered;
+	}
+
 	@Override
 	public void collideWith(final btManifoldPoint collisionPoint, final GameObject source, final GameObject target) {
 
 		// If is not collected and collide with Player
 		if (!collected && target.isPlayer()) {
-
 			handlingTime -= Gdx.graphics.getDeltaTime();
 			if (handlingTime <= 0f) {
 				handlingTime = HANDLING_TIME;
@@ -84,7 +97,6 @@ public class MissionComponent extends CollisionComponent {
 				stage.addActor(controlMessageActor);
 			}
 		} else if (!delivered && destination.equals(target.getName())) {
-
 			handlingTime -= Gdx.graphics.getDeltaTime();
 			if (handlingTime <= 0f) {
 				handlingTime = HANDLING_TIME;
