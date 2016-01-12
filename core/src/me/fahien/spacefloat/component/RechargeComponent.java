@@ -48,7 +48,7 @@ public class RechargeComponent extends CollisionComponent {
 	protected EnergyComponent m_energyComponent;
 
 	@Override
-	public void collideWith(btManifoldPoint collisionPoint, GameObject source, GameObject target) {
+	public void collideWith(float delta, btManifoldPoint collisionPoint, GameObject source, GameObject target) {
 		m_energyComponent = energyMapper.get(target);
 		if (m_energyComponent != null) {
 			m_energyComponent.recharge();

@@ -1,1 +1,7 @@
-{name:ParcelOne,components:{array:[{class:me.fahien.spacefloat.component.GraphicComponent,name:parcel.g3db},{class:me.fahien.spacefloat.component.TransformComponent,x:1740,y:0,z:2310,yaw:0,pitch:0,roll:0},{class:me.fahien.spacefloat.component.MissionComponent,destination:Earth,collected:false,delivered:false}],iterable:null}}
+{name:ParcelOne,components:{array:[{class:me.fahien.spacefloat.component.GraphicComponent,name:parcel.g3db},{class:me.fahien.spacefloat.component.TransformComponent,x:1740,y:0,z:2310,yaw:0,pitch:0,roll:0},
+  {class:me.fahien.spacefloat.component.MissionComponent,
+    destination:Earth,
+    collected:false,
+    delivered:false,
+    messageInitial:Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!,
+    messageEnding:"Well done, space courier!"}],iterable:null}}

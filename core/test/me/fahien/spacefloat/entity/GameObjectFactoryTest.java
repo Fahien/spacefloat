@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
+import me.fahien.spacefloat.component.DestinationComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
@@ -61,21 +62,27 @@ public class GameObjectFactoryTest {
 	public void couldSaveTheSpaceship() {
 		// Create the spaceship
 		GameObject spaceship = new GameObject(SPACESHIP_NAME);
+
 		// Create a graphic component
 		GraphicComponent graphic = new GraphicComponent(SPACESHIP_GRAPHIC);
 		spaceship.add(graphic);
+
 		// Create a transform component
 		TransformComponent position = new TransformComponent(SPACESHIP_POSITION);
 		spaceship.add(position);
+
 		// Create a velocity component
 		VelocityComponent velocity = new VelocityComponent();
 		spaceship.add(velocity);
+
 		// Create an acceleration component
 		AccelerationComponent acceleration = new AccelerationComponent();
 		spaceship.add(acceleration);
+
 		// Create a player component
 		PlayerComponent player = new PlayerComponent();
 		spaceship.add(player);
+
 		// Create a rigid component
 		RigidbodyComponent rigidbody = new RigidbodyComponent(
 				SPACESHIP_MASS,
@@ -83,12 +90,20 @@ public class GameObjectFactoryTest {
 				SPACESHIP_GROUP,
 				(short) (2|4|8)); // 2 - Object + 4 - Planet + 8 - Event
 		spaceship.add(rigidbody);
+
 		// Create a reactor component
 		ReactorComponent reactorComponent = new ReactorComponent(SPACESHIP_REACTOR);
 		spaceship.add(reactorComponent);
+
 		// Create an energy component
 		EnergyComponent energy = new EnergyComponent();
 		spaceship.add(energy);
+
+		// Create a destination component
+		DestinationComponent destinationComponent = new DestinationComponent();
+		destinationComponent.setPosition(new Vector3(-2000f, 0f, -3000f));
+		spaceship.add(destinationComponent);
+
 		// Save the spaceship
 		gameObjectFactory.save(spaceship);
 	}
@@ -97,15 +112,19 @@ public class GameObjectFactoryTest {
 	public void couldSaveTheEnergyStation() {
 		// Create the energy station
 		GameObject energyStation = new GameObject(ENERGY_STATION_NAME);
+
 		// Create a graphic component
 		GraphicComponent graphic = new GraphicComponent(ENERGY_STATION_GRAPHIC);
 		energyStation.add(graphic);
+
 		// Create a transform component
 		TransformComponent transform = new TransformComponent(new Vector3(-2000f, 0f, -3000f));
 		energyStation.add(transform);
+
 		// Create a velocity component
 		VelocityComponent velocity = new VelocityComponent();
 		energyStation.add(velocity);
+
 		// Create a hurt component
 		RigidbodyComponent rigidbody = new RigidbodyComponent(
 				ENERGY_STATION_MASS,
@@ -113,9 +132,11 @@ public class GameObjectFactoryTest {
 				(short)2, // Object
 				(short)(1|2|4)); // Player | Object | Planet
 		energyStation.add(rigidbody);
+
 		// Create e recharge component
 		RechargeComponent recharge = new RechargeComponent();
 		energyStation.add(recharge);
+
 		// Save the energy station
 		gameObjectFactory.save(energyStation);
 	}
@@ -123,15 +144,21 @@ public class GameObjectFactoryTest {
 	@Test
 	public void couldSaveTheParcelOne() {
 		GameObject parcelOne = new GameObject(PARCEL_ONE_NAME);
+
 		// Create a graphic component
 		GraphicComponent graphic = new GraphicComponent(PARCEL_ONE_GRAPHIC);
 		parcelOne.add(graphic);
+
 		// Create a transform component
 		TransformComponent transform = new TransformComponent(new Vector3(1740,0,2310));
 		parcelOne.add(transform);
+
 		// Create a mission component
 		MissionComponent mission = new MissionComponent("Earth");
 		parcelOne.add(mission);
+		mission.setMessageInitial("Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!");
+		mission.setMessageEnding("Well done, space courier!");
+
 		// Save the parce
 		gameObjectFactory.save(parcelOne);
 	}
@@ -140,23 +167,34 @@ public class GameObjectFactoryTest {
 	public void couldLoadTheSpaceship() {
 		GameObject spaceship = gameObjectFactory.load(SPACESHIP_NAME);
 		assertEquals("The name is not equal to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
+
 		GraphicComponent graphic = spaceship.getComponent(GraphicComponent.class);
 		assertNotNull("The spaceship has no graphic component", graphic);
 		assertEquals("The graphic name is not equal to " + SPACESHIP_GRAPHIC, SPACESHIP_GRAPHIC, graphic.getName());
+
 		TransformComponent transform = spaceship.getComponent(TransformComponent.class);
 		assertNotNull("The spaceship has no transform component", transform);
+
 		VelocityComponent velocity = spaceship.getComponent(VelocityComponent.class);
 		assertNotNull("The spaceship has no velocity component", velocity);
+
 		PlayerComponent player = spaceship.getComponent(PlayerComponent.class);
 		assertNotNull("The spaceship has no player component", player);
+
 		AccelerationComponent acceleration = spaceship.getComponent(AccelerationComponent.class);
 		assertNotNull("The spaceship has no acceleration component", acceleration);
+
 		RigidbodyComponent rigidbody = spaceship.getComponent(RigidbodyComponent.class);
 		assertNotNull("The spaceship has no rigid component", rigidbody);
+
 		ReactorComponent reactor = spaceship.getComponent(ReactorComponent.class);
 		assertNotNull("The spaceship has no reactor component", reactor);
+
 		EnergyComponent energy = spaceship.getComponent(EnergyComponent.class);
 		assertNotNull("The spaceship has no energy component", energy);
+
+		DestinationComponent destination = spaceship.getComponent(DestinationComponent.class);
+		assertNotNull("The spaceship has no destination component", destination);
 	}
 
 	@Test

@@ -108,7 +108,7 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	/**
 	 * Collides with another {@link GameObject}
 	 */
-	public void collideWith(btManifoldPoint collisionPoint, final GameObject source, final GameObject target){
+	public void collideWith(float delta, btManifoldPoint collisionPoint, final GameObject source, final GameObject target){
 		m_energyComponent = energyMapper.get(target);
 		if (m_energyComponent != null) {
 			// Activate SHIELD

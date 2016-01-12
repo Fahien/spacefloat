@@ -51,3 +51,10 @@ control-border
   orig: 1, 1
   offset: 0, 0
   index: -1
+indicator
+  rotate: false
+  xy: 41, 1
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1

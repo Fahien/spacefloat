@@ -36,7 +36,7 @@ public class GravityComponent extends CollisionComponent {
 	}
 
 	@Override
-	public void collideWith(btManifoldPoint collisionPoint, GameObject source, GameObject target) {
+	public void collideWith(float delta, btManifoldPoint collisionPoint, GameObject source, GameObject target) {
 		collideWith(rigidMapper.get(target));
 	}
 

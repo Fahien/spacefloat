@@ -86,6 +86,7 @@ public class MainScreen extends SpaceFloatScreen {
 			RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
 			Vector3 velocity = rigidbodyComponent.getLinearVelocity();
 			stage.addActor(factory.getVelocityActor(velocity));
+
 			EnergyComponent energyComponent = energyMapper.get(player);
 			stage.addActor(factory.getFuelActor(energyComponent));
 		} else {

@@ -144,7 +144,7 @@ public class SpaceFloatGameTest {
 		game.loadHud();
 		TextureAtlas hud = game.getHud();
 		assertNotNull("Could not get the HUD", hud);
-		assertNotNull("The hud has no fuel", hud.findRegion("fuel"));
+		assertNotNull("The hud has no fuel", hud.findRegion("energy"));
 	}
 
 	@After

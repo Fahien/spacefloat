@@ -14,11 +14,11 @@ public class ComponentMapperEnumerator {
 	public static ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
 	public static ComponentMapper<GravityComponent> gravityMapper = ComponentMapper.getFor(GravityComponent.class);
 	public static ComponentMapper<MissionComponent> missionMapper = ComponentMapper.getFor(MissionComponent.class);
-	public static ComponentMapper<PlanetComponent> planetMapper = ComponentMapper.getFor(PlanetComponent.class);
 	public static ComponentMapper<PlayerComponent> playerMapper = ComponentMapper.getFor(PlayerComponent.class);
 	public static ComponentMapper<ReactorComponent> reactorMapper = ComponentMapper.getFor(ReactorComponent.class);
 	public static ComponentMapper<RechargeComponent> rechargeMapper = ComponentMapper.getFor(RechargeComponent.class);
 	public static ComponentMapper<RigidbodyComponent> rigidMapper = ComponentMapper.getFor(RigidbodyComponent.class);
 	public static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	public static ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
+	public static ComponentMapper<DestinationComponent> destinationMapper = ComponentMapper.getFor(DestinationComponent.class);
 }

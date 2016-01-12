@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import me.fahien.spacefloat.actor.ControlMessageActor;
 import me.fahien.spacefloat.actor.HudFactory;
 import me.fahien.spacefloat.camera.MainOrthographicCamera;
 import me.fahien.spacefloat.camera.MainPerspectiveCamera;
@@ -151,13 +152,6 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
-	 * Returns the {@link HudFactory}
-	 */
-	public HudFactory getHudFactory() {
-		return hudFactory;
-	}
-
-	/**
 	 * Initializes the {@link Viewport} and the {@link Stage}
 	 */
 	private void initViewportAndStage() {
@@ -167,13 +161,6 @@ public class SpaceFloatGame extends Game {
 		stage = new Stage(viewport);
 		stage.setDebugAll(false);
 		inputMultiplexer.addProcessor(stage);
-	}
-
-	/**
-	 * Returns the {@link Stage}
-	 */
-	public Stage getStage() {
-		return stage;
 	}
 
 	/**
@@ -269,5 +256,12 @@ public class SpaceFloatGame extends Game {
 		logger.debug("Disposing asset manager");
 		assetManager.dispose();
 		logger.debug("Game disposed");
+	}
+
+	/**
+	 * Enqueue a {@link ControlMessageActor}
+	 */
+	public void enqueueMessage(String message) {
+		stage.addActor(hudFactory.getMessageActor(message));
 	}
 }

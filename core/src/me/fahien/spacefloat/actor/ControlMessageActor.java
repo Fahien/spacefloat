@@ -5,6 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor;
 
 /**
  * The Control Message {@link HudActor}
@@ -19,6 +23,14 @@ public class ControlMessageActor extends HudActor {
 	private static final float MESSAGE_X_OFFSET = 4f;
 	private static final float MESSAGE_Y_OFFSET = -8f;
 
+	private static final InputListener ControlMessageInputListener = new InputListener() {
+		@Override
+		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+			event.getTarget().addAction(removeActor());
+			return true;
+		}
+	};
+
 	private TextureRegion background;
 	private TextureRegion border;
 	private BitmapFont font;
@@ -30,6 +42,7 @@ public class ControlMessageActor extends HudActor {
 		border = hud.findRegion(CONTROL_BORDER_HUD);
 		this.font = font;
 		setWidth(getWidth() + BACKGROUND_REPEAT_COUNT * background.getRegionWidth() + border.getRegionWidth());
+		addListener(ControlMessageInputListener);
 	}
 
 	/**

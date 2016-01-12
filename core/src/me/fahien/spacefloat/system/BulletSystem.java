@@ -21,7 +21,6 @@ import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.MissionComponent;
-import me.fahien.spacefloat.component.PlanetComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -31,7 +30,6 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.collision
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -46,7 +44,6 @@ public class BulletSystem extends EntitySystem {
 	public static float RECHARGE_POWER = 0.125f;
 
 	private ImmutableArray<Entity> collisionEntities;
-	private ImmutableArray<Entity> planetEntities;
 	private ImmutableArray<Entity> gravityEntities;
 	private ImmutableArray<Entity> rechargeEntities;
 	private ImmutableArray<Entity> missionEntities;
@@ -72,8 +69,6 @@ public class BulletSystem extends EntitySystem {
 		collisionEntities = engine.getEntitiesFor(all(GraphicComponent.class, CollisionComponent.class).get());
 		createCollisionObjects(collisionEntities, CollisionComponent.class);
 
-		planetEntities = engine.getEntitiesFor(all(GraphicComponent.class, PlanetComponent.class).get());
-		createCollisionObjects(planetEntities, PlanetComponent.class);
 
 		gravityEntities = engine.getEntitiesFor(all(GraphicComponent.class, GravityComponent.class).get());
 		createCollisionObjects(gravityEntities, GravityComponent.class);
@@ -97,7 +92,6 @@ public class BulletSystem extends EntitySystem {
 		contactListener = new SpaceFloatContactListener();
 
 		addCollisionObjectsToDynamicsWorld(collisionEntities, CollisionComponent.class);
-		addCollisionObjectsToDynamicsWorld(planetEntities, PlanetComponent.class);
 		addCollisionObjectsToDynamicsWorld(gravityEntities, GravityComponent.class);
 		addCollisionObjectsToDynamicsWorld(rechargeEntities, RechargeComponent.class);
 		addCollisionObjectsToDynamicsWorld(missionEntities, MissionComponent.class);
@@ -167,13 +161,14 @@ public class BulletSystem extends EntitySystem {
 		}
 	}
 
+	protected float m_delta;
+
 	@Override
 	public void update(float delta) {
+		m_delta = delta;
+
 		for (Entity entity : collisionEntities) {
 			updateCollisionObjects(collisionMapper.get(entity), graphicMapper.get(entity));
-		}
-		for (Entity entity : planetEntities) {
-			updateCollisionObjects(planetMapper.get(entity), graphicMapper.get(entity));
 		}
 		for (Entity entity : gravityEntities) {
 			updateCollisionObjects(gravityMapper.get(entity), graphicMapper.get(entity));
@@ -247,7 +242,7 @@ public class BulletSystem extends EntitySystem {
 		}
 
 		private void handleCollision(btManifoldPoint collisionPoint, CollisionComponent collision, GameObject source, GameObject target) {
-			collision.collideWith(collisionPoint, source, target);
+			collision.collideWith(m_delta, collisionPoint, source, target);
 		}
 	}
 }

@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
@@ -16,6 +15,7 @@ import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.destinationMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.reactorMapper;
@@ -64,6 +64,7 @@ public class ReactorController extends PlayerController {
 		reactor.dispose();
 	}
 
+	protected Vector3 m_position = new Vector3();
 	protected Quaternion m_quaternion = new Quaternion();
 
 	@Override
@@ -79,6 +80,12 @@ public class ReactorController extends PlayerController {
 				rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));
 			}
 		}
+
+		// TODO move this code
+		rigidbody.getPosition(m_position);
+		destinationMapper.get(getPlayer()).updateIndicator(m_position);
+
+
 	}
 
 	/**
