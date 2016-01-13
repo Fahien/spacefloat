@@ -25,8 +25,10 @@ import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.entity.GameObjectFactory;
+import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.mission.Mission;
 
 import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -59,9 +61,11 @@ public class LoadingScreen extends SpaceFloatScreen {
 		stage.addActor(m_loadingActor);
 		localResolver = new LocalFileHandleResolver();
 		internalResolver = new InternalFileHandleResolver();
-		loadObjects(getEngine());
-		loadModels(getEngine());
+		Engine engine = getEngine();
+		loadObjects(engine);
+		loadModels(engine);
 	}
+
 
 	/**
 	 * Sets the {@link AssetManager}
@@ -75,9 +79,12 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 * Loads the {@link GameObject}s
 	 */
 	protected void loadObjects(Engine engine) {
-		GameObjectFactory factory = new GameObjectFactory();
+		GameObjectFactory factory = getGameObjectFactory();
 		Array<GameObject> objects = factory.loadObjects();
 		for (GameObject object : objects) {
+			if (object.isPlayer()) {
+				MissionFactory.INSTANCE.setPlayer(object);
+			}
 			engine.addEntity(object);
 		}
 	}
@@ -101,6 +108,8 @@ public class LoadingScreen extends SpaceFloatScreen {
 				}
 			}
 		}
+		// Load parcel model
+		m_assetManager.load(GraphicComponent.MODELS_DIR + MissionFactory.PARCEL_GRAPHIC, Model.class);
 	}
 
 	/**
@@ -109,6 +118,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 * @see <a href="https://github.com/libgdx/libgdx/wiki/3D-Particle-Effects">3D Particle Effects</a>
 	 */
 	protected void loadParticles(Engine engine, ParticleSystem particleSystem) {
+		logger.debug("Loading reactor particle effects");
 		// Get all entities with a reactor component
 		entities = engine.getEntitiesFor(all(ReactorComponent.class).get());
 		// Initialize loaders
@@ -150,6 +160,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 * Injects a {@link ModelInstance} in every {@link GraphicComponent}
 	 */
 	protected void injectGraphics(ImmutableArray<Entity> entities) {
+		logger.debug("Injecting graphics into entities");
 		for (Entity entity : entities) {
 			GraphicComponent graphic = graphicMapper.get(entity);
 			if (graphic.getInstance() == null) {
@@ -158,12 +169,17 @@ public class LoadingScreen extends SpaceFloatScreen {
 				graphic.setInstance(instance);
 			}
 		}
+		// Inject parcel model instance
+		Model model = m_assetManager.get(GraphicComponent.MODELS_DIR + MissionFactory.PARCEL_GRAPHIC, Model.class);
+		ModelInstance instance = new ModelInstance(model);
+		MissionFactory.INSTANCE.getParcelGraphic().setInstance(instance);
 	}
 
 	/**
 	 * Injects a {@link ParticleEffect} in every {@link ReactorComponent}
 	 */
 	protected void injectReactors(ImmutableArray<Entity> entities) {
+		logger.debug("Injecting reactors into entities");
 		for (Entity entity : entities) {
 			ReactorComponent reactor = reactorMapper.get(entity);
 			if (reactor.getReactor() == null) {
@@ -174,27 +190,31 @@ public class LoadingScreen extends SpaceFloatScreen {
 		}
 	}
 
+	/**
+	 * Loads {@link Mission}s
+	 */
+	private void loadMissions(MissionFactory missionFactory) {
+		logger.debug("Loading missions");
+		missionFactory.loadMissions();
+		missionFactory.loadNextMission();
+	}
+
 	@Override
 	public void update(float delta) {
 		super.update(delta);
 		if (m_progress < 1.0f) {
-			logger.debug("Updating asset manager");
 			m_assetManager.update();
-			logger.debug("Getting asset manager progress");
 			m_progress = m_assetManager.getProgress();
-			logger.debug("Setting loading text");
 			m_loadingActor.setText((int) (m_progress * 100) + LOADING_TEXT);
 		}
 		if (m_progress >= 1.0f) {
 			logger.info("Loaded " + entities.size() + " models");
 			try {
-				logger.debug("Injecting graphics into entities");
 				injectGraphics(entities);
-				logger.debug("Loading reactor particle effects");
-				loadParticles(getEngine(), getParticleSystem());
-				logger.debug("Injecting reactors into entities");
-				injectReactors(getEngine().getEntitiesFor(all(ReactorComponent.class).get()));
-				logger.debug("Changing screen");
+				Engine engine = getEngine();
+				loadParticles(engine, getParticleSystem());
+				injectReactors(engine.getEntitiesFor(all(ReactorComponent.class).get()));
+				loadMissions(MissionFactory.INSTANCE);
 				SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);
 			} catch (GdxRuntimeException e) {
 				logger.error("Could not inject reactors:" + e.getMessage());

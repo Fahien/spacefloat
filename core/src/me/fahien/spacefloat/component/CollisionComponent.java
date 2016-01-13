@@ -97,6 +97,13 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	}
 
 	/**
+	 * Sets the position
+	 */
+	public void setPosition(Vector3 position) {
+		getWorldTransform().trn(position);
+	}
+
+	/**
 	 * Sets the {@link btCollisionObject} transform
 	 */
 	public void setTransform(Matrix4 transform) {

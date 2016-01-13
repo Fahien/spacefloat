@@ -82,7 +82,7 @@ public class GraphicComponent implements Component, Json.Serializable {
 	 * Sets the {@link ModelInstance} position
 	 */
 	public void setPosition(Vector3 position) {
-		instance.transform.trn(position);
+		instance.transform.setTranslation(position);
 	}
 
 	/**

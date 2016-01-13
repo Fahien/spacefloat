@@ -39,6 +39,13 @@ public class TransformComponent implements Component, Json.Serializable {
 	}
 
 	/**
+	 * Sets the position
+	 */
+	public void setPosition(Vector3 position) {
+		this.position = position;
+	}
+
+	/**
 	 * Returns the eulerAngles
 	 */
 	public Vector3 getEulerAngles() {

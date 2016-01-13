@@ -1,4 +1,4 @@
-package me.fahien.spacefloat.actor;
+package me.fahien.spacefloat.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import me.fahien.spacefloat.actor.ControlMessageActor;
+import me.fahien.spacefloat.actor.EnergyHudActor;
+import me.fahien.spacefloat.actor.FontActor;
+import me.fahien.spacefloat.actor.HudActor;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
@@ -14,7 +18,9 @@ import me.fahien.spacefloat.screen.SpaceFloatScreen;
  *
  * @author Fahien
  */
-public class HudFactory {
+public enum HudFactory {
+	INSTANCE;
+
 	private static final String FPS_TXT = "FPS: ";
 	private static final String VEL_TXT = "VEL: ";
 	private static final float FPS_X = 4.0f;

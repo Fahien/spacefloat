@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import me.fahien.spacefloat.actor.HudFactory;
+import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.controller.ReactorController;

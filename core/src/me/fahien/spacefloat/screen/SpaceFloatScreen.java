@@ -14,7 +14,8 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import me.fahien.spacefloat.actor.HudFactory;
+import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 
 import static java.lang.Math.min;
@@ -36,6 +37,8 @@ public class SpaceFloatScreen implements Screen {
 
 	private BitmapFont font;
 	private TextureAtlas hud;
+
+	private GameObjectFactory gameObjectFactory;
 	private HudFactory hudFactory;
 
 	private Engine engine;
@@ -114,6 +117,20 @@ public class SpaceFloatScreen implements Screen {
 	 */
 	public void setFont(final BitmapFont font) {
 		this.font = font;
+	}
+
+	/**
+	 * Returns the {@link GameObjectFactory}
+	 */
+	public GameObjectFactory getGameObjectFactory() {
+		return gameObjectFactory;
+	}
+
+	/**
+	 * Sets the {@link GameObjectFactory}
+	 */
+	public void setGameObejctFactory(final GameObjectFactory gameObejctFactory) {
+		this.gameObjectFactory = gameObejctFactory;
 	}
 
 	/**

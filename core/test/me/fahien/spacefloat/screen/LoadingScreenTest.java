@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.factory.GameObjectFactory;
 import me.fahien.spacefloat.game.GdxTestRunner;
 
 import static org.junit.Assert.assertNotNull;
@@ -31,6 +32,7 @@ public class LoadingScreenTest {
 		screen = (LoadingScreen) ScreenEnumerator.LOADING.getScreen();
 		AssetManager assetManager = new AssetManager();
 		screen.setAssetManager(assetManager);
+		screen.setGameObejctFactory(GameObjectFactory.INSTANCE);
 		engine = new Engine();
 		screen.setEngine(engine);
 		try {

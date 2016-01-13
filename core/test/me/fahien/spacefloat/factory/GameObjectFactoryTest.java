@@ -1,9 +1,10 @@
-package me.fahien.spacefloat.entity;
+package me.fahien.spacefloat.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +21,8 @@ import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
+import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.utils.JsonKey;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -46,16 +49,12 @@ public class GameObjectFactoryTest {
 	public static final float ENERGY_STATION_MASS = 10f;
 	public static final float ENERGY_STATION_RADIUS = 100f;
 
-	private static final String PARCEL_ONE_NAME = "ParcelOne";
-	private static final String PARCEL_ONE_GRAPHIC = "parcel.g3db";
-	private static final String PARCEL_ONE_DESTINATION = "Earth";
-
-
 	private GameObjectFactory gameObjectFactory;
 
 	@Before
 	public void before() {
-		gameObjectFactory = new GameObjectFactory();
+		gameObjectFactory = GameObjectFactory.INSTANCE;
+		gameObjectFactory.setJson(new Json());
 	}
 
 	@Test
@@ -142,28 +141,6 @@ public class GameObjectFactoryTest {
 	}
 
 	@Test
-	public void couldSaveTheParcelOne() {
-		GameObject parcelOne = new GameObject(PARCEL_ONE_NAME);
-
-		// Create a graphic component
-		GraphicComponent graphic = new GraphicComponent(PARCEL_ONE_GRAPHIC);
-		parcelOne.add(graphic);
-
-		// Create a transform component
-		TransformComponent transform = new TransformComponent(new Vector3(1740,0,2310));
-		parcelOne.add(transform);
-
-		// Create a mission component
-		MissionComponent mission = new MissionComponent("Earth");
-		parcelOne.add(mission);
-		mission.setMessageInitial("Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!");
-		mission.setMessageEnding("Well done, space courier!");
-
-		// Save the parce
-		gameObjectFactory.save(parcelOne);
-	}
-
-	@Test
 	public void couldLoadTheSpaceship() {
 		GameObject spaceship = gameObjectFactory.load(SPACESHIP_NAME);
 		assertEquals("The name is not equal to " + SPACESHIP_NAME, SPACESHIP_NAME, spaceship.getName());
@@ -215,20 +192,6 @@ public class GameObjectFactoryTest {
 	}
 
 	@Test
-	public void couldLoadTheParcelOne() {
-		GameObject parcelOne = gameObjectFactory.load(PARCEL_ONE_NAME);
-		assertEquals("The parcel name is not equal to " + PARCEL_ONE_NAME, PARCEL_ONE_NAME, parcelOne.getName());
-		GraphicComponent graphic = parcelOne.getComponent(GraphicComponent.class);
-		assertNotNull("The parcel has no graphic component", graphic);
-		assertEquals("The parcel graphic name is not equal to " + PARCEL_ONE_GRAPHIC, PARCEL_ONE_GRAPHIC, graphic.getName());
-		TransformComponent transform = parcelOne.getComponent(TransformComponent.class);
-		assertNotNull("The parcel has no transform component", transform);
-		MissionComponent mission = parcelOne.getComponent(MissionComponent.class);
-		assertNotNull("The parcel has no mission", mission);
-		assertEquals("The parcel mission destination is not equal to " + PARCEL_ONE_DESTINATION, PARCEL_ONE_DESTINATION, mission.getDestination());
-	}
-
-	@Test
 	public void couldLoadTheEarth() {
 		GameObject earth = gameObjectFactory.load(EARTH_NAME);
 		assertEquals("The name is not equal to " + EARTH_NAME, EARTH_NAME, earth.getName());
@@ -243,7 +206,7 @@ public class GameObjectFactoryTest {
 		String objectList = "";
 		FileHandle[] files = Gdx.files.local(GameObjectFactory.OBJECTS_DIR).list();
 		for (FileHandle file : files) {
-			if (file.path().endsWith(GameObjectFactory.JSON_EXT)) {
+			if (file.path().endsWith(JsonKey.JSON_EXT)) {
 				objectList += file.nameWithoutExtension() + "\n";
 			}
 		}

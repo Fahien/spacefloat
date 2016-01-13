@@ -1,11 +1,12 @@
-package me.fahien.spacefloat.entity;
+package me.fahien.spacefloat.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
-import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.utils.JsonKey;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -14,16 +15,19 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  *
  * @author Fahien
  */
-public class GameObjectFactory {
+public enum GameObjectFactory {
+	INSTANCE;
+
 	protected static final String OBJECTS_DIR = "objects/";
 	protected static final String OBJECT_LIST = OBJECTS_DIR + "objects.txt";
-	protected static final String JSON_EXT = ".json";
 
 	private Json json;
 
-	public GameObjectFactory() {
-		json = new Json();
-		SpaceFloat.GAME.getGame().initLogger();
+	/**
+	 * Sets {@link Json}
+	 */
+	public void setJson(Json json) {
+		this.json = json;
 	}
 
 	/**
@@ -33,7 +37,7 @@ public class GameObjectFactory {
 		String objectList = "";
 		FileHandle[] files = Gdx.files.local(GameObjectFactory.OBJECTS_DIR).list();
 		for (FileHandle file : files) {
-			if (file.path().endsWith(GameObjectFactory.JSON_EXT)) {
+			if (file.path().endsWith(JsonKey.JSON_EXT)) {
 				objectList += file.nameWithoutExtension() + "\n";
 			}
 		}
@@ -45,7 +49,7 @@ public class GameObjectFactory {
 	 * Saves a {@link GameObject}
 	 */
 	public void save(GameObject object) {
-		json.toJson(object, Gdx.files.local(OBJECTS_DIR + object.getName() + JSON_EXT));
+		json.toJson(object, Gdx.files.local(OBJECTS_DIR + object.getName() + JsonKey.JSON_EXT));
 	}
 
 	/**
@@ -62,14 +66,14 @@ public class GameObjectFactory {
 	 * Loads a local {@link GameObject}
 	 */
 	public GameObject load(String testName) {
-		return json.fromJson(GameObject.class, Gdx.files.local(OBJECTS_DIR + testName + JSON_EXT));
+		return json.fromJson(GameObject.class, Gdx.files.local(OBJECTS_DIR + testName + JsonKey.JSON_EXT));
 	}
 
 	/**
 	 * Loads an internal {@link GameObject}
 	 */
 	public GameObject loadInternal(String testName) {
-		return json.fromJson(GameObject.class, Gdx.files.internal(OBJECTS_DIR + testName + JSON_EXT));
+		return json.fromJson(GameObject.class, Gdx.files.internal(OBJECTS_DIR + testName + JsonKey.JSON_EXT));
 	}
 
 	/**
@@ -103,7 +107,7 @@ public class GameObjectFactory {
 			if (files.length > 0) {
 				objects = new Array<>(files.length);
 				for (FileHandle file : files) {
-					if (file.name().endsWith(JSON_EXT)) {
+					if (file.name().endsWith(JsonKey.JSON_EXT)) {
 						objects.add(load(file.nameWithoutExtension()));
 					}
 				}

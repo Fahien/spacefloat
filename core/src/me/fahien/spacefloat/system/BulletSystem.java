@@ -69,7 +69,6 @@ public class BulletSystem extends EntitySystem {
 		collisionEntities = engine.getEntitiesFor(all(GraphicComponent.class, CollisionComponent.class).get());
 		createCollisionObjects(collisionEntities, CollisionComponent.class);
 
-
 		gravityEntities = engine.getEntitiesFor(all(GraphicComponent.class, GravityComponent.class).get());
 		createCollisionObjects(gravityEntities, GravityComponent.class);
 

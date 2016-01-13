@@ -12,14 +12,18 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.actor.ControlMessageActor;
-import me.fahien.spacefloat.actor.HudFactory;
+import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.camera.MainOrthographicCamera;
 import me.fahien.spacefloat.camera.MainPerspectiveCamera;
+import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.system.CameraSystem;
@@ -46,6 +50,10 @@ public class SpaceFloatGame extends Game {
 
 	private AssetManager assetManager;
 
+	private Json json;
+	private GameObjectFactory gameObjectFactory;
+	private MissionFactory missionFactory;
+
 	private Engine engine;
 	private Camera camera;
 	private ParticleSystem particleSystem;
@@ -58,10 +66,6 @@ public class SpaceFloatGame extends Game {
 
 	private Viewport viewport;
 	private Stage stage;
-
-	public SpaceFloatGame() {
-		engine = new Engine();
-	}
 
 	/**
 	 * Loads the {@link SpaceFloatPreferences}
@@ -93,6 +97,20 @@ public class SpaceFloatGame extends Game {
 	 */
 	public AssetManager getAssetManager() {
 		return assetManager;
+	}
+
+	/**
+	 * Initializes {@link Json}
+	 */
+	public void initJson() {
+		json = new Json();
+	}
+
+	/**
+	 * Initializes the {@link Engine}
+	 */
+	public void initEngine() {
+		engine = new Engine();
 	}
 
 	/**
@@ -145,8 +163,16 @@ public class SpaceFloatGame extends Game {
 		return hud;
 	}
 
-	public void initHudFactory() {
-		hudFactory = new HudFactory();
+	public void initFactories() {
+		gameObjectFactory = GameObjectFactory.INSTANCE;
+		gameObjectFactory.setJson(json);
+
+		missionFactory = MissionFactory.INSTANCE;
+		missionFactory.setJson(json);
+		missionFactory.setEngine(engine);
+		missionFactory.setMissionComponent(new MissionComponent());
+
+		hudFactory = HudFactory.INSTANCE;
 		hudFactory.setHud(hud);
 		hudFactory.setFont(font);
 	}
@@ -205,6 +231,7 @@ public class SpaceFloatGame extends Game {
 	 */
 	private void injectDependencies(SpaceFloatScreen screen) {
 		screen.setAssetManager(assetManager);
+		screen.setGameObejctFactory(gameObjectFactory);
 		screen.setFont(font);
 		screen.setHud(hud);
 		screen.setHudFactory(hudFactory);
@@ -225,14 +252,16 @@ public class SpaceFloatGame extends Game {
 		loadPreferences();
 		initLogger();
 		initAssetManager();
+		initEngine();
+		initJson();
 		loadFont();
 		loadHud();
-		initHudFactory();
 		initCamera();
 		initParticleSystem();
 		initInputMultiplexer();
 		initViewportAndStage();
 		Bullet.init();
+		initFactories();
 		setScreen(ScreenEnumerator.LOADING);
 	}
 
@@ -249,6 +278,10 @@ public class SpaceFloatGame extends Game {
 	@Override
 	public void dispose() {
 		super.dispose();
+		if (missionFactory != null) {
+			logger.debug("Disposing mission");
+			missionFactory.dispose();
+		}
 		if (stage != null) {
 			logger.debug("Disposing stage");
 			stage.dispose();
