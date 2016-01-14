@@ -8,8 +8,9 @@ package me.fahien.spacefloat.screen;
 public enum ScreenEnumerator {
 	SHOWCASE(new ShowcaseScreen()),
 	INFO(new InfoScreen()),
-	MAIN(new MainScreen()),
-	LOADING(new LoadingScreen());
+	GAME(new GameScreen()),
+	LOADING(new LoadingScreen()),
+	MAIN(new MainScreen());
 
 	private SpaceFloatScreen screen;
 

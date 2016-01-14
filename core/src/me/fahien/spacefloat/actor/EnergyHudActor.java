@@ -30,16 +30,21 @@ public class EnergyHudActor extends HudActor {
 	private int pointWidth;
 	private int pointHeight;
 
-
 	private EnergyComponent energy;
 
-	public EnergyHudActor(TextureAtlas hud, EnergyComponent energy) {
+	public EnergyHudActor(TextureAtlas hud) {
 		super(hud.findRegion(LINEAR_HUD));
 		pointNormal = hud.findRegion(POINT_NORMAL_HUD);
 		pointWarning = hud.findRegion(POINT_WARNING_HUD);
 		pointDanger = hud.findRegion(POINT_DANGER_HUD);
 		pointWidth = pointNormal.getRegionWidth();
 		pointHeight = pointNormal.getRegionHeight();
+	}
+
+	/**
+	 * Sets the {@link EnergyComponent}
+	 */
+	public void setEnergy(EnergyComponent energy) {
 		this.energy = energy;
 	}
 

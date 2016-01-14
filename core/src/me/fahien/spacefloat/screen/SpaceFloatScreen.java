@@ -14,9 +14,13 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.factory.GameObjectFactory;
 import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.game.SpaceFloatGame;
+import me.fahien.spacefloat.system.BulletSystem;
+import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.system.RenderSystem;
 
 import static java.lang.Math.min;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -48,6 +52,11 @@ public class SpaceFloatScreen implements Screen {
 
 	private Viewport viewport;
 	private Stage stage;
+
+	private ReactorController reactorController;
+	private CameraSystem cameraSystem;
+	private BulletSystem bulletSystem;
+	private RenderSystem renderSystem;
 
 	/**
 	 * Tests whether is initialized
@@ -231,6 +240,38 @@ public class SpaceFloatScreen implements Screen {
 		this.stage = stage;
 	}
 
+	public ReactorController getReactorController() {
+		return reactorController;
+	}
+
+	public void setReactorController(ReactorController reactorController) {
+		this.reactorController = reactorController;
+	}
+
+	public CameraSystem getCameraSystem() {
+		return cameraSystem;
+	}
+
+	public void setCameraSystem(CameraSystem cameraSystem) {
+		this.cameraSystem = cameraSystem;
+	}
+
+	public BulletSystem getBulletSystem() {
+		return bulletSystem;
+	}
+
+	public void setBulletSystem(BulletSystem bulletSystem) {
+		this.bulletSystem = bulletSystem;
+	}
+
+	public RenderSystem getRenderSystem() {
+		return renderSystem;
+	}
+
+	public void setRenderSystem(RenderSystem renderSystem) {
+		this.renderSystem = renderSystem;
+	}
+
 	/**
 	 * Populates the {@link Stage}
 	 */
@@ -289,14 +330,21 @@ public class SpaceFloatScreen implements Screen {
 	public void dispose() {
 		logger.debug("Disposing screen");
 		engine = null;
+		camera = null;
 		font = null;
 		hud = null;
 		hudFactory = null;
+		gameObjectFactory = null;
 		assetManager = null;
 		inputMultiplexer = null;
 		viewport = null;
 		if (stage != null) stage.getRoot().clearChildren();
 		stage = null;
+		particleSystem = null;
+		reactorController = null;
+		cameraSystem = null;
+		bulletSystem = null;
+		renderSystem = null;
 		initialized = false;
 	}
 }

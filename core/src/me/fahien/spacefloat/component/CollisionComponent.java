@@ -4,23 +4,20 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.utils.JsonKey;
-
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 
 /**
  * The Collision {@link Component}
  *
  * @author Fahien
  */
-public class CollisionComponent extends btCollisionObject implements Component, Json.Serializable {
+public class CollisionComponent implements Component, Json.Serializable {
 	private static final float DEFAULT_RADIUS = 128.0f;
 	private final static short DEFAULT_GROUP = 1 << 1; // 10
 	private final static short DEFAULT_MASK = 0; // Nothing
@@ -30,6 +27,7 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	protected btCollisionShape shape;
 	private short group;
 	private short mask;
+	private btCollisionObject collisionObject;
 
 	public CollisionComponent() {
 		this(DEFAULT_RADIUS);
@@ -63,16 +61,22 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	 * Creates the {@link btCollisionObject}
 	 */
 	public void createCollisionObject() {
+		if (collisionObject != null) return;
 		if (shape == null) createShape();
-		setCollisionShape(shape);
+		collisionObject = new btCollisionObject();
+		collisionObject.setCollisionShape(shape);
 		setCollisionFlags();
+	}
+
+	public btCollisionObject getCollisionObject() {
+		return collisionObject;
 	}
 
 	/**
 	 * Sets the {@link CollisionFlags}
 	 */
 	protected void setCollisionFlags() {
-		setCollisionFlags(getCollisionFlags() | CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		collisionObject.setCollisionFlags(collisionObject.getCollisionFlags() | CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
 	}
 
 	/**
@@ -93,41 +97,28 @@ public class CollisionComponent extends btCollisionObject implements Component, 
 	 * Returns the {@link btCollisionObject} position
 	 */
 	public void getPosition(Vector3 position) {
-		getWorldTransform().getTranslation(position);
+		collisionObject.getWorldTransform().getTranslation(position);
 	}
 
 	/**
 	 * Sets the position
 	 */
 	public void setPosition(Vector3 position) {
-		getWorldTransform().trn(position);
+		collisionObject.getWorldTransform().trn(position);
 	}
 
 	/**
 	 * Sets the {@link btCollisionObject} transform
 	 */
 	public void setTransform(Matrix4 transform) {
-		setWorldTransform(transform);
-	}
-
-	protected EnergyComponent m_energyComponent;
-
-	/**
-	 * Collides with another {@link GameObject}
-	 */
-	public void collideWith(float delta, btManifoldPoint collisionPoint, final GameObject source, final GameObject target){
-		m_energyComponent = energyMapper.get(target);
-		if (m_energyComponent != null) {
-			// Activate SHIELD
-			m_energyComponent.hurt(collisionPoint.getAppliedImpulse());
-		}
+		collisionObject.setWorldTransform(transform);
 	}
 
 	public void dispose() {
 		// Dispose Bullet shape
-		if (shape != null) shape.dispose();
+		if (shape != null && !shape.isDisposed()) shape.dispose();
 		// Dispose Bullet collision object
-		super.dispose();
+		if (collisionObject != null && !collisionObject.isDisposed()) collisionObject.dispose();
 	}
 
 	@Override

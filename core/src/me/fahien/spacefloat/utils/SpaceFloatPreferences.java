@@ -3,9 +3,8 @@ package me.fahien.spacefloat.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 
-import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.game.SpaceFloatGame;
-import me.fahien.spacefloat.system.BulletSystem;
+import me.fahien.spacefloat.system.CameraSystem;
 
 /**
  * Space Float Preferences
@@ -16,7 +15,6 @@ public class SpaceFloatPreferences {
 	private static final String CONFIG_FILE = "spacefloat";
 
 	protected static final String LOGGER_LEVEL = "loggerLevel";
-	protected static final String RECHARGE_POWER = "rechargePower";
 	protected static final String SHIELD_CONSUME = "shieldConsume";
 	protected static final String CAMERA_TYPE = "cameraType";
 	protected static final String CAMERA_ZOOM = "cameraZoom";
@@ -41,7 +39,6 @@ public class SpaceFloatPreferences {
 		preferences.putInteger(LOGGER_LEVEL, SpaceFloatGame.LOGGER_LEVEL);
 		preferences.putString(CAMERA_TYPE, CameraSystem.CAMERA_TYPE);
 		preferences.putFloat(CAMERA_ZOOM, CameraSystem.CAMERA_ZOOM);
-		preferences.putFloat(RECHARGE_POWER, BulletSystem.RECHARGE_POWER);
 		preferences.flush();
 	}
 
@@ -52,6 +49,5 @@ public class SpaceFloatPreferences {
 		SpaceFloatGame.LOGGER_LEVEL = preferences.getInteger(LOGGER_LEVEL, SpaceFloatGame.LOGGER_LEVEL);
 		CameraSystem.CAMERA_TYPE = preferences.getString(CAMERA_TYPE, CameraSystem.CAMERA_TYPE);
 		CameraSystem.setCameraZoom(preferences.getFloat(CAMERA_ZOOM, CameraSystem.CAMERA_ZOOM));
-		BulletSystem.RECHARGE_POWER = preferences.getFloat(RECHARGE_POWER, BulletSystem.RECHARGE_POWER);
 	}
 }

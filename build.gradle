@@ -13,7 +13,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '0.13'
+    version = '0.14'
     ext {
         appName = "SpaceFloat"
         gdxVersion = '1.7.1'

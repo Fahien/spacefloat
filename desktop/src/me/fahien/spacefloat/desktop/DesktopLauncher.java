@@ -4,9 +4,10 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.game.SpaceFloatGame;
 
 public class DesktopLauncher {
-	private static final String WINDOW_TITLE = "SpaceFloat";
+	private static final String WINDOW_TITLE = "SpaceFloat v" + SpaceFloatGame.VERSION;
 
 	private static final int WINDOW_WIDTH = 960;
 	private static final int WINDOW_HEIGHT = 540;

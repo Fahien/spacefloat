@@ -2,15 +2,11 @@ package me.fahien.spacefloat.component;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btGhostObject;
-import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-
-import me.fahien.spacefloat.entity.GameObject;
-
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags;
 
 /**
- * The Recharge Component
+ * The Recharge {@link CollisionComponent}
  *
  * @author Fahien
  */
@@ -30,28 +26,18 @@ public class RechargeComponent extends CollisionComponent {
 
 	@Override
 	protected void setCollisionFlags() {
-		setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
+		getCollisionObject().setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
 	}
 
 	protected Matrix4 m_transform = new Matrix4();
 
 	/**
-	 * Sets the {@link btGhostObject} transform
+	 * Sets the {@link btCollisionObject} transform
 	 */
 	@Override
 	public void setTransform(Matrix4 transform) {
 		m_transform.set(transform);
 		m_transform.translate(offset);
-		setWorldTransform(m_transform);
-	}
-
-	protected EnergyComponent m_energyComponent;
-
-	@Override
-	public void collideWith(float delta, btManifoldPoint collisionPoint, GameObject source, GameObject target) {
-		m_energyComponent = energyMapper.get(target);
-		if (m_energyComponent != null) {
-			m_energyComponent.recharge();
-		}
+		getCollisionObject().setWorldTransform(m_transform);
 	}
 }

@@ -2,7 +2,7 @@ package me.fahien.spacefloat.screen;
 
 
 /**
- * The {@link MainScreen} Test Case
+ * The {@link GameScreen} Test Case
  *
  * @author Fahien
  */

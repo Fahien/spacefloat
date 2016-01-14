@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.utils.JsonKey;
 
 /**

@@ -1,8 +1,10 @@
 package me.fahien.spacefloat.game;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
@@ -11,6 +13,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.Logger;
@@ -19,6 +23,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.actor.ControlMessageActor;
 import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.controller.ReactorController;
+import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
 import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.camera.MainOrthographicCamera;
@@ -26,7 +32,9 @@ import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
+import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.system.RenderSystem;
 import me.fahien.spacefloat.utils.SpaceFloatPreferences;
 
 /**
@@ -40,7 +48,11 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
+	public static final String VERSION = "0.14";
+
 	public static int LOGGER_LEVEL = Logger.INFO;
+
+	public static boolean DEBUG_ALL = false;
 
 	private static final String SYSTEM_PATH = "system/";
 	private static final String SYSTEM_FONT = SYSTEM_PATH + "font.fnt";
@@ -66,6 +78,12 @@ public class SpaceFloatGame extends Game {
 
 	private Viewport viewport;
 	private Stage stage;
+
+	private ReactorController reactorController;
+	private CameraSystem cameraSystem;
+	private RenderSystem renderSystem;
+	private BulletSystem bulletSystem;
+	private GameObject player;
 
 	/**
 	 * Loads the {@link SpaceFloatPreferences}
@@ -170,7 +188,6 @@ public class SpaceFloatGame extends Game {
 		missionFactory = MissionFactory.INSTANCE;
 		missionFactory.setJson(json);
 		missionFactory.setEngine(engine);
-		missionFactory.setMissionComponent(new MissionComponent());
 
 		hudFactory = HudFactory.INSTANCE;
 		hudFactory.setHud(hud);
@@ -185,7 +202,17 @@ public class SpaceFloatGame extends Game {
 		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
 		logger.debug("Creating stage");
 		stage = new Stage(viewport);
-		stage.setDebugAll(false);
+		stage.setDebugAll(DEBUG_ALL);
+		stage.getRoot().addListener(new InputListener() {
+			@Override
+			public boolean keyDown(InputEvent event, int keycode) {
+				if (keycode == Input.Keys.ESCAPE && getScreen() != ScreenEnumerator.LOADING.getScreen()) {
+					setScreen(ScreenEnumerator.MAIN);
+					return true;
+				}
+				return false;
+			}
+		});
 		inputMultiplexer.addProcessor(stage);
 	}
 
@@ -208,6 +235,30 @@ public class SpaceFloatGame extends Game {
 		logger.debug("Creating input multiplexer");
 		inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
+	}
+
+	/**
+	 * Initializes all {@link EntitySystem}s
+	 */
+	public void initSystems() {
+		cameraSystem = new CameraSystem();
+		renderSystem = new RenderSystem();
+		bulletSystem = new BulletSystem();
+		reactorController = new ReactorController();
+	}
+
+	/**
+	 * Returns the player
+	 */
+	public GameObject getPlayer() {
+		return player;
+	}
+
+	/**
+	 * Sets the player
+	 */
+	public void setPlayer(GameObject player) {
+		this.player = player;
 	}
 
 	/**
@@ -238,6 +289,10 @@ public class SpaceFloatGame extends Game {
 		screen.setEngine(engine);
 		screen.setCamera(camera);
 		screen.setParticleSystem(particleSystem);
+		screen.setReactorController(reactorController);
+		screen.setCameraSystem(cameraSystem);
+		screen.setBulletSystem(bulletSystem);
+		screen.setRenderSystem(renderSystem);
 		screen.setInputMultiplexer(inputMultiplexer);
 		screen.setViewport(viewport);
 		screen.setStage(stage);
@@ -262,7 +317,8 @@ public class SpaceFloatGame extends Game {
 		initViewportAndStage();
 		Bullet.init();
 		initFactories();
-		setScreen(ScreenEnumerator.LOADING);
+		initSystems();
+		setScreen(ScreenEnumerator.MAIN);
 	}
 
 	@Override
@@ -282,6 +338,14 @@ public class SpaceFloatGame extends Game {
 			logger.debug("Disposing mission");
 			missionFactory.dispose();
 		}
+		if (bulletSystem != null) {
+			logger.debug("Disposing bullet");
+			bulletSystem.dispose();
+		}
+		if (renderSystem != null) {
+			logger.debug("Disposing render");
+			renderSystem.dispose();
+		}
 		if (stage != null) {
 			logger.debug("Disposing stage");
 			stage.dispose();
@@ -296,5 +360,9 @@ public class SpaceFloatGame extends Game {
 	 */
 	public void enqueueMessage(String message) {
 		stage.addActor(hudFactory.getMessageActor(message));
+	}
+
+	public BulletSystem getBulletSystem() {
+		return bulletSystem;
 	}
 }

@@ -4,6 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.game.SpaceFloatGame;
+
 /**
  * Hud {@link Actor}
  *
@@ -24,6 +27,15 @@ public class HudActor extends Actor {
 	 */
 	public TextureRegion getRegion() {
 		return region;
+	}
+
+	/**
+	 * Sets the {link TextureRegion}
+	 */
+	public void setRegion(TextureRegion region) {
+		this.region = region;
+		setWidth(region.getRegionWidth());
+		setHeight(region.getRegionHeight());
 	}
 
 	@Override

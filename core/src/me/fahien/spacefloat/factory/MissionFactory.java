@@ -11,6 +11,7 @@ import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.game.SpaceFloat;
 import me.fahien.spacefloat.mission.Mission;
 import me.fahien.spacefloat.utils.JsonKey;
 
@@ -24,8 +25,9 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public enum MissionFactory {
 	INSTANCE;
 
-	private static final String PARCEL_NAME = "parcel";
+	public static final String PARCEL_NAME = "parcel";
 	public static final String PARCEL_GRAPHIC = "parcel.g3db";
+
 	private static final String MISSIONS_DIR = "missions/";
 	private static final String MISSION_LIST = MISSIONS_DIR + "missions.txt";
 
@@ -36,7 +38,6 @@ public enum MissionFactory {
 	private TransformComponent parcelTransform;
 	private GraphicComponent parcelGraphic;
 
-	private GameObject player;
 	private MissionComponent missionComponent;
 
 	private Array<Mission> missions;
@@ -50,13 +51,6 @@ public enum MissionFactory {
 	}
 
 	/**
-	 * Initializes the {@link MissionComponent}
-	 */
-	public void setMissionComponent(final MissionComponent missionComponent) {
-		this.missionComponent = missionComponent;
-	}
-
-	/**
 	 * Loads the next {@link Mission}
 	 */
 	public void loadNextMission() {
@@ -65,6 +59,11 @@ public enum MissionFactory {
 			logger.debug("No more missions");
 			return;
 		}
+		if (missionComponent == null) {
+			missionComponent = new MissionComponent();
+			missionComponent.createCollisionObject();
+		}
+		GameObject player = SpaceFloat.GAME.getGame().getPlayer();
 		for (int i = 0; i < missions.size; i++) {
 			// Get first mission
 			Mission mission = missions.get(i);
@@ -77,7 +76,7 @@ public enum MissionFactory {
 					Vector3 position = mission.getPosition();
 					missionComponent.setPosition(position);
 					// Update mission component user data
-					missionComponent.userData = parcel;
+					missionComponent.getCollisionObject().userData = parcel;
 					// Updating parcel transform
 					parcelTransform.setPosition(position);
 					// Update parcel graphic
@@ -87,6 +86,8 @@ public enum MissionFactory {
 					// Add parcel game object to the engine
 					engine.addEntity(parcel);
 				} else {
+					// Update mission component user data
+					missionComponent.getCollisionObject().userData = player;
 					// Add the mission component to the player
 					player.add(missionComponent);
 				}
@@ -108,13 +109,6 @@ public enum MissionFactory {
 	 */
 	public void setEngine(final Engine engine) {
 		this.engine = engine;
-	}
-
-	/**
-	 * Sets the player {@link GameObject}
-	 */
-	public void setPlayer(final GameObject player) {
-		this.player = player;
 	}
 
 	/**
@@ -167,7 +161,17 @@ public enum MissionFactory {
 	 * Loads all {@link Mission} in the internal MISSIONS_DIR
 	 */
 	public void loadInternalMissions() {
-		FileHandle file = Gdx.files.internal(MISSION_LIST);
+		if (missions != null) {
+			missions.clear();
+		}
+		FileHandle file = Gdx.files.local(MISSIONS_DIR);
+		if (file.isDirectory()) {
+			file.deleteDirectory();
+		}
+		if (missionComponent != null && missionComponent.getCollisionObject().isDisposed()) {
+			missionComponent = null;
+		}
+		file = Gdx.files.internal(MISSION_LIST);
 		String listString = file.readString();
 		String[] missionName = listString.split("\n");
 		if (missionName.length > 0) {
@@ -228,6 +232,9 @@ public enum MissionFactory {
 	 * Disposes resources
 	 */
 	public void dispose() {
-		if (!missionComponent.isDisposed()) missionComponent.dispose();
+		if (missionComponent != null) {
+			missionComponent.dispose();
+			missionComponent = null;
+		}
 	}
 }

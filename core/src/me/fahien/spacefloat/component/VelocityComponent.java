@@ -7,23 +7,18 @@ import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.utils.JsonKey;
 
-import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
-
 /**
  * The Velocity {@link Component}
  *
  * @author Fahien
  */
 public class VelocityComponent implements Component, Json.Serializable {
-
-	public static final int BOUNCE_LIMIT = 64;
-	public static final float ABSORBE_FACTOR = 0.5f;
 	private Vector3 velocity;
-	private Vector3 eulerAnglesVelocity;
+	private Vector3 angularVelocity;
 
 	public VelocityComponent() {
 		velocity = new Vector3();
-		eulerAnglesVelocity = new Vector3();
+		angularVelocity = new Vector3();
 	}
 
 	/**
@@ -34,45 +29,17 @@ public class VelocityComponent implements Component, Json.Serializable {
 	}
 
 	/**
-	 * Returns the euler Angles
+	 * Sets the velocity
 	 */
-	public Vector3 getEulerAnglesVelocity() {
-		return eulerAnglesVelocity;
+	public void setVelocity(Vector3 velocity) {
+		this.velocity = velocity;
 	}
 
 	/**
-	 * Hurt with normal
+	 * Returns the angular velocity
 	 */
-	public void hurt(Vector3 normal) {
-		normal.nor();
-		logger.debug("Normal: " + normal);
-		float dot = 2 * velocity.dot(normal);
-		normal.scl(dot);
-		logger.debug("Pre hurt velocity: " + velocity);
-		velocity.sub(normal).scl(ABSORBE_FACTOR);
-		logger.debug("Hurted velocity: " + velocity);
-		if (velocity.len2() < BOUNCE_LIMIT) {
-			logger.debug("Hurt absorbed");
-			velocity.set(Vector3.Zero);
-		}
-	}
-
-	/**
-	 * Collide with normal
-	 */
-	public void collide(Vector3 normal) {
-		normal.nor();
-		float dot = velocity.dot(normal);
-		logger.debug("Colliding dot: " + dot);
-		if (dot > 0) {
-			normal.scl(dot);
-			velocity.sub(normal);
-			logger.debug("Velocity after colliding: " + velocity);
-			if (velocity.len2() < BOUNCE_LIMIT) {
-				logger.debug("Hurt absorbed");
-				velocity.set(Vector3.Zero);
-			}
-		}
+	public Vector3 getAngularVelocity() {
+		return angularVelocity;
 	}
 
 	@Override
@@ -80,9 +47,9 @@ public class VelocityComponent implements Component, Json.Serializable {
 		json.writeValue(JsonKey.X, velocity.x);
 		json.writeValue(JsonKey.Y, velocity.y);
 		json.writeValue(JsonKey.Z, velocity.z);
-		json.writeValue(JsonKey.YAW, eulerAnglesVelocity.x);
-		json.writeValue(JsonKey.PITCH, eulerAnglesVelocity.y);
-		json.writeValue(JsonKey.ROLL, eulerAnglesVelocity.z);
+		json.writeValue(JsonKey.YAW, angularVelocity.x);
+		json.writeValue(JsonKey.PITCH, angularVelocity.y);
+		json.writeValue(JsonKey.ROLL, angularVelocity.z);
 	}
 
 	@Override
@@ -90,8 +57,12 @@ public class VelocityComponent implements Component, Json.Serializable {
 		velocity.x = jsonData.getFloat(JsonKey.X);
 		velocity.y = jsonData.getFloat(JsonKey.Y);
 		velocity.z = jsonData.getFloat(JsonKey.Z);
-		eulerAnglesVelocity.x = jsonData.getFloat(JsonKey.YAW);
-		eulerAnglesVelocity.y = jsonData.getFloat(JsonKey.PITCH);
-		eulerAnglesVelocity.z = jsonData.getFloat(JsonKey.ROLL);
+		angularVelocity.x = jsonData.getFloat(JsonKey.YAW);
+		angularVelocity.y = jsonData.getFloat(JsonKey.PITCH);
+		angularVelocity.z = jsonData.getFloat(JsonKey.ROLL);
+	}
+
+	public void setAngularVelocity(Vector3 angularVelocity) {
+		this.angularVelocity = angularVelocity;
 	}
 }

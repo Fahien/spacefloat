@@ -1,5 +1,6 @@
 package me.fahien.spacefloat.actor;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -62,7 +63,9 @@ public class FontActor extends Actor {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		super.draw(batch, parentAlpha);
+		font.setColor(Color.BLACK);
+		font.draw(batch, text, getX() + 1, getY() + getHeight() / 2 - 1, getWidth(), halign, false);
+		font.setColor(Color.WHITE);
 		font.draw(batch, text, getX(), getY() + getHeight() / 2, getWidth(), halign, false);
 	}
 }

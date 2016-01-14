@@ -1,13 +1,24 @@
 package me.fahien.spacefloat.factory;
 
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
+import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.component.RigidbodyComponent;
+import me.fahien.spacefloat.component.TransformComponent;
+import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.game.SpaceFloat;
 import me.fahien.spacefloat.utils.JsonKey;
 
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -22,6 +33,7 @@ public enum GameObjectFactory {
 	protected static final String OBJECT_LIST = OBJECTS_DIR + "objects.txt";
 
 	private Json json;
+	private Array<GameObject> objects;
 
 	/**
 	 * Sets {@link Json}
@@ -80,10 +92,21 @@ public enum GameObjectFactory {
 	 * Loads all {@link GameObject} in the internal OBJECTS_DIR
 	 */
 	public Array<GameObject> loadInternalObjects() {
+		if (objects != null) {
+			logger.debug("Disposing old collisions and rigidbodies");
+			SpaceFloat.GAME.getGame().getBulletSystem().disposeCollisionsAndRigidbodies();
+			objects.clear();
+		}
+		FileHandle dir = Gdx.files.local(OBJECTS_DIR);
+		if (dir.isDirectory()) {
+			for (FileHandle file : dir.list()) {
+				file.delete();
+			}
+			dir.deleteDirectory();
+		}
 		FileHandle file = Gdx.files.internal(OBJECT_LIST);
 		String listString = file.readString();
 		String[] objectNames = listString.split("\n");
-		Array<GameObject> objects;
 		if (objectNames.length > 0) {
 			objects = new Array<>(objectNames.length);
 			for (String objectName : objectNames) {
@@ -122,11 +145,38 @@ public enum GameObjectFactory {
 	 * Loads the {@link GameObject} list
 	 */
 	public Array<GameObject> loadObjects() {
-		Array<GameObject> objects = loadLocalObjects();
+		if (objects == null) objects = loadLocalObjects();
 		if (objects == null) {
 			logger.error("No objects found in the local directory: " + OBJECTS_DIR);
 			objects = loadInternalObjects();
 		}
 		return objects;
+	}
+
+	/**
+	 * Saves entities
+	 */
+	public void saveObjects(ImmutableArray<Entity> entities) {
+		for (Entity entity : entities) {
+			GameObject object = (GameObject) entity;
+			// Do not save the parcel
+			if (object.getName().equals(MissionFactory.PARCEL_NAME)) continue;
+			// Do not save the mission component
+			MissionComponent mission = missionMapper.get(entity);
+			if (mission != null) entity.remove(MissionComponent.class);
+			// Update transform and velocity components
+			TransformComponent transform = transformMapper.get(entity);
+			RigidbodyComponent rigidbody = rigidMapper.get(entity);
+			if (transform != null && rigidbody != null) {
+				rigidbody.getPosition(transform.getPosition());
+			}
+			VelocityComponent velocity = velocityMapper.get(entity);
+			if (velocity != null && rigidbody != null) {
+				velocity.setVelocity(rigidbody.getLinearVelocity());
+				velocity.setAngularVelocity(rigidbody.getRigidbody().getAngularVelocity());
+			}
+			save(object);
+		}
+		createLocalObjectList();
 	}
 }

@@ -23,7 +23,7 @@ public class ControlMessageActor extends HudActor {
 	private static final float MESSAGE_X_OFFSET = 4f;
 	private static final float MESSAGE_Y_OFFSET = -8f;
 
-	private static final InputListener ControlMessageInputListener = new InputListener() {
+	public static final InputListener ControlMessageInputListener = new InputListener() {
 		@Override
 		public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 			event.getTarget().addAction(removeActor());

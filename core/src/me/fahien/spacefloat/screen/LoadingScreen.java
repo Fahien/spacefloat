@@ -52,6 +52,14 @@ public class LoadingScreen extends SpaceFloatScreen {
 	private FontActor m_loadingActor;
 	private AssetManager m_assetManager;
 	private float m_progress;
+	private boolean loadInternal;
+
+	/**
+	 * Set load internal
+	 */
+	public void setLoadInternal(boolean loadInternal) {
+		this.loadInternal = loadInternal;
+	}
 
 	@Override
 	public void populate(Stage stage) {
@@ -80,12 +88,21 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 */
 	protected void loadObjects(Engine engine) {
 		GameObjectFactory factory = getGameObjectFactory();
-		Array<GameObject> objects = factory.loadObjects();
-		for (GameObject object : objects) {
-			if (object.isPlayer()) {
-				MissionFactory.INSTANCE.setPlayer(object);
+		Array<GameObject> objects;
+		if (loadInternal) {
+			objects = factory.loadInternalObjects();
+		} else {
+			objects = factory.loadObjects();
+		}
+		if (objects != null) {
+			for (GameObject object : objects) {
+				if (object.isPlayer()) {
+					getGame().setPlayer(object);
+				}
+				engine.addEntity(object);
 			}
-			engine.addEntity(object);
+		} else {
+			logger.error("Could not load objects");
 		}
 	}
 
@@ -195,7 +212,11 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 */
 	private void loadMissions(MissionFactory missionFactory) {
 		logger.debug("Loading missions");
-		missionFactory.loadMissions();
+		if (loadInternal) {
+			missionFactory.loadInternalMissions();
+		} else {
+			missionFactory.loadMissions();
+		}
 		missionFactory.loadNextMission();
 	}
 
@@ -215,7 +236,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 				loadParticles(engine, getParticleSystem());
 				injectReactors(engine.getEntitiesFor(all(ReactorComponent.class).get()));
 				loadMissions(MissionFactory.INSTANCE);
-				SpaceFloat.GAME.setScreen(ScreenEnumerator.MAIN);
+				SpaceFloat.GAME.setScreen(ScreenEnumerator.GAME);
 			} catch (GdxRuntimeException e) {
 				logger.error("Could not inject reactors:" + e.getMessage());
 				m_loadingActor.setText("Could not inject reactors, please restart SpaceFloat");

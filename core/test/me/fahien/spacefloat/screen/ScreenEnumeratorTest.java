@@ -23,7 +23,7 @@ public class ScreenEnumeratorTest {
 
 	@Test
 	public void canGetTheMainScreen() {
-		assertNotNull("The main screen is null", ScreenEnumerator.MAIN.getScreen());
+		assertNotNull("The main screen is null", ScreenEnumerator.GAME.getScreen());
 	}
 
 	@Test

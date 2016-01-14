@@ -3,14 +3,18 @@ package me.fahien.spacefloat.factory;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import me.fahien.spacefloat.actor.ButtonActor;
 import me.fahien.spacefloat.actor.ControlMessageActor;
 import me.fahien.spacefloat.actor.EnergyHudActor;
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.actor.HudActor;
+import me.fahien.spacefloat.actor.ScrollingFontActor;
 import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
 /**
@@ -31,20 +35,46 @@ public enum HudFactory {
 	private static final float ENERGY_Y = SpaceFloatScreen.HEIGHT - 22.0f;
 	private static final float MESSAGE_X = 96f;
 	private static final float MESSAGE_Y = FPS_Y;
+	private static final String CREDITS = "SPACE FLOAT\n" +
+			"version " + SpaceFloatGame.VERSION + "\n\n" +
+			"Design\n"+
+			"Antonio Caggiano\n" +
+			"Alberto Pastorato\n\n" +
+			"Programming\n" +
+			"Antonio Caggiano\n\n" +
+			"Artwork\n" +
+			"Alberto Pastorato";
 
 	private TextureAtlas hud;
+	private TextureAtlas menu;
+
 	private BitmapFont font;
 
 	private FontActor fpsActor;
 	private FontActor velocityActor;
-	private HudActor fuelActor;
+	private EnergyHudActor fuelActor;
 	private ControlMessageActor messageActor;
+
+	private HudActor backgroundMenu;
+	private HudActor continueActor;
+	private HudActor newGameActor;
+	private HudActor videoActor;
+	private HudActor audioActor;
+	private ScrollingFontActor creditsActor;
+	private HudActor textBackgroundMenu;
 
 	/**
 	 * Sets the {@link TextureAtlas} HUD
 	 */
 	public void setHud(final TextureAtlas hud) {
 		this.hud = hud;
+	}
+
+	/**
+	 * Sets the {@link TextureAtlas} Menu
+	 */
+	public void setMenu(final TextureAtlas menu) {
+		this.menu = menu;
 	}
 
 	/**
@@ -92,9 +122,10 @@ public enum HudFactory {
 	 */
 	public HudActor getFuelActor(final EnergyComponent energy) {
 		if (fuelActor == null) {
-			fuelActor = new EnergyHudActor(hud, energy);
+			fuelActor = new EnergyHudActor(hud);
 			fuelActor.setPosition(ENERGY_X, ENERGY_Y);
 		}
+		fuelActor.setEnergy(energy);
 		return fuelActor;
 	}
 
@@ -108,5 +139,60 @@ public enum HudFactory {
 		}
 		messageActor.setText(text);
 		return messageActor;
+	}
+
+	/**
+	 * Returns the background menu {@link HudActor}
+	 */
+	public HudActor getBackgroundMenu() {
+		if (backgroundMenu == null) {
+			TextureRegion background = menu.findRegion("background");
+			backgroundMenu = new HudActor(background);
+		}
+		return backgroundMenu;
+	}
+
+	public HudActor getContinueActor() {
+		if (continueActor == null) {
+			continueActor = new ButtonActor(menu, font, "Continue");
+		}
+		return continueActor;
+	}
+
+	public HudActor getNewGameActor() {
+		if (newGameActor == null) {
+			newGameActor = new ButtonActor(menu, font, "New Game");
+		}
+		return newGameActor;
+	}
+
+	public HudActor getVideoActor() {
+		if (videoActor == null) {
+			videoActor = new ButtonActor(menu, font, "Video");
+		}
+		return videoActor;
+	}
+
+	public HudActor getAudioActor() {
+		if (audioActor == null) {
+			audioActor = new ButtonActor(menu, font, "Audio");
+		}
+		return audioActor;
+	}
+
+	public ScrollingFontActor getCreditsActor() {
+		if (creditsActor == null) {
+			creditsActor = new ScrollingFontActor(font, CREDITS);
+		}
+		creditsActor.setPosition(ScrollingFontActor.INITIAL_Y);
+		return creditsActor;
+	}
+
+	public HudActor getTextBackgroundMenu() {
+		if (textBackgroundMenu == null) {
+			TextureRegion background = menu.findRegion("text-background");
+			textBackgroundMenu = new HudActor(background);
+		}
+		return textBackgroundMenu;
 	}
 }

@@ -1,21 +1,33 @@
 package me.fahien.spacefloat.screen;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import me.fahien.spacefloat.actor.HudActor;
+import me.fahien.spacefloat.actor.ScrollingFontActor;
+import me.fahien.spacefloat.camera.MainPerspectiveCamera;
+import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.component.PlayerComponent;
+import me.fahien.spacefloat.component.TransformComponent;
+import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.HudFactory;
-import me.fahien.spacefloat.component.EnergyComponent;
-import me.fahien.spacefloat.component.RigidbodyComponent;
-import me.fahien.spacefloat.controller.ReactorController;
+import me.fahien.spacefloat.game.SpaceFloat;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
-import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -24,94 +36,169 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public class MainScreen extends SpaceFloatScreen {
+	private static final String CARGO_NAME = "cargo";
+	private static final String CARGO_MODEL = "cargo.g3db";
+	private static final String MODELS_DIR = "models/";
+	private static final Vector3 CAMERA_POSITION_OFFSET = new Vector3(75f, 50f, -200f);
+	private static final Vector3 CAMERA_LOOKAT_OFFSET = new Vector3(75f, 0f, 0f);
+	private static final String MENU_ATLAS = "system/menu.atlas";
+	private static final float BUTTON_X = 32f;
+	private static final float BUTTON_Y = 28f;
+	private static final float ROTATION_VELOCITY = 128f;
 
 	private Engine engine;
+
 	private CameraSystem cameraSystem;
-	private RenderSystem renderSystem;
 	private BulletSystem bulletSystem;
-	private ReactorController reactorController;
+	private RenderSystem renderSystem;
+
+	private GameObject cargo;
+	private GraphicComponent cargoGraphic;
+	private Matrix4 transformGraphic;
 
 	public MainScreen() {
-		cameraSystem = new CameraSystem();
-		renderSystem = new RenderSystem();
-		bulletSystem = new BulletSystem();
-		reactorController = new ReactorController();
+		cargo = new GameObject(CARGO_NAME);
+		cargo.add(new TransformComponent());
+		cargo.add(new PlayerComponent());
+		cargoGraphic = new GraphicComponent(CARGO_MODEL);
+		cargo.add(cargoGraphic);
+	}
+
+	private void initSystems() {
+		cameraSystem = getCameraSystem();
+		cameraSystem.setOffset(CAMERA_POSITION_OFFSET);
+		cameraSystem.setLookAt(CAMERA_LOOKAT_OFFSET);
+		bulletSystem = getBulletSystem();
+		renderSystem = getRenderSystem();
 	}
 
 	private void injectSystemsDependencies() {
-		Camera mainCamera = getCamera();
+		Camera mainCamera = new MainPerspectiveCamera();
 		logger.debug("Injecting camera into camera system");
 		cameraSystem.setCamera(mainCamera);
 		logger.debug("Injecting camera into render system");
 		renderSystem.setCamera(mainCamera);
-		logger.debug("Injecting input multiplexer into reactor controller");
-		reactorController.setInputMultiplexer(getInputMultiplexer());
-		logger.debug("Injecting particle system into reactor controller");
-		reactorController.setParticleSystem(getParticleSystem());
-		logger.debug("Injecting particle system into render system");
-		renderSystem.setParticleSystem(getParticleSystem());
 	}
 
 	private void addSystemsToEngine(Engine engine) {
-		/** The RenderSystem must be added before the BulletSystem */
 		logger.debug("Adding render system to the engine");
 		engine.addSystem(renderSystem);
-		logger.debug("Adding bullet system to the engine");
-		engine.addSystem(bulletSystem);
-		logger.debug("Adding reactor controller to the engine");
-		engine.addSystem(reactorController);
 		logger.debug("Adding camera system to the engine");
 		engine.addSystem(cameraSystem);
+		logger.debug("Adding bullet system to the engine");
+		engine.addSystem(bulletSystem);
 	}
 
 	@Override
 	public void show() {
+		initSystems();
 		injectSystemsDependencies();
+		loadTheCargoModel(getAssetManager());
 		engine = getEngine();
+		engine.addEntity(cargo);
 		addSystemsToEngine(engine);
 		super.show();
 	}
 
-
+	private void loadTheCargoModel(AssetManager assetManager) {
+		assetManager.load(MODELS_DIR + CARGO_MODEL, Model.class);
+		assetManager.finishLoading();
+		Model cargoModel = assetManager.get(MODELS_DIR + CARGO_MODEL, Model.class);
+		ModelInstance cargoInstance = new ModelInstance(cargoModel);
+		cargoGraphic.setInstance(cargoInstance);
+		transformGraphic = cargoInstance.transform;
+	}
 
 	@Override
 	public void populate(Stage stage) {
-		// Create the Hud factory
-		HudFactory factory = getHudFactory();
-		// Add the Fps Actor to the Stage
-		stage.addActor(factory.getFpsActor());
-		// Get the player from a PlayerController
-		Entity player = cameraSystem.getPlayer();
-		if (player != null) {
-			RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
-			Vector3 velocity = rigidbodyComponent.getLinearVelocity();
-			stage.addActor(factory.getVelocityActor(velocity));
+		// Load the menu atlas
+		AssetManager assetManager = getAssetManager();
+		assetManager.load(MENU_ATLAS, TextureAtlas.class);
+		assetManager.finishLoading();
+		TextureAtlas menu = assetManager.get(MENU_ATLAS);
 
-			EnergyComponent energyComponent = energyMapper.get(player);
-			stage.addActor(factory.getFuelActor(energyComponent));
-		} else {
-			logger.error("Error creating the HUD: player is null");
+		// Get Hud Factory
+		HudFactory hudfactory = getHudFactory();
+		// Set the menu atlas
+		hudfactory.setMenu(menu);
+
+		// Create text background
+		HudActor textBackgroundActor = hudfactory.getTextBackgroundMenu();
+		textBackgroundActor.setPosition(32f, 14f);
+		stage.addActor(textBackgroundActor);
+
+		// Create scrolling credits
+		ScrollingFontActor creditsActor = hudfactory.getCreditsActor();
+		creditsActor.setPosition(35f, 19f);
+		creditsActor.setSize(156f, 111f);
+		stage.addActor(creditsActor);
+
+		// Create background
+		HudActor backgroundActor = hudfactory.getBackgroundMenu();
+		stage.addActor(backgroundActor);
+
+		// Create continue button
+		FileHandle localObjectsDirectory = Gdx.files.local("objects/");
+		int i = 2;
+		if (localObjectsDirectory != null && localObjectsDirectory.isDirectory()) {
+			HudActor continueActor = hudfactory.getContinueActor();
+			continueActor.setX(BUTTON_X);
+			continueActor.setY(HEIGHT - BUTTON_Y * i++);
+			continueActor.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent event, float x, float y) {
+					((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setLoadInternal(false);
+					SpaceFloat.GAME.setScreen(ScreenEnumerator.LOADING);
+				}
+			});
+			stage.addActor(continueActor);
 		}
+
+		// Create new button
+		HudActor newGameActor = hudfactory.getNewGameActor();
+		newGameActor.setX(BUTTON_X);
+		newGameActor.setY(HEIGHT - BUTTON_Y * i);
+		newGameActor.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setLoadInternal(true);
+				SpaceFloat.GAME.setScreen(ScreenEnumerator.LOADING);
+			}
+		});
+		stage.addActor(newGameActor);
+		/*
+			HudActor videoActor = hudfactory.getVideoActor();
+			videoActor.setX(BUTTON_X);
+			videoActor.setY(HEIGHT - BUTTON_Y * i++);
+			stage.addActor(videoActor);
+			HudActor audioActor = hudfactory.getAudioActor();
+			audioActor.setX(BUTTON_X);
+			audioActor.setY(HEIGHT - BUTTON_Y * i);
+			stage.addActor(audioActor);
+		*/
 	}
+
+	private Quaternion quaternion = new Quaternion();
+	private float rotation = 0;
 
 	@Override
 	public void update(float delta) {
 		super.update(delta);
 		engine.update(delta);
+		rotation += delta * ROTATION_VELOCITY;
+		quaternion.setEulerAnglesRad(-rotation, 0, 0);
+		transformGraphic.set(quaternion);
 	}
 
 	@Override
 	public void hide() {
 		super.hide();
-		if (engine == null) return;
-		engine.removeSystem(cameraSystem);
-		engine.removeSystem(bulletSystem);
-		engine.removeSystem(reactorController);
-		engine.removeSystem(renderSystem);
-	}
-
-	@Override
-	public void dispose() {
-		super.dispose();
+		if (engine != null) {
+			engine.removeSystem(cameraSystem);
+			engine.removeSystem(bulletSystem);
+			engine.removeSystem(renderSystem);
+			engine.removeEntity(cargo);
+			engine = null;
+		}
 	}
 }

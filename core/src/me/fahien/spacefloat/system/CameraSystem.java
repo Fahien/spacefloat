@@ -20,26 +20,35 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  */
 public class CameraSystem extends PlayerController {
 	private static final int CAMERA_PRIORITY = 2;
-	private static final float CAMERA_OFFSET = 1024f;
 	private static final float CAMERA_ZOOM_MIN = 1f;
 	private static final float CAMERA_ZOOM_MAX = 8f;
 
 	public static float CAMERA_ZOOM = 2f;
+	public static final Vector3 POSITION_OFFSET = new Vector3(0f, 1024f, 0f);
+	public static final Vector3 LOOKAT_OFFSET = new Vector3(0f, 0f, 0f);
+
 	public static String CAMERA_TYPE = "orthographic";
 
 	private GraphicComponent playerGraphic;
 	private Camera camera;
-	private Vector3 cameraOffset;
+
+	private Vector3 offset;
+	private Vector3 lookAt;
 
 	public CameraSystem() {
+		this(POSITION_OFFSET, LOOKAT_OFFSET);
+	}
+
+	public CameraSystem(final Vector3 offset, final Vector3 lookAt) {
 		super(CAMERA_PRIORITY);
-		cameraOffset = new Vector3(0f, CAMERA_OFFSET * CAMERA_ZOOM, 0f);
+		this.offset = offset;
+		this.lookAt = lookAt;
 	}
 
 	/**
 	 * Sets the camera zoom
 	 */
-	public static void setCameraZoom(float cameraZoom) {
+	public static void setCameraZoom(final float cameraZoom) {
 		if (cameraZoom < CAMERA_ZOOM_MIN || cameraZoom > CAMERA_ZOOM_MAX) {
 			logger.error("Camera zoom must be comprised between " + CAMERA_ZOOM_MIN + " and " + CAMERA_ZOOM_MAX);
 		}
@@ -49,12 +58,26 @@ public class CameraSystem extends PlayerController {
 	/**
 	 * Sets the {@link Camera}
 	 */
-	public void setCamera(Camera camera) {
+	public void setCamera(final Camera camera) {
 		this.camera = camera;
 	}
 
+	/**
+	 * Sets the camera offset
+	 */
+	public void setOffset(final Vector3 offset) {
+		this.offset = offset;
+	}
+
+	/**
+	 * Set lookAt
+	 */
+	public void setLookAt(final Vector3 lookAt) {
+		this.lookAt = lookAt;
+	}
+
 	@Override
-	public void addedToEngine(Engine engine) {
+	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 
 		Entity player = getPlayer();
@@ -62,17 +85,18 @@ public class CameraSystem extends PlayerController {
 		if (player != null) {
 			playerGraphic = graphicMapper.get(player);
 			playerGraphic.getPosition(camera.position);
-			camera.position.add(cameraOffset);
-			camera.lookAt(transformMapper.get(player).getPosition());
+			camera.position.add(offset);
+			Vector3 lookAt = new Vector3(this.lookAt).add(transformMapper.get(player).getPosition());
+			camera.lookAt(lookAt);
 		}
 		camera.update();
 	}
 
 	@Override
-	public void update(float deltaTime) {
+	public void update(final float deltaTime) {
 		// Follow the player
 		playerGraphic.getPosition(camera.position);
-		camera.position.add(cameraOffset);
+		camera.position.add(offset);
 		camera.update();
 	}
 }

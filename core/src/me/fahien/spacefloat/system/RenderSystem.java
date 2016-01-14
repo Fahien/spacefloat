@@ -32,6 +32,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.playerMap
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
+import static me.fahien.spacefloat.game.SpaceFloatGame.DEBUG_ALL;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -41,7 +42,6 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  */
 public class RenderSystem extends EntitySystem {
 	private static final int RENDER_PRIORITY = 3;
-	private static final boolean debugAll = false;
 
 	private ImmutableArray<Entity> entities;
 
@@ -145,16 +145,18 @@ public class RenderSystem extends EntitySystem {
 			}
 
 			if (playerMapper.get(entity) != null) {
-			// Render destination line
+				// Render destination line
 				m_destinationComponent = destinationMapper.get(entity);
-				if (m_destinationComponent.getName() != null) {
+				if (m_destinationComponent != null && m_destinationComponent.getName() != null) {
 					renderVelocity(m_position, m_destinationComponent.getPosition(), Color.GRAY);
 				}
 				// Render velocity line
-				renderVelocity(m_position, m_rigidbodyComponent.getLinearVelocity(), Color.BLUE);
+				if (m_rigidbodyComponent != null) {
+					renderVelocity(m_position, m_rigidbodyComponent.getLinearVelocity(), Color.BLUE);
+				}
 			}
 
-			if (debugAll) {
+			if (DEBUG_ALL) {
 				// Render rigidbody radius
 				renderRigidbody(m_rigidbodyComponent, Color.RED);
 
@@ -172,12 +174,14 @@ public class RenderSystem extends EntitySystem {
 			}
 		}
 
-		// Render Particles
-		particleSystem.update(); // technically not necessary for rendering
-		particleSystem.begin();
-		particleSystem.draw();
-		particleSystem.end();
-		batch.render(particleSystem);
+		if (particleSystem != null) {
+			// Render Particles
+			particleSystem.update(); // technically not necessary for rendering
+			particleSystem.begin();
+			particleSystem.draw();
+			particleSystem.end();
+			batch.render(particleSystem);
+		}
 
 		// End the batch
 		batch.end();
@@ -234,10 +238,13 @@ public class RenderSystem extends EntitySystem {
 		shapeRenderer.end();
 	}
 
-	@Override
-	public void removedFromEngine(Engine engine) {
-		super.removedFromEngine(engine);
+	/**
+	 * Disposes resources
+	 */
+	public void dispose() {
 		// Dispose the model batch
 		if (batch != null) batch.dispose();
+		// Dispose the shape renderer
+		if (shapeRenderer != null) shapeRenderer.dispose();
 	}
 }
