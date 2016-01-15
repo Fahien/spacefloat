@@ -309,59 +309,93 @@ public class BulletSystem extends EntitySystem {
 	 */
 	class SpaceFloatContactListener extends ContactListener {
 
+		private GameObject m_source;
+		private GameObject m_target;
+		private MissionComponent m_mission;
+
 		@Override
 		public boolean onContactAdded(btManifoldPoint collisionPoint, btCollisionObject collision0, int partId0, int index0, btCollisionObject collision1, int partId1, int index1) {
 			try {
-				GameObject source = (GameObject) collision0.userData;
-				GameObject target = (GameObject) collision1.userData;
+				m_source = (GameObject) collision0.userData;
+				m_target = (GameObject) collision1.userData;
 
 				// Energy shield
-				CollisionComponent collision = collisionMapper.get(source);
-				EnergyComponent energy = energyMapper.get(target);
+				CollisionComponent collision = collisionMapper.get(m_source);
+				EnergyComponent energy = energyMapper.get(m_target);
 				if (collision != null && collision.getCollisionObject() == collision0) {
 					triggerShield(collisionPoint, collision, energy);
 				}
 
 				// Energy recharge
-				RechargeComponent recharge = rechargeMapper.get(source);
+				RechargeComponent recharge = rechargeMapper.get(m_source);
 				if (recharge != null && recharge.getCollisionObject() == collision0) {
 					triggerRecharge(recharge, energy);
 				}
 
 				// Gravity attraction
-				GravityComponent gravity = gravityMapper.get(source);
-				RigidbodyComponent rigidbody = rigidMapper.get(target);
+				GravityComponent gravity = gravityMapper.get(m_source);
+				RigidbodyComponent rigidbody = rigidMapper.get(m_target);
 				if (gravity != null && gravity.getCollisionObject() == collision0) {
 					triggerGravity(gravity, rigidbody);
 				}
 
 				// Mission logic
-				MissionComponent mission = missionMapper.get(source);
-				if (mission != null && mission.getCollisionObject() == collision0) {
-					triggerMission(mission, source, target);
+				m_mission = missionMapper.get(m_source);
+				if (m_mission != null && m_mission.getCollisionObject() == collision0) {
+					triggerMission(m_mission, m_source, m_target);
 				}
-				mission = missionMapper.get(target);
-				if (mission != null && mission.getCollisionObject() == collision1) {
-					triggerMission(mission, target, source);
+				m_mission = missionMapper.get(m_target);
+				if (m_mission != null && m_mission.getCollisionObject() == collision1) {
+					triggerMission(m_mission, m_target, m_source);
 				}
 			} catch (Exception e) {
-				logger.error("Error during collision callback: " + e.getMessage());
+				logger.error("Error during collision callback: " + e.getMessage() + "\n\t" + e.getCause());
+				e.printStackTrace();
 				Gdx.app.exit();
 			}
 			return true;
+		}
+
+		@Override
+		public void onContactEnded(final btCollisionObject collision0, final btCollisionObject collision1) {
+			try {
+				m_source = (GameObject) collision0.userData;
+				m_target = (GameObject) collision1.userData;
+				// Mission logic
+				m_mission = missionMapper.get(m_source);
+				if (m_mission != null && m_mission.getCollisionObject() == collision0) {
+					endMission(m_mission);
+				}
+				m_mission = missionMapper.get(m_target);
+				if (m_mission != null && m_mission.getCollisionObject() == collision1) {
+					endMission(m_mission);
+				}
+
+			} catch (Exception e) {
+				logger.error("Error during collision callback: " + e.getMessage() + "\n\t" + e.getCause());
+				Gdx.app.exit();
+			}
+		}
+
+		private void endMission(MissionComponent mission) {
+			mission.setCollecting(false);
+			mission.setDelivering(false);
+			logger.debug("Resetting handling time");
+			mission.resetHandlingTime();
 		}
 
 		private void triggerMission(MissionComponent missionComponent, GameObject source, GameObject target) {
 			Mission mission = missionComponent.getMission();
 			// If is not collected and collide with Player
 			if (!mission.isCollected() && target.isPlayer()) {
-				// Decrease hangling time
-				missionComponent.addHandlingTime(-m_delta);
+				// Set collecting
+				missionComponent.setCollecting(true);
 
 				if (missionComponent.getHandlingTime() <= 0f) {
-					// Reset handling time
-					missionComponent.resetHandlingTime();
 					// Set collected
+					logger.debug("Resetting handling time");
+					missionComponent.resetHandlingTime();
+					missionComponent.setCollecting(false);
 					mission.setCollected(true);
 					// Remove this component from the parcel source
 					source.remove(MissionComponent.class);
@@ -374,11 +408,26 @@ public class BulletSystem extends EntitySystem {
 					for (Entity entity : engine.getEntities()) {
 						if (((GameObject) entity).getName().equals(mission.getDestination())) {
 							Vector3 position = new Vector3();
-							collisionMapper.get(entity).getPosition(position);
-							// Set the destination
-							DestinationComponent destinationComponent = destinationMapper.get(target);
-							destinationComponent.setPosition(position);
-							destinationComponent.setName(mission.getDestination());
+							PlanetComponent planet = planetMapper.get(entity);
+							if (planet != null) {
+								planet.getPosition(position);
+								// Set the destination
+								DestinationComponent destinationComponent = destinationMapper.get(target);
+								destinationComponent.setPosition(position);
+								destinationComponent.setName(mission.getDestination());
+							} else {
+								logger.debug("Destination is not a planet, trying with collision");
+								CollisionComponent collision = collisionMapper.get(entity);
+								if (collision != null) {
+									collision.getPosition(position);
+									// Set the destination
+									DestinationComponent destinationComponent = destinationMapper.get(target);
+									destinationComponent.setPosition(position);
+									destinationComponent.setName(mission.getDestination());
+								} else {
+									logger.error("Destination has no position");
+								}
+							}
 						}
 					}
 					// Update user data
@@ -392,13 +441,14 @@ public class BulletSystem extends EntitySystem {
 					game.enqueueMessage(mission.getMessageInitial());
 				}
 			} else if (!mission.isDelivered() && mission.getDestination().equals(target.getName())) {
-				// Update handling time
-				missionComponent.addHandlingTime(-m_delta);
+				// Set delivering
+				missionComponent.setDelivering(true);
 
 				if (missionComponent.getHandlingTime() <= 0f) {
-					// Reset handling time
-					missionComponent.resetHandlingTime();
 					// Set delivered
+					logger.debug("Resetting handling time");
+					missionComponent.resetHandlingTime();
+					missionComponent.setDelivering(false);
 					mission.setDelivered(true);
 					// Remove this component from the player
 					SpaceFloatGame game = SpaceFloat.GAME.getGame();

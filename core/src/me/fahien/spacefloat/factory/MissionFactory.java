@@ -237,4 +237,8 @@ public enum MissionFactory {
 			missionComponent = null;
 		}
 	}
+
+	public MissionComponent getMissionComponent() {
+		return missionComponent;
+	}
 }

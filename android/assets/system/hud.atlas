@@ -65,3 +65,60 @@ money
   orig: 1, 1
   offset: 0, 0
   index: -1
+parcel-background
+  rotate: false
+  xy: 264, 128
+  size: 16, 88
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel-spaceship
+  rotate: false
+  xy: 288, 128
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel-base-up
+  rotate: false
+  xy: 288, 152
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel-up
+  rotate: false
+  xy: 304, 144
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel
+  rotate: false
+  xy: 304, 160
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel-down
+  rotate: false
+  xy: 304, 184
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel-base-down
+  rotate: false
+  xy: 288, 176
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+parcel-target
+  rotate: false
+  xy: 288, 200
+  size: 16, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+

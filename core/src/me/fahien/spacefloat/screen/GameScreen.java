@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.controller.ReactorController;
@@ -107,6 +108,9 @@ public class GameScreen extends SpaceFloatScreen {
 		// Add the Money Actor
 		MoneyComponent money = moneyMapper.get(player);
 		stage.addActor(factory.getMoneyActor(money));
+		// Add the Parcel Actor
+		MissionComponent mission = MissionFactory.INSTANCE.getMissionComponent();
+		stage.addActor(factory.getParcelActor(mission));
 	}
 
 	@Override

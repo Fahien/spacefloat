@@ -10,7 +10,7 @@ import me.fahien.spacefloat.mission.Mission;
  * @author Fahien
  */
 public class MissionComponent extends CollisionComponent {
-	private static final float PARCEL_RADIUS = 80f;
+	private static final float PARCEL_RADIUS = 90f;
 	private static final short PARCEL_GROUP = 8; // Event
 	private static final short PARCEL_MASK = 1|4; // Player + Planet
 	private static final float HANDLING_TIME = 0.003f; // 3 seconds
@@ -18,6 +18,8 @@ public class MissionComponent extends CollisionComponent {
 	private static float handlingTime = HANDLING_TIME;
 
 	private Mission mission;
+	private boolean collecting;
+	private boolean delivering;
 
 	public MissionComponent() {
 		super(PARCEL_RADIUS, PARCEL_GROUP, PARCEL_MASK);
@@ -55,7 +57,7 @@ public class MissionComponent extends CollisionComponent {
 	 * Reset the handling time
 	 */
 	public void resetHandlingTime() {
-		handlingTime = HANDLING_TIME;
+		if (handlingTime != HANDLING_TIME) handlingTime = HANDLING_TIME;
 	}
 
 	@Override
@@ -63,4 +65,19 @@ public class MissionComponent extends CollisionComponent {
 		getCollisionObject().setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
 	}
 
+	public void setCollecting(boolean collecting) {
+		this.collecting = collecting;
+	}
+
+	public boolean isCollecting() {
+		return collecting;
+	}
+
+	public boolean isDelivering() {
+		return delivering;
+	}
+
+	public void setDelivering(boolean delivering) {
+		this.delivering = delivering;
+	}
 }

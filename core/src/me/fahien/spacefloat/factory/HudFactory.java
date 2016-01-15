@@ -13,8 +13,10 @@ import me.fahien.spacefloat.actor.EnergyHudActor;
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.actor.HudActor;
 import me.fahien.spacefloat.actor.MoneyActor;
+import me.fahien.spacefloat.actor.ParcelActor;
 import me.fahien.spacefloat.actor.ScrollingFontActor;
 import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
@@ -42,8 +44,11 @@ public enum HudFactory {
 	private static final float MESSAGE_X = 96.0f;
 	private static final float MESSAGE_Y = FPS_Y;
 
-	private static final float MONEY_Y = ENERGY_Y;
 	private static final float MONEY_X = SpaceFloatScreen.WIDTH - FPS_X - 72.0f;
+	private static final float MONEY_Y = ENERGY_Y;
+
+	private static final float PARCEL_X = SpaceFloatScreen.WIDTH - FPS_X - 16.0f;
+	private static final float PARCEL_Y = ENERGY_Y - 110f;
 
 	private static final String CREDITS =
 			"SPACE FLOAT\n" +
@@ -66,6 +71,7 @@ public enum HudFactory {
 	private EnergyHudActor fuelActor;
 	private ControlMessageActor messageActor;
 	private MoneyActor moneyActor;
+	private ParcelActor parcelActor;
 
 	private HudActor backgroundMenu;
 	private HudActor continueActor;
@@ -162,6 +168,17 @@ public enum HudFactory {
 			moneyActor.setPosition(MONEY_X, MONEY_Y);
 		}
 		return moneyActor;
+	}
+
+	/**
+	 * Returns the {@link ParcelActor}
+	 */
+	public ParcelActor getParcelActor(final MissionComponent mission) {
+		if (parcelActor == null) {
+			parcelActor = new ParcelActor(hud, mission);
+			parcelActor.setPosition(PARCEL_X, PARCEL_Y);
+		}
+		return parcelActor;
 	}
 
 	/**
