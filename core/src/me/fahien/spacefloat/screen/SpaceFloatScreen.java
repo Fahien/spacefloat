@@ -20,6 +20,7 @@ import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.system.DestinationSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
 import static java.lang.Math.min;
@@ -57,6 +58,7 @@ public class SpaceFloatScreen implements Screen {
 	private CameraSystem cameraSystem;
 	private BulletSystem bulletSystem;
 	private RenderSystem renderSystem;
+	private DestinationSystem destinationSystem;
 
 	/**
 	 * Tests whether is initialized
@@ -240,36 +242,74 @@ public class SpaceFloatScreen implements Screen {
 		this.stage = stage;
 	}
 
+	/**
+	 * Returns the {@link ReactorController}
+	 */
 	public ReactorController getReactorController() {
 		return reactorController;
 	}
 
+	/**
+	 * Sets the {@link ReactorController}
+	 */
 	public void setReactorController(ReactorController reactorController) {
 		this.reactorController = reactorController;
 	}
 
+	/**
+	 * Returns the {@link CameraSystem}
+	 */
 	public CameraSystem getCameraSystem() {
 		return cameraSystem;
 	}
 
+	/**
+	 * Sets the {@link CameraSystem}
+	 */
 	public void setCameraSystem(CameraSystem cameraSystem) {
 		this.cameraSystem = cameraSystem;
 	}
 
+	/**
+	 * Returns the {@link BulletSystem}
+	 */
 	public BulletSystem getBulletSystem() {
 		return bulletSystem;
 	}
 
+	/**
+	 * Sets the {@link BulletSystem}
+	 */
 	public void setBulletSystem(BulletSystem bulletSystem) {
 		this.bulletSystem = bulletSystem;
 	}
 
+	/**
+	 * Returns the {@link RenderSystem}
+	 */
 	public RenderSystem getRenderSystem() {
 		return renderSystem;
 	}
 
+	/**
+	 * Sets the {@link RenderSystem}
+	 */
 	public void setRenderSystem(RenderSystem renderSystem) {
 		this.renderSystem = renderSystem;
+	}
+
+	/**
+	 * Returns the {@link DestinationSystem}
+	 */
+	public DestinationSystem getDestinationSystem() {
+		return destinationSystem;
+	}
+
+	/**
+	 * Sets the {@link DestinationSystem}
+	 */
+	public void setDestinationSystem(DestinationSystem destinationSystem) {
+		this.destinationSystem = destinationSystem;
 	}
 
 	/**
@@ -345,6 +385,7 @@ public class SpaceFloatScreen implements Screen {
 		cameraSystem = null;
 		bulletSystem = null;
 		renderSystem = null;
+		destinationSystem = null;
 		initialized = false;
 	}
 }

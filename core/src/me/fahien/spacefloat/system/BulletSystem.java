@@ -28,6 +28,7 @@ import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
+import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.MissionFactory;
@@ -44,6 +45,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMa
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.velocityMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -206,13 +208,17 @@ public class BulletSystem extends EntitySystem {
 			dynamicsWorld.stepSimulation(delta, 5, 0.000001f);
 		} catch (Exception e) {
 			logger.error("Error while simulating dynamics world: " + e.getMessage());
-			e.printStackTrace();
 			Gdx.app.exit();
 		}
 		for (Entity entity : rigidEntities) {
 			// Update rigid body after world simulation
-			rigidMapper.get(entity).update();
+			updateRigidbody(rigidMapper.get(entity), transformMapper.get(entity));
 		}
+	}
+
+	private void updateRigidbody(RigidbodyComponent rigidbodyComponent, TransformComponent transformComponent) {
+		rigidbodyComponent.update();
+		rigidbodyComponent.getPosition(transformComponent.getPosition());
 	}
 
 	/**
@@ -327,7 +333,6 @@ public class BulletSystem extends EntitySystem {
 				}
 			} catch (Exception e) {
 				logger.error("Error during collision callback: " + e.getMessage());
-				e.printStackTrace();
 				Gdx.app.exit();
 			}
 			return true;

@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.utils.JsonKey;
 
 /**
@@ -35,7 +34,7 @@ public class DestinationComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the destination name
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -49,7 +48,7 @@ public class DestinationComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the destination position
 	 */
-	public void setPosition(Vector3 position){
+	public void setPosition(final Vector3 position){
 		this.position = position;
 	}
 
@@ -60,18 +59,8 @@ public class DestinationComponent implements Component, Json.Serializable {
 		return indicator;
 	}
 
-	/**
-	 * Returns the indicator position
-	 */
-	public void updateIndicator(final Vector3 center) {
-		indicator.set(position);
-		indicator.sub(center);
-		indicator.nor().scl(SpaceFloatScreen.HEIGHT);
-		indicator.add(center);
-	}
-
 	@Override
-	public void write(Json json) {
+	public void write(final Json json) {
 		json.writeValue(JsonKey.NAME, name);
 		json.writeValue(JsonKey.X, position.x);
 		json.writeValue(JsonKey.Y, position.y);
@@ -79,7 +68,7 @@ public class DestinationComponent implements Component, Json.Serializable {
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {
+	public void read(final Json json, final JsonValue jsonData) {
 		name = jsonData.getString(JsonKey.NAME);
 		position.x = jsonData.getShort(JsonKey.X);
 		position.y = jsonData.getShort(JsonKey.Y);

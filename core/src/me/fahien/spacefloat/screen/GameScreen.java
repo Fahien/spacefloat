@@ -6,14 +6,15 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import me.fahien.spacefloat.factory.GameObjectFactory;
-import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.controller.ReactorController;
+import me.fahien.spacefloat.factory.GameObjectFactory;
+import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.system.DestinationSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
@@ -31,9 +32,8 @@ public class GameScreen extends SpaceFloatScreen {
 	private CameraSystem cameraSystem;
 	private RenderSystem renderSystem;
 	private BulletSystem bulletSystem;
+	private DestinationSystem destinationSystem;
 	private ReactorController reactorController;
-
-	public GameScreen() {}
 
 	private void initSystems() {
 		cameraSystem = getCameraSystem();
@@ -42,6 +42,7 @@ public class GameScreen extends SpaceFloatScreen {
 		bulletSystem = getBulletSystem();
 		renderSystem = getRenderSystem();
 		reactorController = getReactorController();
+		destinationSystem = getDestinationSystem();
 	}
 
 	private void injectSystemsDependencies() {
@@ -68,6 +69,8 @@ public class GameScreen extends SpaceFloatScreen {
 		engine.addSystem(reactorController);
 		logger.debug("Adding camera system to the engine");
 		engine.addSystem(cameraSystem);
+		logger.debug("Adding destination system to the engine");
+		engine.addSystem(destinationSystem);
 	}
 
 	@Override
@@ -121,6 +124,8 @@ public class GameScreen extends SpaceFloatScreen {
 			engine.removeSystem(cameraSystem);
 			engine.removeSystem(bulletSystem);
 			engine.removeSystem(renderSystem);
+			engine.removeSystem(destinationSystem);
+			engine.removeSystem(reactorController);
 			engine.removeAllEntities();
 			engine = null;
 		}

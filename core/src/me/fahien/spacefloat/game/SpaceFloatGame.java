@@ -34,6 +34,7 @@ import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
+import me.fahien.spacefloat.system.DestinationSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 import me.fahien.spacefloat.utils.SpaceFloatPreferences;
 
@@ -83,6 +84,8 @@ public class SpaceFloatGame extends Game {
 	private CameraSystem cameraSystem;
 	private RenderSystem renderSystem;
 	private BulletSystem bulletSystem;
+	private DestinationSystem destinationSystem;
+
 	private GameObject player;
 
 	/**
@@ -244,6 +247,7 @@ public class SpaceFloatGame extends Game {
 		cameraSystem = new CameraSystem();
 		renderSystem = new RenderSystem();
 		bulletSystem = new BulletSystem();
+		destinationSystem = new DestinationSystem();
 		reactorController = new ReactorController();
 	}
 
@@ -293,6 +297,7 @@ public class SpaceFloatGame extends Game {
 		screen.setCameraSystem(cameraSystem);
 		screen.setBulletSystem(bulletSystem);
 		screen.setRenderSystem(renderSystem);
+		screen.setDestinationSystem(destinationSystem);
 		screen.setInputMultiplexer(inputMultiplexer);
 		screen.setViewport(viewport);
 		screen.setStage(stage);
