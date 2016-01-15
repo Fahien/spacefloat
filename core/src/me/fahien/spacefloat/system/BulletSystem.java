@@ -27,6 +27,7 @@ import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
+import me.fahien.spacefloat.component.PlanetComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
@@ -45,6 +46,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMa
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.moneyMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.planetMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
@@ -67,6 +69,7 @@ public class BulletSystem extends EntitySystem {
 	private ImmutableArray<Entity> rechargeEntities;
 	private ImmutableArray<Entity> missionEntities;
 	private ImmutableArray<Entity> rigidEntities;
+	private ImmutableArray<Entity> planetEntities;
 
 	private btDefaultCollisionConfiguration collisionConfig;
 	private btCollisionDispatcher dispatcher;
@@ -102,6 +105,9 @@ public class BulletSystem extends EntitySystem {
 		rigidEntities = engine.getEntitiesFor(all(GraphicComponent.class, RigidbodyComponent.class).get());
 		createRigidbodies(rigidEntities, RigidbodyComponent.class);
 
+		planetEntities = engine.getEntitiesFor(all(GraphicComponent.class, PlanetComponent.class).get());
+		createRigidbodies(planetEntities, PlanetComponent.class);
+
 		if (collisionConfig == null) collisionConfig = new btDefaultCollisionConfiguration();
 		if (dispatcher == null) dispatcher = new btCollisionDispatcher(collisionConfig);
 
@@ -117,6 +123,7 @@ public class BulletSystem extends EntitySystem {
 		addCollisionObjectsToDynamicsWorld(missionEntities, MissionComponent.class);
 
 		addRigidbodiesToDynamicsWorld(rigidEntities, RigidbodyComponent.class);
+		addRigidbodiesToDynamicsWorld(planetEntities, PlanetComponent.class);
 	}
 
 	/**
@@ -215,6 +222,10 @@ public class BulletSystem extends EntitySystem {
 		for (Entity entity : rigidEntities) {
 			// Update rigid body after world simulation
 			updateRigidbody(rigidMapper.get(entity), transformMapper.get(entity));
+		}
+		for (Entity entity : planetEntities) {
+			// Update rigid body after world simulation
+			updateRigidbody(planetMapper.get(entity), transformMapper.get(entity));
 		}
 	}
 
