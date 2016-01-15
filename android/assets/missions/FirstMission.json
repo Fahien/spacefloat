@@ -1,1 +1,1 @@
-{name:FirstMission,x:1740,y:0,z:2310,destination:Earth,collected:false,delivered:false,messageInitial:Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!,messageEnding:"Well done, space courier!"}
+{name:FirstMission,x:1740,y:0,z:2310,destination:Earth,collected:false,delivered:false,messageInitial:Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!,messageEnding:"Well done, space courier!",reward:100}

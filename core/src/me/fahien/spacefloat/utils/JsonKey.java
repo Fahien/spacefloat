@@ -33,12 +33,12 @@ public class JsonKey {
 	public static final String CONSUME = "consume";
 	public static final String POWER = "power";
 
-	public static final String SOURCE = "source";
 	public static final String DESTINATION = "destination";
 	public static final String COLLECTED = "collected";
 	public static final String DELIVERED = "delivered";
 	public static final String MESSAGE_INITIAL = "messageInitial";
 	public static final String MESSAGE_ENDING = "messageEnding";
+	public static final String REWARD = "reward";
 
 	public static final String JSON_EXT = ".json";
 }

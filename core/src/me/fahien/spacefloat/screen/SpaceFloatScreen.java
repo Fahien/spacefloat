@@ -21,6 +21,7 @@ import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.DestinationSystem;
+import me.fahien.spacefloat.system.MissionSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
 import static java.lang.Math.min;
@@ -59,6 +60,7 @@ public class SpaceFloatScreen implements Screen {
 	private BulletSystem bulletSystem;
 	private RenderSystem renderSystem;
 	private DestinationSystem destinationSystem;
+	private MissionSystem missionSystem;
 
 	/**
 	 * Tests whether is initialized
@@ -252,7 +254,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link ReactorController}
 	 */
-	public void setReactorController(ReactorController reactorController) {
+	public void setReactorController(final ReactorController reactorController) {
 		this.reactorController = reactorController;
 	}
 
@@ -266,7 +268,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link CameraSystem}
 	 */
-	public void setCameraSystem(CameraSystem cameraSystem) {
+	public void setCameraSystem(final CameraSystem cameraSystem) {
 		this.cameraSystem = cameraSystem;
 	}
 
@@ -280,7 +282,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link BulletSystem}
 	 */
-	public void setBulletSystem(BulletSystem bulletSystem) {
+	public void setBulletSystem(final BulletSystem bulletSystem) {
 		this.bulletSystem = bulletSystem;
 	}
 
@@ -294,7 +296,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link RenderSystem}
 	 */
-	public void setRenderSystem(RenderSystem renderSystem) {
+	public void setRenderSystem(final RenderSystem renderSystem) {
 		this.renderSystem = renderSystem;
 	}
 
@@ -308,8 +310,22 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Sets the {@link DestinationSystem}
 	 */
-	public void setDestinationSystem(DestinationSystem destinationSystem) {
+	public void setDestinationSystem(final DestinationSystem destinationSystem) {
 		this.destinationSystem = destinationSystem;
+	}
+
+	/**
+	 * Returns the {@link MissionSystem}
+	 */
+	public MissionSystem getMissionSystem() {
+		return missionSystem;
+	}
+
+	/**
+	 * Sets the {@link MissionSystem}
+	 */
+	public void setMissionSystem(final MissionSystem missionSystem) {
+		this.missionSystem = missionSystem;
 	}
 
 	/**
@@ -328,7 +344,7 @@ public class SpaceFloatScreen implements Screen {
 	/**
 	 * Update is called before drawing the stage
 	 */
-	public void update(float delta) {
+	public void update(final float delta) {
 		stage.act(delta);
 	}
 
@@ -346,7 +362,7 @@ public class SpaceFloatScreen implements Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
+	public void resize(final int width, final int height) {
 		if (viewport != null) viewport.update(width, height);
 	}
 
@@ -386,6 +402,7 @@ public class SpaceFloatScreen implements Screen {
 		bulletSystem = null;
 		renderSystem = null;
 		destinationSystem = null;
+		missionSystem = null;
 		initialized = false;
 	}
 }

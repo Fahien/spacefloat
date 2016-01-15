@@ -58,3 +58,10 @@ indicator
   orig: 1, 1
   offset: 0, 0
   index: -1
+money
+  rotate: false
+  xy: 128, 176
+  size: 72, 16
+  orig: 1, 1
+  offset: 0, 0
+  index: -1

@@ -26,6 +26,7 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
 import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
@@ -43,6 +44,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMap
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.gravityMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.moneyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rechargeMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
@@ -388,6 +390,9 @@ public class BulletSystem extends EntitySystem {
 					SpaceFloatGame game = SpaceFloat.GAME.getGame();
 					GameObject player = game.getPlayer();
 					player.remove(MissionComponent.class);
+					// Add reward
+					MoneyComponent moneyComponent = moneyMapper.get(player);
+					moneyComponent.addMoney(mission.getReward());
 					// Reset the destination
 					DestinationComponent destinationComponent = destinationMapper.get(player);
 					destinationComponent.setName(null);

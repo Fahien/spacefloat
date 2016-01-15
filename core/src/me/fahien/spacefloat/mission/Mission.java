@@ -25,6 +25,8 @@ public class Mission implements Json.Serializable {
 	private boolean collected;
 	private boolean delivered;
 
+	private int reward;
+
 	public Mission() {
 		position = new Vector3();
 	}
@@ -39,7 +41,7 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets the name
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -53,7 +55,7 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets the initial position
 	 */
-	public void setPosition(Vector3 position) {
+	public void setPosition(final Vector3 position) {
 		this.position = position;
 	}
 
@@ -67,7 +69,7 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets the destination {@link GameObject} name
 	 */
-	public void setDestination(String destination) {
+	public void setDestination(final String destination) {
 		this.destination = destination;
 	}
 
@@ -81,7 +83,7 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets the initial message
 	 */
-	public void setMessageInitial(String messageInitial) {
+	public void setMessageInitial(final String messageInitial) {
 		this.messageInitial = messageInitial;
 	}
 
@@ -95,7 +97,7 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets the engine message
 	 */
-	public void setMessageEnding(String messageEnding) {
+	public void setMessageEnding(final String messageEnding) {
 		this.messageEnding = messageEnding;
 	}
 
@@ -109,7 +111,7 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets collected
 	 */
-	public void setCollected(boolean collected) {
+	public void setCollected(final boolean collected) {
 		this.collected = collected;
 	}
 
@@ -123,8 +125,32 @@ public class Mission implements Json.Serializable {
 	/**
 	 * Sets delivered
 	 */
-	public void setDelivered(boolean delivered) {
+	public void setDelivered(final boolean delivered) {
 		this.delivered = delivered;
+	}
+
+	/**
+	 * Returns the reward
+	 */
+	public int getReward() {
+		return reward;
+	}
+
+	/**
+	 * Sets the reward
+	 */
+	public void setReward(final int reward) {
+		if (reward >= 0) {
+			this.reward = reward;
+		}
+	}
+
+	/**
+	 * Adds reward
+	 */
+	public void addReward(int reward) {
+		reward += this.reward;
+		this.reward = (reward >= 0) ? reward : 0;
 	}
 
 	@Override
@@ -138,6 +164,7 @@ public class Mission implements Json.Serializable {
 		json.writeValue(JsonKey.DELIVERED, delivered);
 		json.writeValue(JsonKey.MESSAGE_INITIAL, messageInitial);
 		json.writeValue(JsonKey.MESSAGE_ENDING, messageEnding);
+		json.writeValue(JsonKey.REWARD, reward);
 	}
 
 	@Override
@@ -151,5 +178,6 @@ public class Mission implements Json.Serializable {
 		delivered = jsonData.getBoolean(JsonKey.DELIVERED);
 		messageInitial = jsonData.getString(JsonKey.MESSAGE_INITIAL);
 		messageEnding = jsonData.getString(JsonKey.MESSAGE_ENDING);
+		setReward(jsonData.getInt(JsonKey.REWARD));
 	}
 }

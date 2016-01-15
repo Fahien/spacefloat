@@ -14,7 +14,7 @@ import me.fahien.spacefloat.component.DestinationComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.GravityComponent;
-import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.component.PlayerComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RechargeComponent;
@@ -103,6 +103,10 @@ public class GameObjectFactoryTest {
 		destinationComponent.setPosition(new Vector3(-2000f, 0f, -3000f));
 		spaceship.add(destinationComponent);
 
+		// Create a money component
+		MoneyComponent moneyComponent = new MoneyComponent();
+		spaceship.add(moneyComponent);
+
 		// Save the spaceship
 		gameObjectFactory.save(spaceship);
 	}
@@ -172,6 +176,9 @@ public class GameObjectFactoryTest {
 
 		DestinationComponent destination = spaceship.getComponent(DestinationComponent.class);
 		assertNotNull("The spaceship has no destination component", destination);
+
+		MoneyComponent money = spaceship.getComponent(MoneyComponent.class);
+		assertNotNull("The spaceship has no money component", money);
 	}
 
 	@Test

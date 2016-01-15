@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.factory.GameObjectFactory;
@@ -15,9 +16,11 @@ import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.DestinationSystem;
+import me.fahien.spacefloat.system.MissionSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.moneyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
@@ -33,6 +36,7 @@ public class GameScreen extends SpaceFloatScreen {
 	private RenderSystem renderSystem;
 	private BulletSystem bulletSystem;
 	private DestinationSystem destinationSystem;
+	private MissionSystem missionSystem;
 	private ReactorController reactorController;
 
 	private void initSystems() {
@@ -43,6 +47,7 @@ public class GameScreen extends SpaceFloatScreen {
 		renderSystem = getRenderSystem();
 		reactorController = getReactorController();
 		destinationSystem = getDestinationSystem();
+		missionSystem = getMissionSystem();
 	}
 
 	private void injectSystemsDependencies() {
@@ -71,6 +76,8 @@ public class GameScreen extends SpaceFloatScreen {
 		engine.addSystem(cameraSystem);
 		logger.debug("Adding destination system to the engine");
 		engine.addSystem(destinationSystem);
+		logger.debug("Adding mission system to the engine");
+		engine.addSystem(missionSystem);
 	}
 
 	@Override
@@ -88,18 +95,18 @@ public class GameScreen extends SpaceFloatScreen {
 		HudFactory factory = getHudFactory();
 		// Add the Fps Actor to the Stage
 		stage.addActor(factory.getFpsActor());
-		// Get the player from a PlayerController
+		// Get the Player
 		Entity player = getGame().getPlayer();
-		if (player != null) {
-			RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
-			Vector3 velocity = rigidbodyComponent.getLinearVelocity();
-			stage.addActor(factory.getVelocityActor(velocity));
-
-			EnergyComponent energyComponent = energyMapper.get(player);
-			stage.addActor(factory.getFuelActor(energyComponent));
-		} else {
-			logger.error("Error creating the HUD: player is null");
-		}
+		// Add the Velocity Actor
+		RigidbodyComponent rigidbodyComponent = rigidMapper.get(player);
+		Vector3 velocity = rigidbodyComponent.getLinearVelocity();
+		stage.addActor(factory.getVelocityActor(velocity));
+		// Add the Energy Actor
+		EnergyComponent energyComponent = energyMapper.get(player);
+		stage.addActor(factory.getFuelActor(energyComponent));
+		// Add the Money Actor
+		MoneyComponent money = moneyMapper.get(player);
+		stage.addActor(factory.getMoneyActor(money));
 	}
 
 	@Override
@@ -125,6 +132,7 @@ public class GameScreen extends SpaceFloatScreen {
 			engine.removeSystem(bulletSystem);
 			engine.removeSystem(renderSystem);
 			engine.removeSystem(destinationSystem);
+			engine.removeSystem(missionSystem);
 			engine.removeSystem(reactorController);
 			engine.removeAllEntities();
 			engine = null;

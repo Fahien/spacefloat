@@ -8,7 +8,6 @@ import com.badlogic.ashley.core.ComponentMapper;
  * @author Fahien
  */
 public class ComponentMapperEnumerator {
-	public static ComponentMapper<AccelerationComponent> accelerationMapper = ComponentMapper.getFor(AccelerationComponent.class);
 	public static ComponentMapper<CollisionComponent> collisionMapper = ComponentMapper.getFor(CollisionComponent.class);
 	public static ComponentMapper<EnergyComponent> energyMapper = ComponentMapper.getFor(EnergyComponent.class);
 	public static ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
@@ -21,4 +20,5 @@ public class ComponentMapperEnumerator {
 	public static ComponentMapper<TransformComponent> transformMapper = ComponentMapper.getFor(TransformComponent.class);
 	public static ComponentMapper<VelocityComponent> velocityMapper = ComponentMapper.getFor(VelocityComponent.class);
 	public static ComponentMapper<DestinationComponent> destinationMapper = ComponentMapper.getFor(DestinationComponent.class);
+	public static ComponentMapper<MoneyComponent> moneyMapper = ComponentMapper.getFor(MoneyComponent.class);
 }

@@ -12,8 +12,10 @@ import me.fahien.spacefloat.actor.ControlMessageActor;
 import me.fahien.spacefloat.actor.EnergyHudActor;
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.actor.HudActor;
+import me.fahien.spacefloat.actor.MoneyActor;
 import me.fahien.spacefloat.actor.ScrollingFontActor;
 import me.fahien.spacefloat.component.EnergyComponent;
+import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
 
@@ -27,15 +29,24 @@ public enum HudFactory {
 
 	private static final String FPS_TXT = "FPS: ";
 	private static final String VEL_TXT = "VEL: ";
+
 	private static final float FPS_X = 4.0f;
 	private static final float FPS_Y = 8.0f;
+
 	private static final float VEL_X = SpaceFloatScreen.WIDTH - FPS_X;
 	private static final float VEL_Y = FPS_Y;
+
 	private static final float ENERGY_X = FPS_X;
 	private static final float ENERGY_Y = SpaceFloatScreen.HEIGHT - 22.0f;
-	private static final float MESSAGE_X = 96f;
+
+	private static final float MESSAGE_X = 96.0f;
 	private static final float MESSAGE_Y = FPS_Y;
-	private static final String CREDITS = "SPACE FLOAT\n" +
+
+	private static final float MONEY_Y = ENERGY_Y;
+	private static final float MONEY_X = SpaceFloatScreen.WIDTH - FPS_X - 72.0f;
+
+	private static final String CREDITS =
+			"SPACE FLOAT\n" +
 			"version " + SpaceFloatGame.VERSION + "\n\n" +
 			"Design\n"+
 			"Antonio Caggiano\n" +
@@ -54,6 +65,7 @@ public enum HudFactory {
 	private FontActor velocityActor;
 	private EnergyHudActor fuelActor;
 	private ControlMessageActor messageActor;
+	private MoneyActor moneyActor;
 
 	private HudActor backgroundMenu;
 	private HudActor continueActor;
@@ -142,6 +154,17 @@ public enum HudFactory {
 	}
 
 	/**
+	 * Returns the {@link MoneyActor}
+	 */
+	public MoneyActor getMoneyActor(final MoneyComponent money) {
+		if (moneyActor == null) {
+			moneyActor = new MoneyActor(hud, font, money);
+			moneyActor.setPosition(MONEY_X, MONEY_Y);
+		}
+		return moneyActor;
+	}
+
+	/**
 	 * Returns the background menu {@link HudActor}
 	 */
 	public HudActor getBackgroundMenu() {
@@ -152,6 +175,31 @@ public enum HudFactory {
 		return backgroundMenu;
 	}
 
+	/**
+	 * Returns the credits {@link ScrollingFontActor}
+	 */
+	public ScrollingFontActor getCreditsActor() {
+		if (creditsActor == null) {
+			creditsActor = new ScrollingFontActor(font, CREDITS);
+		}
+		creditsActor.setPosition(ScrollingFontActor.INITIAL_Y);
+		return creditsActor;
+	}
+
+	/**
+	 * Returns the text background
+	 */
+	public HudActor getTextBackgroundMenu() {
+		if (textBackgroundMenu == null) {
+			TextureRegion background = menu.findRegion("text-background");
+			textBackgroundMenu = new HudActor(background);
+		}
+		return textBackgroundMenu;
+	}
+
+	/**
+	 * Returns the continue {@link ButtonActor}
+	 */
 	public HudActor getContinueActor() {
 		if (continueActor == null) {
 			continueActor = new ButtonActor(menu, font, "Continue");
@@ -159,6 +207,9 @@ public enum HudFactory {
 		return continueActor;
 	}
 
+	/**
+	 * Returns the new game {@link ButtonActor}
+	 */
 	public HudActor getNewGameActor() {
 		if (newGameActor == null) {
 			newGameActor = new ButtonActor(menu, font, "New Game");
@@ -178,21 +229,5 @@ public enum HudFactory {
 			audioActor = new ButtonActor(menu, font, "Audio");
 		}
 		return audioActor;
-	}
-
-	public ScrollingFontActor getCreditsActor() {
-		if (creditsActor == null) {
-			creditsActor = new ScrollingFontActor(font, CREDITS);
-		}
-		creditsActor.setPosition(ScrollingFontActor.INITIAL_Y);
-		return creditsActor;
-	}
-
-	public HudActor getTextBackgroundMenu() {
-		if (textBackgroundMenu == null) {
-			TextureRegion background = menu.findRegion("text-background");
-			textBackgroundMenu = new HudActor(background);
-		}
-		return textBackgroundMenu;
 	}
 }

@@ -35,6 +35,7 @@ public class MissionFactoryTest {
 		mission.setPosition(new Vector3(1740.0f, 0.0f, 2310.0f));
 		mission.setMessageInitial("Hello! This is Mission Control! The parcel you have picked up has to be delivered to the Earth!");
 		mission.setMessageEnding("Well done, space courier!");
+		mission.setReward(100);
 
 		missionFactory.save(mission);
 	}
