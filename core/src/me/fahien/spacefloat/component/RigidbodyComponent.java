@@ -26,6 +26,7 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	private final static float DEFAULT_RADIUS = 10f;
 	private final static short DEFAULT_GROUP = 1; // 1 - Player
 	private final static short ALL_FLAG = -1;
+	private static final Vector3 LINEAR_FACTOR = new Vector3(1.0f, 0.0f, 1.0f);
 
 	private float mass;
 	private float radius;
@@ -129,6 +130,7 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		if (constructionInfo == null) createConstructionInfo();
 		rigidbody = new btRigidBody(constructionInfo);
 		rigidbody.setCollisionFlags(rigidbody.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+		rigidbody.setLinearFactor(LINEAR_FACTOR);
 	}
 
 	/**
@@ -191,10 +193,6 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		rigidbody.getWorldTransform(bt_transform);
 		bt_transform.getTranslation(bt_position);
 		bt_velocity.set(rigidbody.getLinearVelocity());
-		// Adjust y to zero
-		bt_position.y = 0f;
-		bt_transform.setTranslation(bt_position);
-		rigidbody.setWorldTransform(bt_transform);
 	}
 
 	/**
@@ -211,11 +209,11 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 	 */
 	public void dispose() {
 		// Dispose Bullet shape
-		if (shape != null) shape.dispose();
+		if (shape != null && !shape.isDisposed()) shape.dispose();
 		// Dispose Bullet construction info
-		if (constructionInfo != null) constructionInfo.dispose();
+		if (constructionInfo != null && !constructionInfo.isDisposed()) constructionInfo.dispose();
 		// Dispose Bullet rigid body
-		if (rigidbody != null) rigidbody.dispose();
+		if (rigidbody != null && !rigidbody.isDisposed()) rigidbody.dispose();
 	}
 
 	@Override
