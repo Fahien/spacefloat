@@ -5,6 +5,7 @@ import com.badlogic.ashley.systems.IteratingSystem;
 
 import me.fahien.spacefloat.component.ComponentMapperEnumerator;
 import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.mission.Mission;
 
@@ -22,21 +23,22 @@ public class MissionSystem extends IteratingSystem {
 	private float money_delta;
 
 	public MissionSystem() {
-		super(all(MissionComponent.class).get(), MISSION_PRIORITY);
+		super(all(MissionComponent.class, MoneyComponent.class).get(), MISSION_PRIORITY);
 	}
 
 	@Override
 	protected void processEntity(final Entity entity, final float delta) {
 		if (money_delta >= 1.0f) money_delta = 0.0f;
-		money_delta += delta;
+		money_delta += delta * 1024.0f;
 		if (money_delta >= 1.0f) {
-			updateMission(missionMapper.get(entity).getMission(), (int) money_delta);
+			updateMission(missionMapper.get(entity).getMission(), ComponentMapperEnumerator.moneyMapper.get(entity), (int) money_delta);
 		}
 	}
 
-	private void updateMission(Mission mission, int money) {
+	private void updateMission(Mission mission, MoneyComponent money, int reward) {
 		if (mission.isCollected() && !mission.isDelivered()) {
-			mission.addReward(-money);
+			mission.addReward(-reward);
+			money.setReward(mission.getReward());
 			SpaceFloatGame.logger.debug("Reward: " + mission.getReward());
 		}
 	}

@@ -15,6 +15,7 @@ import me.fahien.spacefloat.utils.JsonKey;
 public class MoneyComponent implements Component, Json.Serializable {
 
 	private int money;
+	private int reward;
 
 	public MoneyComponent() {}
 
@@ -44,13 +45,29 @@ public class MoneyComponent implements Component, Json.Serializable {
 		} else throw new GdxRuntimeException("Not enough money");
 	}
 
+	/**
+	 * Returns the reward
+	 */
+	public int getReward() {
+		return reward;
+	}
+
+	/**
+	 * Sets the reward
+	 */
+	public void setReward(final int reward) {
+		this.reward = (reward >= 0 ) ? reward : 0;
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JsonKey.MONEY, money);
+		json.writeValue(JsonKey.REWARD, reward);
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		setMoney(jsonData.getInt(JsonKey.MONEY));
+		setReward(jsonData.getInt(JsonKey.REWARD));
 	}
 }

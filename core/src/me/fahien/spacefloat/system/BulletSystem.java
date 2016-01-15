@@ -372,6 +372,9 @@ public class BulletSystem extends EntitySystem {
 					}
 					// Update user data
 					missionComponent.getCollisionObject().userData = target;
+					// Set the money reward
+					MoneyComponent moneyComponent = moneyMapper.get(target);
+					moneyComponent.setReward(mission.getReward());
 					// Add this component to the player
 					target.add(missionComponent);
 					// Enqueue first message
@@ -393,6 +396,7 @@ public class BulletSystem extends EntitySystem {
 					// Add reward
 					MoneyComponent moneyComponent = moneyMapper.get(player);
 					moneyComponent.addMoney(mission.getReward());
+					moneyComponent.setReward(0);
 					// Reset the destination
 					DestinationComponent destinationComponent = destinationMapper.get(player);
 					destinationComponent.setName(null);
