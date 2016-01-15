@@ -40,7 +40,7 @@ public class SpaceFloatGameTest {
 	public void before() {
 		game = new SpaceFloatGame();
 		game.initEngine();
-		game.initAssetManager();
+		game.createAssetManager();
 		game.initLogger();
 	}
 

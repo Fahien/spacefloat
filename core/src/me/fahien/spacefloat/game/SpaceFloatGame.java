@@ -8,6 +8,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
@@ -22,13 +24,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.actor.ControlMessageActor;
-import me.fahien.spacefloat.component.MissionComponent;
+import me.fahien.spacefloat.camera.MainOrthographicCamera;
+import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
 import me.fahien.spacefloat.factory.HudFactory;
-import me.fahien.spacefloat.camera.MainOrthographicCamera;
-import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.screen.SpaceFloatScreen;
@@ -50,13 +51,14 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	public static final String VERSION = "0.14";
+	public static final String VERSION = "0.15";
 
 	public static int LOGGER_LEVEL = Logger.INFO;
 
 	public static boolean DEBUG_ALL = false;
 
 	private static final String SYSTEM_PATH = "system/";
+	private static final String CURSOR_IMAGE = SYSTEM_PATH + "cursor.png";
 	private static final String SYSTEM_FONT = SYSTEM_PATH + "font.fnt";
 	private static final String SYSTEM_HUD = SYSTEM_PATH + "hud.atlas";
 
@@ -109,31 +111,20 @@ public class SpaceFloatGame extends Game {
 	}
 
 	/**
-	 * Initializes the {@link AssetManager}
+	 * Loads the cursor
 	 */
-	public void initAssetManager() {
-		assetManager = new AssetManager();
+	public void loadCursor(AssetManager assetManager) {
+		assetManager.load(CURSOR_IMAGE, Pixmap.class);
+		assetManager.finishLoading();
+		Pixmap cursor = assetManager.get(CURSOR_IMAGE, Pixmap.class);
+		Cursor customCursor = Gdx.graphics.newCursor(cursor, 1, 1);
+		Gdx.graphics.setCursor(customCursor);
 	}
-
 	/**
 	 * Returns the {@link AssetManager}
 	 */
 	public AssetManager getAssetManager() {
 		return assetManager;
-	}
-
-	/**
-	 * Initializes {@link Json}
-	 */
-	public void initJson() {
-		json = new Json();
-	}
-
-	/**
-	 * Initializes the {@link Engine}
-	 */
-	public void initEngine() {
-		engine = new Engine();
 	}
 
 	/**
@@ -157,7 +148,7 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Loads the {@link BitmapFont}
 	 */
-	protected void loadFont() {
+	protected void loadFont(AssetManager assetManager) {
 		assetManager.load(SYSTEM_FONT, BitmapFont.class);
 		assetManager.finishLoading();
 		font = assetManager.get(SYSTEM_FONT);
@@ -173,7 +164,7 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Loads the HUD {@link TextureAtlas}
 	 */
-	public void loadHud() {
+	public void loadHud(AssetManager assetManager) {
 		assetManager.load(SYSTEM_HUD, TextureAtlas.class);
 		assetManager.finishLoading();
 		this.hud = assetManager.get(SYSTEM_HUD);
@@ -315,11 +306,12 @@ public class SpaceFloatGame extends Game {
 		logger.info(logo);
 		loadPreferences();
 		initLogger();
-		initAssetManager();
-		initEngine();
-		initJson();
-		loadFont();
-		loadHud();
+		assetManager = new AssetManager();
+		loadCursor(assetManager);
+		loadFont(assetManager);
+		loadHud(assetManager);
+		engine = new Engine();
+		json = new Json();
 		initCamera();
 		initParticleSystem();
 		initInputMultiplexer();
