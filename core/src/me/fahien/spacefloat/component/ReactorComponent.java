@@ -136,7 +136,6 @@ public class ReactorComponent implements Component, Json.Serializable {
 	 */
 	public void dispose() {
 		if (effect != null) effect.dispose();
-		if (reactor!= null) reactor.dispose();
 	}
 
 	@Override

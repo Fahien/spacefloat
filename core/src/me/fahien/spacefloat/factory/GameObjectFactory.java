@@ -191,7 +191,9 @@ public enum GameObjectFactory {
 	}
 
 	public void dispose() {
-		objects.clear();
-		objects = null;
+		if (objects != null) {
+			objects.clear();
+			objects = null;
+		}
 	}
 }
