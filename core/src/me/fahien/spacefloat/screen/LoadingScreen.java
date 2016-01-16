@@ -171,7 +171,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 						try {
 							m_assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
 						} catch (GdxRuntimeException ex) {
-							logger.error("Could not load " + ReactorComponent.PARTICLES_DIR + name + ": " + e.getMessage());
+							logger.error("Could not load " + ReactorComponent.PARTICLES_DIR + name + ": " + e.getMessage() + "\n\t" + e.getCause());
 						}
 						m_assetManager.setLoader(ParticleEffect.class, localLoader);
 					}

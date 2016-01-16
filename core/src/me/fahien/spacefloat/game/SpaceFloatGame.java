@@ -10,6 +10,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
@@ -51,7 +52,7 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	public static final String VERSION = "0.15";
+	public static final String VERSION = "0.16";
 
 	public static int LOGGER_LEVEL = Logger.DEBUG;
 
@@ -194,7 +195,7 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Initializes the {@link Viewport} and the {@link Stage}
 	 */
-	private void initViewportAndStage() {
+	private void initViewportAndStage(final InputMultiplexer inputMultiplexer) {
 		logger.debug("Creating viewport");
 		viewport = new FitViewport(SpaceFloatScreen.WIDTH, SpaceFloatScreen.HEIGHT);
 		logger.debug("Creating stage");
@@ -203,14 +204,21 @@ public class SpaceFloatGame extends Game {
 		stage.getRoot().addListener(new InputListener() {
 			@Override
 			public boolean keyDown(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE && getScreen() != ScreenEnumerator.LOADING.getScreen()) {
+				if (keycode == Input.Keys.ESCAPE && getScreen() == ScreenEnumerator.GAME.getScreen()) {
 					setScreen(ScreenEnumerator.MAIN);
+					return true;
+				}
+				if (keycode == Input.Keys.BACK) {
+					if (getScreen() == ScreenEnumerator.GAME.getScreen()) {
+						setScreen(ScreenEnumerator.MAIN);
+					}
 					return true;
 				}
 				return false;
 			}
 		});
 		inputMultiplexer.addProcessor(stage);
+		Gdx.input.setCatchBackKey(true);
 	}
 
 	/**
@@ -228,10 +236,11 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Initializes the {@link InputMultiplexer}
 	 */
-	private void initInputMultiplexer() {
+	private InputMultiplexer createInputMultiplexer() {
 		logger.debug("Creating input multiplexer");
-		inputMultiplexer = new InputMultiplexer();
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
+		return inputMultiplexer;
 	}
 
 	/**
@@ -317,6 +326,7 @@ public class SpaceFloatGame extends Game {
 		initLogger();
 		logger.debug("Initializing asset manager");
 		assetManager = new AssetManager();
+		Texture.setAssetManager(assetManager);
 		loadCursor(assetManager);
 		loadFont(assetManager);
 		loadHud(assetManager);
@@ -325,8 +335,8 @@ public class SpaceFloatGame extends Game {
 		json = new Json();
 		initCamera();
 		initParticleSystem();
-		initInputMultiplexer();
-		initViewportAndStage();
+		inputMultiplexer = createInputMultiplexer();
+		initViewportAndStage(inputMultiplexer);
 		logger.debug("Initializing bullet");
 		Bullet.init();
 		initFactories();

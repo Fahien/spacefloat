@@ -3,6 +3,7 @@ package me.fahien.spacefloat.controller;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,6 +15,8 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
+import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.screen.ScreenEnumerator;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
