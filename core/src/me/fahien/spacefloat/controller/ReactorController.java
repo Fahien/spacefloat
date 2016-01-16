@@ -19,6 +19,7 @@ import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMap
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.reactorMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.rigidMapper;
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The ReactorController
@@ -30,6 +31,8 @@ public class ReactorController extends PlayerController {
 	private ParticleSystem particleSystem;
 	private Vector3 force;
 	private float rotation;
+
+	private ReactorInputAdapter reactorInputAdapter;
 
 	private ReactorComponent reactor;
 	private EnergyComponent energy;
@@ -49,35 +52,52 @@ public class ReactorController extends PlayerController {
 		super.addedToEngine(engine);
 
 		Entity player = getPlayer();
-		reactor = reactorMapper.get(player);
-		energy = energyMapper.get(player);
-		graphic = graphicMapper.get(player);
-		rigidbody = rigidMapper.get(player);
-		getInputMultiplexer().addProcessor(new ReactorInputAdapter());
+		if (player != null) {
+			reactor = reactorMapper.get(player);
+			energy = energyMapper.get(player);
+			graphic = graphicMapper.get(player);
+			rigidbody = rigidMapper.get(player);
+		}
+
+		reactorInputAdapter = new ReactorInputAdapter();
+		getInputMultiplexer().addProcessor(reactorInputAdapter);
 
 		force = new Vector3();
 	}
 
-	@Override
-	public void removedFromEngine(Engine engine) {
-		reactor.dispose();
-	}
-
 	protected Quaternion m_quaternion = new Quaternion();
+	protected boolean m_error;
 
 	@Override
 	public void update(float delta) {
-		if (!energy.hasCharge()) {
-			reactor.stop(particleSystem);
+		if (energy != null) {
+			if (!energy.hasCharge()) {
+				reactor.stop(particleSystem);
+			} else {
+				m_quaternion.setEulerAnglesRad(rotation, 0, 0);
+				rigidbody.rotate(m_quaternion);
+				if (reactor.isBurning()) {
+					reactor.setTransform(rigidbody.getTransform());
+					energy.addCharge(-reactor.getConsume() * 64 * delta);
+					rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));
+				}
+			}
 		} else {
-			m_quaternion.setEulerAnglesRad(rotation, 0, 0);
-			rigidbody.rotate(m_quaternion);
-			if (reactor.isBurning()) {
-				reactor.setTransform(rigidbody.getTransform());
-				energy.addCharge(-reactor.getConsume() * 64 * delta);
-				rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));
+			if (!m_error) {
+				logger.error("Could not find energy component");
+				m_error = true;
 			}
 		}
+	}
+
+
+	@Override
+	public void removedFromEngine(Engine engine) {
+		getInputMultiplexer().removeProcessor(reactorInputAdapter);
+	}
+
+	public void dispose() {
+		if (reactor != null) reactor.dispose();
 	}
 
 	/**

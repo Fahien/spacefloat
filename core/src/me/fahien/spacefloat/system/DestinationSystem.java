@@ -84,6 +84,7 @@ public class DestinationSystem extends IteratingSystem {
 			if (energy != null) {
 				chargeLow = energy.getCharge() / energy.getChargeMax() < 1/3f;
 				if (chargeLow) {
+					if (destinationComponent == null) return;
 					destinationComponent.setPosition(energyStationPosition);
 				} else {
 					MissionComponent mission = missionMapper.get(entity);

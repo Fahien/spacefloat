@@ -62,6 +62,13 @@ public class LoadingScreen extends SpaceFloatScreen {
 		this.loadInternal = loadInternal;
 	}
 
+	/**
+	 * Sets force reload of game objects
+	 */
+	public void setForceReload(boolean forceReload) {
+		this.forceReload = forceReload;
+	}
+
 	@Override
 	public void populate(Stage stage) {
 		m_loadingActor = new FontActor(getFont(), m_progress + LOADING_TEXT);
@@ -74,7 +81,6 @@ public class LoadingScreen extends SpaceFloatScreen {
 		loadObjects(engine);
 		loadModels(engine);
 	}
-
 
 	/**
 	 * Sets the {@link AssetManager}
@@ -242,24 +248,18 @@ public class LoadingScreen extends SpaceFloatScreen {
 				Engine engine = getEngine();
 				loadParticles(engine, getParticleSystem());
 				injectReactors(engine.getEntitiesFor(all(ReactorComponent.class).get()));
-				loadMissions(MissionFactory.INSTANCE);
-				SpaceFloat.GAME.setScreen(ScreenEnumerator.GAME);
 			} catch (GdxRuntimeException e) {
-				logger.error("Could not inject reactors:" + e.getMessage());
+				logger.error("Could not inject reactors: " + e.getMessage());
 				m_loadingActor.setText("Could not inject reactors, please restart SpaceFloat");
-				Gdx.app.exit();
 			}
+			loadMissions(MissionFactory.INSTANCE);
+			SpaceFloat.GAME.setScreen(ScreenEnumerator.GAME);
 		}
 	}
 
 	@Override
-	public void dispose() {
-		super.dispose();
+	public void hide() {
+		super.hide();
 		m_progress = 0.0f;
-		m_assetManager = null;
-	}
-
-	public void setForceReload(boolean forceReload) {
-		this.forceReload = forceReload;
 	}
 }

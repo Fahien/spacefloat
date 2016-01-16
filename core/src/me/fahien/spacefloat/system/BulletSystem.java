@@ -215,7 +215,12 @@ public class BulletSystem extends EntitySystem {
 			updateCollisionObjects(missionMapper.get(entity), graphicMapper.get(entity));
 		}
 		try {
-			dynamicsWorld.stepSimulation(delta, 5, 0.000001f);
+			if (dynamicsWorld != null && !dynamicsWorld.isDisposed()) {
+				dynamicsWorld.stepSimulation(delta, 5, 0.000001f);
+			} else {
+				logger.error("Dynamics world is disposed or is null");
+				Gdx.app.exit();
+			}
 		} catch (Exception e) {
 			logger.error("Error while simulating dynamics world: " + e.getMessage());
 			Gdx.app.exit();

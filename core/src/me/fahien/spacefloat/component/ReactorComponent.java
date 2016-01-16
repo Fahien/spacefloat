@@ -9,6 +9,8 @@ import com.badlogic.gdx.utils.JsonValue;
 
 import me.fahien.spacefloat.utils.JsonKey;
 
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
+
 /**
  * The Reactor {@link Component}
  *
@@ -29,7 +31,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 
 	public ReactorComponent() {}
 
-	public ReactorComponent(String name) {
+	public ReactorComponent(final String name) {
 		this.name = name;
 	}
 
@@ -43,7 +45,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the name
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -57,7 +59,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the reactor {@link ParticleEffect}
 	 */
-	public void setReactor(ParticleEffect reactor) {
+	public void setReactor(final ParticleEffect reactor) {
 		this.reactor = reactor;
 		this.effect = reactor.copy();
 	}
@@ -72,7 +74,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the consume
 	 */
-	public void setConsume(float consume) {
+	public void setConsume(final float consume) {
 		this.consume = consume;
 	}
 
@@ -86,7 +88,7 @@ public class ReactorComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the power
 	 */
-	public void setPower(float power) {
+	public void setPower(final float power) {
 		this.power = power;
 	}
 
@@ -100,31 +102,33 @@ public class ReactorComponent implements Component, Json.Serializable {
 	/**
 	 * Starts or updates the reactor {@link ParticleEffect}
 	 */
-	public void start(ParticleSystem particleSystem, Matrix4 transform) {
-		if (effect == null) return;
+	public void start(final ParticleSystem particleSystem, final Matrix4 transform) {
 		if (isBurning()) return;
-		effect.setTransform(transform);
-		effect.init();
-		effect.start();  // optional: particle will begin burning immediately
-		particleSystem.add(effect);
+		if (effect != null) {
+			effect.setTransform(transform);
+			effect.init();
+			effect.start();  // optional: particle will begin burning immediately
+			particleSystem.add(effect);
+		} else {
+			logger.error("Effect is null");
+		}
 		burning = true;
 	}
 
 	/**
 	 * Stops the reactor {@link ParticleEffect}
 	 */
-	public void stop(ParticleSystem particleSystem) {
-		if (effect == null) return;
+	public void stop(final ParticleSystem particleSystem) {
 		if (!isBurning()) return;
-		particleSystem.remove(effect);
+		if (effect != null) particleSystem.remove(effect);
 		burning = false;
 	}
 
 	/**
 	 * Updates the reactor {@link ParticleEffect} transform
 	 */
-	public void setTransform(Matrix4 transform) {
-		effect.setTransform(transform);
+	public void setTransform(final Matrix4 transform) {
+		if (effect != null) effect.setTransform(transform);
 	}
 
 	/**

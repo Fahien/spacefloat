@@ -130,7 +130,6 @@ public class GameScreen extends SpaceFloatScreen {
 
 	@Override
 	public void hide() {
-		pause();
 		super.hide();
 		if (engine != null) {
 			engine.removeSystem(cameraSystem);
@@ -140,7 +139,6 @@ public class GameScreen extends SpaceFloatScreen {
 			engine.removeSystem(missionSystem);
 			engine.removeSystem(reactorController);
 			engine.removeAllEntities();
-			engine = null;
 		}
 	}
 }

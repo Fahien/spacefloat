@@ -1,6 +1,7 @@
 package me.fahien.spacefloat.screen;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -78,7 +79,7 @@ public class MainScreen extends SpaceFloatScreen {
 		renderSystem.setCamera(mainCamera);
 	}
 
-	private void addSystemsToEngine(Engine engine) {
+	private void addSystemsToEngine(final Engine engine) {
 		logger.debug("Adding render system to the engine");
 		engine.addSystem(renderSystem);
 		logger.debug("Adding camera system to the engine");
@@ -108,7 +109,7 @@ public class MainScreen extends SpaceFloatScreen {
 	}
 
 	@Override
-	public void populate(Stage stage) {
+	public void populate(final Stage stage) {
 		// Load the menu atlas
 		AssetManager assetManager = getAssetManager();
 		assetManager.load(MENU_ATLAS, TextureAtlas.class);
@@ -160,6 +161,7 @@ public class MainScreen extends SpaceFloatScreen {
 			HudActor continueActor = hudfactory.getContinueActor();
 			continueActor.setX(BUTTON_X);
 			continueActor.setY(HEIGHT - BUTTON_Y * i++);
+			continueActor.clearListeners();
 			continueActor.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -174,6 +176,7 @@ public class MainScreen extends SpaceFloatScreen {
 		HudActor newGameActor = hudfactory.getNewGameActor();
 		newGameActor.setX(BUTTON_X);
 		newGameActor.setY(HEIGHT - BUTTON_Y * i);
+		newGameActor.clearListeners();
 		newGameActor.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -200,7 +203,12 @@ public class MainScreen extends SpaceFloatScreen {
 	@Override
 	public void update(float delta) {
 		super.update(delta);
-		engine.update(delta);
+		if (engine != null) {
+			engine.update(delta);
+		} else {
+			logger.error("Engine is null");
+			Gdx.app.exit();
+		}
 		rotation += delta * ROTATION_VELOCITY;
 		quaternion.setEulerAnglesRad(-rotation, 0, 0);
 		transformGraphic.set(quaternion);
@@ -214,7 +222,6 @@ public class MainScreen extends SpaceFloatScreen {
 			engine.removeSystem(bulletSystem);
 			engine.removeSystem(renderSystem);
 			engine.removeEntity(cargo);
-			engine = null;
 		}
 	}
 }

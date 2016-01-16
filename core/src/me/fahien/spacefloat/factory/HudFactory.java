@@ -247,4 +247,21 @@ public enum HudFactory {
 		}
 		return audioActor;
 	}
+
+	public void dispose() {
+		fpsActor = null;
+		velocityActor = null;
+		fuelActor = null;
+		messageActor = null;
+		moneyActor = null;
+		parcelActor = null;
+
+		backgroundMenu = null;
+		continueActor = null;
+		newGameActor = null;
+		videoActor = null;
+		audioActor = null;
+		creditsActor = null;
+		textBackgroundMenu = null;
+	}
 }

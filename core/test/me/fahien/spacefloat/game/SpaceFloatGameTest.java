@@ -34,14 +34,14 @@ public class SpaceFloatGameTest {
 	private static final String MODELS_DIR = "models/";
 	private static final String A_MODEL = MODELS_DIR + "player.g3db";
 
+	private AssetManager assetManager;
 	private SpaceFloatGame game;
 
 	@Before
 	public void before() {
 		game = new SpaceFloatGame();
-		game.initEngine();
-		game.createAssetManager();
 		game.initLogger();
+		assetManager = new AssetManager();
 	}
 
 	@Test
@@ -77,8 +77,8 @@ public class SpaceFloatGameTest {
 
 	@Test
 	public void canInjectDependenciesInScreens() {
-		game.loadFont();
-		game.loadHud();
+		game.loadFont(assetManager);
+		game.loadHud(assetManager);
 		game.initCamera();
 		for (ScreenEnumerator screenEnum : ScreenEnumerator.values()) {
 			try {
@@ -136,13 +136,13 @@ public class SpaceFloatGameTest {
 
 	@Test
 	public void canLoadAndGetTheFont() {
-		game.loadFont();
+		game.loadFont(assetManager);
 		assertNotNull("Could not get the font", game.getFont());
 	}
 
 	@Test
 	public void canLoadAndGetTheHud() {
-		game.loadHud();
+		game.loadHud(assetManager);
 		TextureAtlas hud = game.getHud();
 		assertNotNull("Could not get the HUD", hud);
 		assertNotNull("The hud has no fuel", hud.findRegion("energy"));
@@ -151,5 +151,6 @@ public class SpaceFloatGameTest {
 	@After
 	public void after() {
 		game.dispose();
+		assetManager.dispose();
 	}
 }

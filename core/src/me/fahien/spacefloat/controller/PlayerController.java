@@ -8,6 +8,9 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.InputMultiplexer;
 
 import me.fahien.spacefloat.component.PlayerComponent;
+import me.fahien.spacefloat.game.SpaceFloatGame;
+
+import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
  * The Player {@link EntitySystem} Base Class
@@ -54,6 +57,8 @@ public abstract class PlayerController extends EntitySystem {
 		ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
 		if (entities.size() > 0) {
 			player = entities.get(0);
+		} else {
+			logger.error("Could not find the player");
 		}
 	}
 }

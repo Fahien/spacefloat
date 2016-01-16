@@ -53,7 +53,7 @@ public class SpaceFloatGame extends Game {
 
 	public static final String VERSION = "0.15";
 
-	public static int LOGGER_LEVEL = Logger.INFO;
+	public static int LOGGER_LEVEL = Logger.DEBUG;
 
 	public static boolean DEBUG_ALL = false;
 
@@ -178,6 +178,7 @@ public class SpaceFloatGame extends Game {
 	}
 
 	public void initFactories() {
+		logger.debug("Initializing factories");
 		gameObjectFactory = GameObjectFactory.INSTANCE;
 		gameObjectFactory.setJson(json);
 
@@ -237,11 +238,17 @@ public class SpaceFloatGame extends Game {
 	 * Initializes all {@link EntitySystem}s
 	 */
 	public void initSystems() {
+		logger.debug("Creating camera system");
 		cameraSystem = new CameraSystem();
+		logger.debug("Creating render system");
 		renderSystem = new RenderSystem();
+		logger.debug("Creating bullet system");
 		bulletSystem = new BulletSystem();
+		logger.debug("Creating destination system");
 		destinationSystem = new DestinationSystem();
+		logger.debug("Creating mission system");
 		missionSystem = new MissionSystem();
+		logger.debug("Creating reactor controller");
 		reactorController = new ReactorController();
 	}
 
@@ -264,15 +271,17 @@ public class SpaceFloatGame extends Game {
 	 */
 	public void setScreen(ScreenEnumerator screenEnumerator) {
 		SpaceFloatScreen screen = screenEnumerator.getScreen();
-		if (!screen.isInitialized()) {
-			logger.debug("Injecting dependencies into " + screen.getClass().getSimpleName());
-			injectDependencies(screen);
-		}
-		if (screen == this.screen) return;
+
+		logger.debug("Injecting dependencies into " + screen.getClass().getSimpleName());
+		injectDependencies(screen);
+
 		String currentScreen = "Null";
-		if (this.screen != null) currentScreen = this.screen.getClass().getSimpleName();
+		if (this.screen != null) {
+			currentScreen = this.screen.getClass().getSimpleName();
+		}
 		logger.debug("Switching screen: " + currentScreen + " → " + screen.getClass().getSimpleName());
 		setScreen(screen);
+
 	}
 
 	/**
@@ -306,25 +315,40 @@ public class SpaceFloatGame extends Game {
 		logger.info(logo);
 		loadPreferences();
 		initLogger();
+		logger.debug("Initializing asset manager");
 		assetManager = new AssetManager();
 		loadCursor(assetManager);
 		loadFont(assetManager);
 		loadHud(assetManager);
+		logger.debug("Initializing engine");
 		engine = new Engine();
 		json = new Json();
 		initCamera();
 		initParticleSystem();
 		initInputMultiplexer();
 		initViewportAndStage();
+		logger.debug("Initializing bullet");
 		Bullet.init();
 		initFactories();
 		initSystems();
-		setScreen(ScreenEnumerator.MAIN);
+		try {
+			setScreen(ScreenEnumerator.MAIN);
+		} catch (Exception e) {
+			logger.error("Something gone wrong: " + e.getMessage());
+			e.printStackTrace();
+			Gdx.app.exit();
+		}
 	}
 
 	@Override
 	public void render() {
-		super.render();
+		try {
+			super.render();
+		} catch (Exception e) {
+			logger.error("Something gone wrong: " + e.getMessage());
+			e.printStackTrace();
+			Gdx.app.exit();
+		}
 	}
 
 	@Override
@@ -335,9 +359,25 @@ public class SpaceFloatGame extends Game {
 	@Override
 	public void dispose() {
 		super.dispose();
+		if (hudFactory != null) {
+			logger.debug("Disposing hud");
+			hudFactory.dispose();
+		}
+		if (gameObjectFactory != null) {
+			logger.debug("Disposing objects");
+			gameObjectFactory.dispose();
+		}
+		if (stage != null) {
+			logger.debug("Disposing stage");
+			stage.dispose();
+		}
 		if (missionFactory != null) {
 			logger.debug("Disposing mission");
 			missionFactory.dispose();
+		}
+		if (reactorController != null) {
+			logger.debug("Disposing reactor");
+			reactorController.dispose();
 		}
 		if (bulletSystem != null) {
 			logger.debug("Disposing bullet");
@@ -346,10 +386,6 @@ public class SpaceFloatGame extends Game {
 		if (renderSystem != null) {
 			logger.debug("Disposing render");
 			renderSystem.dispose();
-		}
-		if (stage != null) {
-			logger.debug("Disposing stage");
-			stage.dispose();
 		}
 		logger.debug("Disposing asset manager");
 		assetManager.dispose();
@@ -361,9 +397,5 @@ public class SpaceFloatGame extends Game {
 	 */
 	public void enqueueMessage(String message) {
 		stage.addActor(hudFactory.getMessageActor(message));
-	}
-
-	public BulletSystem getBulletSystem() {
-		return bulletSystem;
 	}
 }

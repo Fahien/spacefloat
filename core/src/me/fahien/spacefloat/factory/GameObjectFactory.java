@@ -12,7 +12,6 @@ import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
-import me.fahien.spacefloat.game.SpaceFloat;
 import me.fahien.spacefloat.utils.JsonKey;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
@@ -150,7 +149,7 @@ public enum GameObjectFactory {
 			}
 		}
 		else {
-			logger.error("Reloading local objects");
+			logger.debug("Loading local objects");
 			objects = loadLocalObjects();
 		}
 		if (objects == null) {
@@ -189,5 +188,10 @@ public enum GameObjectFactory {
 
 	public boolean hasObjects() {
 		return objects != null && objects.size > 0;
+	}
+
+	public void dispose() {
+		objects.clear();
+		objects = null;
 	}
 }

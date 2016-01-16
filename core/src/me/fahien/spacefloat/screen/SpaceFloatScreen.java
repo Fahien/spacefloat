@@ -379,7 +379,7 @@ public class SpaceFloatScreen implements Screen {
 	@Override
 	public void hide() {
 		logger.debug("Hiding screen");
-		dispose();
+		if (stage != null) stage.getRoot().clearChildren();
 	}
 
 	@Override
@@ -394,7 +394,6 @@ public class SpaceFloatScreen implements Screen {
 		assetManager = null;
 		inputMultiplexer = null;
 		viewport = null;
-		if (stage != null) stage.getRoot().clearChildren();
 		stage = null;
 		particleSystem = null;
 		reactorController = null;
