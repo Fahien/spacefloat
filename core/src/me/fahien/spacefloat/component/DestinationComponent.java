@@ -62,16 +62,10 @@ public class DestinationComponent implements Component, Json.Serializable {
 	@Override
 	public void write(final Json json) {
 		json.writeValue(JsonKey.NAME, name);
-		json.writeValue(JsonKey.X, position.x);
-		json.writeValue(JsonKey.Y, position.y);
-		json.writeValue(JsonKey.Z, position.z);
 	}
 
 	@Override
 	public void read(final Json json, final JsonValue jsonData) {
 		name = jsonData.getString(JsonKey.NAME);
-		position.x = jsonData.getShort(JsonKey.X);
-		position.y = jsonData.getShort(JsonKey.Y);
-		position.z = jsonData.getShort(JsonKey.Z);
 	}
 }

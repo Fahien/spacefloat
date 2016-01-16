@@ -164,14 +164,16 @@ public enum MissionFactory {
 		if (missions != null) {
 			missions.clear();
 		}
+		/*
 		FileHandle file = Gdx.files.local(MISSIONS_DIR);
 		if (file.isDirectory()) {
 			file.deleteDirectory();
 		}
+		*/
 		if (missionComponent != null && missionComponent.getCollisionObject().isDisposed()) {
 			missionComponent = null;
 		}
-		file = Gdx.files.internal(MISSION_LIST);
+		FileHandle file = Gdx.files.internal(MISSION_LIST);
 		String listString = file.readString();
 		String[] missionName = listString.split("\n");
 		if (missionName.length > 0) {
@@ -206,8 +208,19 @@ public enum MissionFactory {
 	/**
 	 * Loads the {@link Mission} list
 	 */
-	public void loadMissions() {
-		loadLocalMissions();
+	public void loadMissions(final boolean force) {
+		if (!force) {
+			if (missions != null && missions.size > 0) {
+				logger.debug("Missions already loaded");
+			} else {
+				logger.debug("Loading local objects");
+				loadLocalMissions();
+			}
+		}
+		else {
+			logger.debug("Reloading local missions");
+			loadLocalMissions();
+		}
 		if (missions == null) {
 			logger.error("No missions found in the local directory: " + MISSIONS_DIR);
 			loadInternalMissions();

@@ -92,11 +92,7 @@ public enum GameObjectFactory {
 	 * Loads all {@link GameObject} in the internal OBJECTS_DIR
 	 */
 	public Array<GameObject> loadInternalObjects() {
-		if (objects != null) {
-			logger.debug("Disposing old collisions and rigidbodies");
-			SpaceFloat.GAME.getGame().getBulletSystem().disposeCollisionsAndRigidbodies();
-			objects.clear();
-		}
+		/*
 		FileHandle dir = Gdx.files.local(OBJECTS_DIR);
 		if (dir.isDirectory()) {
 			for (FileHandle file : dir.list()) {
@@ -104,6 +100,7 @@ public enum GameObjectFactory {
 			}
 			dir.deleteDirectory();
 		}
+		*/
 		FileHandle file = Gdx.files.internal(OBJECT_LIST);
 		String listString = file.readString();
 		String[] objectNames = listString.split("\n");
@@ -126,7 +123,6 @@ public enum GameObjectFactory {
 		FileHandle objectsDir = Gdx.files.local(OBJECTS_DIR);
 		if (objectsDir.isDirectory()) {
 			FileHandle[] files = objectsDir.list();
-			Array<GameObject> objects;
 			if (files.length > 0) {
 				objects = new Array<>(files.length);
 				for (FileHandle file : files) {
@@ -144,8 +140,19 @@ public enum GameObjectFactory {
 	/**
 	 * Loads the {@link GameObject} list
 	 */
-	public Array<GameObject> loadObjects() {
-		if (objects == null) objects = loadLocalObjects();
+	public Array<GameObject> loadObjects(final boolean force) {
+		if (!force) {
+			if (objects != null && objects.size > 0) {
+				logger.debug("Objects already loaded");
+			} else {
+				logger.debug("Loading local objects");
+				objects = loadLocalObjects();
+			}
+		}
+		else {
+			logger.error("Reloading local objects");
+			objects = loadLocalObjects();
+		}
 		if (objects == null) {
 			logger.error("No objects found in the local directory: " + OBJECTS_DIR);
 			objects = loadInternalObjects();
@@ -173,10 +180,14 @@ public enum GameObjectFactory {
 			VelocityComponent velocity = velocityMapper.get(entity);
 			if (velocity != null && rigidbody != null) {
 				velocity.setVelocity(rigidbody.getLinearVelocity());
-				velocity.setAngularVelocity(rigidbody.getRigidbody().getAngularVelocity());
+				velocity.setAngularVelocity(rigidbody.getAngularVelocity());
 			}
 			save(object);
 		}
 		createLocalObjectList();
+	}
+
+	public boolean hasObjects() {
+		return objects != null && objects.size > 0;
 	}
 }

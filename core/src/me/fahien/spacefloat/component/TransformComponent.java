@@ -52,6 +52,13 @@ public class TransformComponent implements Component, Json.Serializable {
 		return eulerAngles;
 	}
 
+	/**
+	 * Sets the eulerAngles
+	 */
+	public void setEulerAngles(float yaw, float pitch, float roll) {
+		eulerAngles.set(yaw, pitch, roll);
+	}
+
 	@Override
 	public void write(Json json) {
 		json.writeValue(JsonKey.X, position.x);

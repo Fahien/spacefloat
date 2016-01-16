@@ -1,9 +1,7 @@
 package me.fahien.spacefloat.screen;
 
 import com.badlogic.ashley.core.Engine;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -137,17 +135,35 @@ public class MainScreen extends SpaceFloatScreen {
 		HudActor backgroundActor = hudfactory.getBackgroundMenu();
 		stage.addActor(backgroundActor);
 
-		// Create continue button
-		FileHandle localObjectsDirectory = Gdx.files.local("objects/");
 		int i = 2;
-		if (localObjectsDirectory != null && localObjectsDirectory.isDirectory()) {
+
+		// Create continue button
+		/*
+			FileHandle localObjectsDirectory = Gdx.files.local("objects/");
+			if (localObjectsDirectory != null && localObjectsDirectory.isDirectory()) {
+				HudActor continueActor = hudfactory.getContinueActor();
+				continueActor.setX(BUTTON_X);
+				continueActor.setY(HEIGHT - BUTTON_Y * i++);
+				continueActor.addListener(new ClickListener() {
+					@Override
+					public void clicked(InputEvent event, float x, float y) {
+						((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setLoadInternal(false);
+						SpaceFloat.GAME.setScreen(ScreenEnumerator.LOADING);
+					}
+				});
+				stage.addActor(continueActor);
+			}
+		*/
+
+		// Temp continue button
+		if (getGameObjectFactory().hasObjects()) {
 			HudActor continueActor = hudfactory.getContinueActor();
 			continueActor.setX(BUTTON_X);
 			continueActor.setY(HEIGHT - BUTTON_Y * i++);
 			continueActor.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
-					((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setLoadInternal(false);
+					((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setForceReload(false);
 					SpaceFloat.GAME.setScreen(ScreenEnumerator.LOADING);
 				}
 			});
@@ -161,7 +177,7 @@ public class MainScreen extends SpaceFloatScreen {
 		newGameActor.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setLoadInternal(true);
+				((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setForceReload(true);
 				SpaceFloat.GAME.setScreen(ScreenEnumerator.LOADING);
 			}
 		});

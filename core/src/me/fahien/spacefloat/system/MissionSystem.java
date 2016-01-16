@@ -1,16 +1,21 @@
 package me.fahien.spacefloat.system;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 
 import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
+import me.fahien.spacefloat.component.TransformComponent;
+import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.mission.Mission;
 
 import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.missionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.moneyMapper;
-import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.transformMapper;
 
 /**
  * The Mission {@link IteratingSystem}
@@ -28,6 +33,47 @@ public class MissionSystem extends IteratingSystem {
 
 	protected MissionComponent m_missionComponent;
 	protected MoneyComponent m_moneyComponent;
+
+	@Override
+	public void addedToEngine(final Engine engine) {
+		super.addedToEngine(engine);
+
+		updateTargetPosition(engine, getEntities());
+	}
+
+	/**
+	 * Updates the mission component target position if the parcel is collected but not delivered
+	 */
+	private void updateTargetPosition(final Engine engine, final ImmutableArray<Entity> entities) {
+		// If there are entities
+		if (entities.size() > 0) {
+			// Get the first game object
+			GameObject gameObject = (GameObject) entities.first();
+			// If it is the player
+			if (gameObject.isPlayer()) {
+				// Get the mission component
+				m_missionComponent = missionMapper.get(gameObject);
+				// Get the mission
+				Mission mission = m_missionComponent.getMission();
+				// Get the family of transform
+				Family familyTransform = all(TransformComponent.class).get();
+				// Get entities with a transform
+				ImmutableArray<Entity> entitiesTransform = engine.getEntitiesFor(familyTransform);
+				// For every entity
+				for (Entity entity : entitiesTransform) {
+					// If it is the destination
+					if (mission.getDestination().equals(((GameObject) entity).getName())) {
+						// Get the transform
+						TransformComponent transform = transformMapper.get(entity);
+						// Update the mission component destination position
+						m_missionComponent.setDestinationPosition(transform.getPosition());
+						// Done
+						break;
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	protected void processEntity(final Entity entity, final float delta) {

@@ -11,7 +11,6 @@ import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.controller.ReactorController;
-import me.fahien.spacefloat.factory.GameObjectFactory;
 import me.fahien.spacefloat.factory.HudFactory;
 import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.system.BulletSystem;
@@ -121,10 +120,12 @@ public class GameScreen extends SpaceFloatScreen {
 
 	@Override
 	public void pause() {
-		logger.info("Saving game");
-		GameObjectFactory factory = getGameObjectFactory();
-		if (factory != null) factory.saveObjects(engine.getEntities());
-		MissionFactory.INSTANCE.saveMissions();
+		/*
+			logger.info("Saving game");
+			GameObjectFactory factory = getGameObjectFactory();
+			if (factory != null) factory.saveObjects(engine.getEntities());
+			MissionFactory.INSTANCE.saveMissions();
+		 */
 	}
 
 	@Override

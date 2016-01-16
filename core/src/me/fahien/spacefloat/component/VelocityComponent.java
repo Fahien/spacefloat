@@ -31,8 +31,8 @@ public class VelocityComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the velocity
 	 */
-	public void setVelocity(Vector3 velocity) {
-		this.velocity = velocity;
+	public void setVelocity(final Vector3 velocity) {
+		this.velocity.set(velocity);
 	}
 
 	/**
@@ -40,6 +40,13 @@ public class VelocityComponent implements Component, Json.Serializable {
 	 */
 	public Vector3 getAngularVelocity() {
 		return angularVelocity;
+	}
+
+	/**
+	 * Sets the angular velocity
+	 */
+	public void setAngularVelocity(final Vector3 angularVelocity) {
+		this.angularVelocity.set(angularVelocity);
 	}
 
 	@Override
@@ -60,9 +67,5 @@ public class VelocityComponent implements Component, Json.Serializable {
 		angularVelocity.x = jsonData.getFloat(JsonKey.YAW);
 		angularVelocity.y = jsonData.getFloat(JsonKey.PITCH);
 		angularVelocity.z = jsonData.getFloat(JsonKey.ROLL);
-	}
-
-	public void setAngularVelocity(Vector3 angularVelocity) {
-		this.angularVelocity = angularVelocity;
 	}
 }

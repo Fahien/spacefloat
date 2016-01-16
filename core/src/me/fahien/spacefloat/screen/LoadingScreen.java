@@ -53,6 +53,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 	private AssetManager m_assetManager;
 	private float m_progress;
 	private boolean loadInternal;
+	private boolean forceReload;
 
 	/**
 	 * Set load internal
@@ -89,11 +90,14 @@ public class LoadingScreen extends SpaceFloatScreen {
 	protected void loadObjects(Engine engine) {
 		GameObjectFactory factory = getGameObjectFactory();
 		Array<GameObject> objects;
+		/*
 		if (loadInternal) {
 			objects = factory.loadInternalObjects();
 		} else {
 			objects = factory.loadObjects();
 		}
+		 */
+		objects = factory.loadObjects(forceReload);
 		if (objects != null) {
 			for (GameObject object : objects) {
 				if (object.isPlayer()) {
@@ -212,11 +216,14 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 */
 	private void loadMissions(MissionFactory missionFactory) {
 		logger.debug("Loading missions");
+		/*
 		if (loadInternal) {
 			missionFactory.loadInternalMissions();
 		} else {
 			missionFactory.loadMissions();
 		}
+		*/
+		missionFactory.loadMissions(forceReload);
 		missionFactory.loadNextMission();
 	}
 
@@ -250,5 +257,9 @@ public class LoadingScreen extends SpaceFloatScreen {
 		super.dispose();
 		m_progress = 0.0f;
 		m_assetManager = null;
+	}
+
+	public void setForceReload(boolean forceReload) {
+		this.forceReload = forceReload;
 	}
 }

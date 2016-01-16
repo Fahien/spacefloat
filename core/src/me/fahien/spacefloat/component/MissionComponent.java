@@ -1,5 +1,6 @@
 package me.fahien.spacefloat.component;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags;
 
 import me.fahien.spacefloat.mission.Mission;
@@ -20,6 +21,7 @@ public class MissionComponent extends CollisionComponent {
 	private Mission mission;
 	private boolean collecting;
 	private boolean delivering;
+	private Vector3 destinationPosition;
 
 	public MissionComponent() {
 		super(PARCEL_RADIUS, PARCEL_GROUP, PARCEL_MASK);
@@ -60,24 +62,50 @@ public class MissionComponent extends CollisionComponent {
 		if (handlingTime != HANDLING_TIME) handlingTime = HANDLING_TIME;
 	}
 
-	@Override
-	protected void setCollisionFlags() {
-		getCollisionObject().setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
-	}
-
-	public void setCollecting(boolean collecting) {
-		this.collecting = collecting;
-	}
-
+	/**
+	 * Tests whether is collecting
+	 */
 	public boolean isCollecting() {
 		return collecting;
 	}
 
+	/**
+	 * Sets collecting
+	 */
+	public void setCollecting(boolean collecting) {
+		this.collecting = collecting;
+	}
+
+	/**
+	 * Tests whether is delivering
+	 */
 	public boolean isDelivering() {
 		return delivering;
 	}
 
+	/**
+	 * Sets delivering
+	 */
 	public void setDelivering(boolean delivering) {
 		this.delivering = delivering;
+	}
+
+	/**
+	 * Returns the destination position
+	 */
+	public Vector3 getDestinationPosition() {
+		return destinationPosition;
+	}
+
+	/**
+	 * Sets the destination position
+	 */
+	public void setDestinationPosition(final Vector3 destinationPosition) {
+		this.destinationPosition = destinationPosition;
+	}
+
+	@Override
+	protected void setCollisionFlags() {
+		getCollisionObject().setCollisionFlags(CollisionFlags.CF_NO_CONTACT_RESPONSE);
 	}
 }

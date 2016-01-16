@@ -23,6 +23,7 @@ import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.utils.ShapeRenderer;
 import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 
+import static com.badlogic.ashley.core.Family.all;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.collisionMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.destinationMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
@@ -75,7 +76,7 @@ public class RenderSystem extends EntitySystem {
 		super.addedToEngine(engine);
 
 		// Get the Entities
-		Family family = Family.all(GraphicComponent.class, TransformComponent.class).get();
+		Family family = all(GraphicComponent.class, TransformComponent.class).get();
 		entities = engine.getEntitiesFor(family);
 		setModelInstancesTransform(entities);
 
@@ -105,7 +106,7 @@ public class RenderSystem extends EntitySystem {
 			// Get the transform component
 			TransformComponent transformComponent = transformMapper.get(entity);
 			// Set the model instance initial rotation before position
-			graphicComponent.setFromEulerAnglesRad(transformComponent.getEulerAngles());
+			graphicComponent.setFromEulerAngles(transformComponent.getEulerAngles());
 			// Set the model instance initial position after rotation
 			graphicComponent.setPosition(transformComponent.getPosition());
 		}
@@ -147,7 +148,7 @@ public class RenderSystem extends EntitySystem {
 			if (playerMapper.get(entity) != null) {
 				// Render destination line
 				m_destinationComponent = destinationMapper.get(entity);
-				if (m_destinationComponent != null && m_destinationComponent.getName() != null) {
+				if (m_destinationComponent != null) {
 					renderVelocity(m_position, m_destinationComponent.getPosition(), Color.GRAY);
 				}
 				// Render velocity line
@@ -191,16 +192,17 @@ public class RenderSystem extends EntitySystem {
 	 * Renders rigid body velocity line
 	 */
 	private void renderVelocity(Vector3 position, Vector3 velocity, Color color) {
-		// Return if velocity is near zero
-		if (velocity.len2() < 1.0f) return;
-		// Begin shape renderer with line shape type
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		// Set shape renderer color
-		shapeRenderer.setColor(color);
-		// Draw a line
-		shapeRenderer.line(position, velocity);
-		// End shape renderer
-		shapeRenderer.end();
+		// If velocity is not near zero
+		if (position != null && velocity != null && velocity.len2() > 1.0f) {
+			// Begin shape renderer with line shape type
+			shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+			// Set shape renderer color
+			shapeRenderer.setColor(color);
+			// Draw a line
+			shapeRenderer.line(position, velocity);
+			// End shape renderer
+			shapeRenderer.end();
+		}
 	}
 
 	protected Vector3 m_center = new Vector3();

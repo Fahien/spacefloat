@@ -36,7 +36,7 @@ public class GraphicComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the name
 	 */
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -50,7 +50,7 @@ public class GraphicComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the {@link ModelInstance}
 	 */
-	public void setInstance(ModelInstance instance) {
+	public void setInstance(final ModelInstance instance) {
 		this.instance = instance;
 	}
 
@@ -67,38 +67,38 @@ public class GraphicComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the {@link ModelInstance} transform
 	 */
-	public void setTransform(Matrix4 transform) {
+	public void setTransform(final Matrix4 transform) {
 		instance.transform = transform;
 	}
 
 	/**
 	 * Returns the {@link ModelInstance} position
 	 */
-	public void getPosition(Vector3 position) {
+	public void getPosition(final Vector3 position) {
 		instance.transform.getTranslation(position);
 	}
 
 	/**
 	 * Sets the {@link ModelInstance} position
 	 */
-	public void setPosition(Vector3 position) {
+	public void setPosition(final Vector3 position) {
 		instance.transform.setTranslation(position);
 	}
 
 	/**
 	 * Sets the {@link ModelInstance} rotation
 	 */
-	public void setFromEulerAnglesRad(Vector3 eulerAngles) {
-		instance.transform.setFromEulerAnglesRad(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+	public void setFromEulerAngles(final Vector3 eulerAngles) {
+		instance.transform.setFromEulerAngles(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 	}
 
 	@Override
-	public void write(Json json) {
+	public void write(final Json json) {
 		json.writeValue(NAME, name);
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {
+	public void read(final Json json, JsonValue jsonData) {
 		name = jsonData.getString(NAME);
 	}
 }

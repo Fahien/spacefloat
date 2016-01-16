@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseInterface;
@@ -221,17 +222,23 @@ public class BulletSystem extends EntitySystem {
 		}
 		for (Entity entity : rigidEntities) {
 			// Update rigid body after world simulation
-			updateRigidbody(rigidMapper.get(entity), transformMapper.get(entity));
+			updateRigidbody(rigidMapper.get(entity), transformMapper.get(entity), velocityMapper.get(entity));
 		}
 		for (Entity entity : planetEntities) {
 			// Update rigid body after world simulation
-			updateRigidbody(planetMapper.get(entity), transformMapper.get(entity));
+			updateRigidbody(planetMapper.get(entity), transformMapper.get(entity), velocityMapper.get(entity));
 		}
 	}
 
-	private void updateRigidbody(RigidbodyComponent rigidbodyComponent, TransformComponent transformComponent) {
+	private Quaternion m_quaternion = new Quaternion();
+
+	private void updateRigidbody(final RigidbodyComponent rigidbodyComponent, final TransformComponent transformComponent, final VelocityComponent velocity) {
 		rigidbodyComponent.update();
 		rigidbodyComponent.getPosition(transformComponent.getPosition());
+		rigidbodyComponent.getTransform().getRotation(m_quaternion);
+		transformComponent.setEulerAngles(m_quaternion.getYaw(),  m_quaternion.getPitch(), m_quaternion.getRoll());
+		velocity.setVelocity(rigidbodyComponent.getLinearVelocity());
+		velocity.setAngularVelocity(rigidbodyComponent.getAngularVelocity());
 	}
 
 	/**
@@ -411,19 +418,21 @@ public class BulletSystem extends EntitySystem {
 							PlanetComponent planet = planetMapper.get(entity);
 							if (planet != null) {
 								planet.getPosition(position);
+								missionComponent.setDestinationPosition(position);
 								// Set the destination
-								DestinationComponent destinationComponent = destinationMapper.get(target);
-								destinationComponent.setPosition(position);
-								destinationComponent.setName(mission.getDestination());
+								//DestinationComponent destinationComponent = destinationMapper.get(target);
+								//destinationComponent.setPosition(position);
+								//destinationComponent.setName(mission.getDestination());
 							} else {
 								logger.debug("Destination is not a planet, trying with collision");
 								CollisionComponent collision = collisionMapper.get(entity);
 								if (collision != null) {
 									collision.getPosition(position);
+									missionComponent.setDestinationPosition(position);
 									// Set the destination
-									DestinationComponent destinationComponent = destinationMapper.get(target);
-									destinationComponent.setPosition(position);
-									destinationComponent.setName(mission.getDestination());
+									//DestinationComponent destinationComponent = destinationMapper.get(target);
+									//destinationComponent.setPosition(position);
+									//destinationComponent.setName(mission.getDestination());
 								} else {
 									logger.error("Destination has no position");
 								}

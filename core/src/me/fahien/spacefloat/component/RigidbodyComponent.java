@@ -182,8 +182,18 @@ public class RigidbodyComponent implements Component, Json.Serializable {
 		bt_transform.getTranslation(position);
 	}
 
+	/**
+	 * Returns the {@link btRigidBody} linear velocity
+	 */
 	public Vector3 getLinearVelocity() {
 		return bt_velocity;
+	}
+
+	/**
+	 * Returns the {@link btRigidBody} angular velocity
+	 */
+	public Vector3 getAngularVelocity() {
+		return rigidbody.getAngularVelocity();
 	}
 
 	/**

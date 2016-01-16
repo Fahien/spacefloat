@@ -42,7 +42,7 @@ public class MissionFactoryTest {
 
 	@Test
 	public void couldLoadMission() {
-		missionFactory.loadMissions();
+		missionFactory.loadMissions(true);
 		Array<Mission> mission = missionFactory.getMissions();
 		assertNotNull("Missions array is null", mission);
 		assertTrue("Mission array is empty", mission.size > 0);
