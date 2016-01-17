@@ -352,8 +352,6 @@ public class BulletSystem extends EntitySystem {
 			GameObject target = (GameObject) collision1.userData;
 
 			triggerRechargeSound(collision0, source, target);
-			triggerCollisionSound(collision0, source, target);
-			triggerCollisionSound(collision1, target, source);
 			triggerMissionSound(collision0, source, target);
 		}
 
@@ -368,34 +366,6 @@ public class BulletSystem extends EntitySystem {
 			mission = missionMapper.get(target);
 			if (mission != null && mission.getCollisionObject() == collision) {
 				audio.play(rechargeSound);
-			}
-		}
-
-		private void triggerCollisionSound(final btCollisionObject collision,
-										   final GameObject source,
-										   final GameObject target) {
-
-			EnergyComponent energy = energyMapper.get(target);
-			RigidbodyComponent rigidbody = rigidMapper.get(target);
-			// Do nothing if energy is null;
-			if (energy == null) return;
-
-			CollisionComponent collisionComponent = collisionMapper.get(source);
-			if (collisionComponent != null && collisionComponent.getCollisionObject() == collision) {
-				audio.play(collisionSound);
-				energy.start(particleSystem, rigidbody.getTransform());
-				return;
-			}
-			RigidbodyComponent rigidbodyComponent = planetMapper.get(source);
-			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
-				audio.play(collisionSound);
-				energy.start(particleSystem, rigidbody.getTransform());
-				return;
-			}
-			rigidbodyComponent = rigidMapper.get(source);
-			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
-				audio.play(collisionSound);
-				energy.start(particleSystem, rigidbody.getTransform());
 			}
 		}
 
@@ -455,21 +425,26 @@ public class BulletSystem extends EntitySystem {
 										 final btCollisionObject collision,
 										 final GameObject source,
 										 final GameObject target) {
+			if (point.getAppliedImpulse() / EnergyComponent.SHIELD_CONSUME < 2.0f) return;
+
 			EnergyComponent energy = energyMapper.get(target);
+			RigidbodyComponent rigidbody = rigidMapper.get(target);
 			// Do nothing if energy is null;
-			if (energy == null) return;
+			if (energy == null || !energy.hasCharge()) return;
+
 
 			CollisionComponent collisionComponent = collisionMapper.get(source);
 			if (collisionComponent != null && collisionComponent.getCollisionObject() == collision) {
-				triggerShield(point, energy);
+				triggerShield(point, energy, rigidbody);
 			}
+
 			RigidbodyComponent rigidbodyComponent = planetMapper.get(source);
 			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
-				triggerShield(point, energy);
+				triggerShield(point, energy, rigidbody);
 			}
 			rigidbodyComponent = rigidMapper.get(source);
 			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
-				triggerShield(point, energy);
+				triggerShield(point, energy, rigidbody);
 			}
 		}
 
@@ -611,9 +586,11 @@ public class BulletSystem extends EntitySystem {
 			}
 		}
 
-		private void triggerShield(final btManifoldPoint point, final EnergyComponent energy) {
+		private void triggerShield(final btManifoldPoint point, final EnergyComponent energy, final RigidbodyComponent rigidbody) {
 			if (energy != null) {
 				energy.hurt(point.getAppliedImpulse());
+				audio.play(collisionSound);
+				energy.start(particleSystem, rigidbody.getTransform());
 			}
 		}
 	}

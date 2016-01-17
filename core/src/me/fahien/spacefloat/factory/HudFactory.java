@@ -1,13 +1,18 @@
 package me.fahien.spacefloat.factory;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import me.fahien.spacefloat.actor.ButtonActor;
+import me.fahien.spacefloat.actor.ButtonClickListener;
 import me.fahien.spacefloat.actor.ControlMessageActor;
 import me.fahien.spacefloat.actor.EnergyHudActor;
 import me.fahien.spacefloat.actor.FontActor;
@@ -15,6 +20,7 @@ import me.fahien.spacefloat.actor.HudActor;
 import me.fahien.spacefloat.actor.MoneyActor;
 import me.fahien.spacefloat.actor.ParcelActor;
 import me.fahien.spacefloat.actor.ScrollingFontActor;
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
@@ -66,6 +72,13 @@ public enum HudFactory {
 
 	private BitmapFont font;
 
+	private Audio audio;
+	private Sound selectSound;
+
+	private Graphics graphics;
+
+	private Application app;
+
 	private FontActor fpsActor;
 	private FontActor velocityActor;
 	private EnergyHudActor fuelActor;
@@ -74,10 +87,11 @@ public enum HudFactory {
 	private ParcelActor parcelActor;
 
 	private HudActor backgroundMenu;
-	private HudActor continueActor;
-	private HudActor newGameActor;
-	private HudActor videoActor;
-	private HudActor audioActor;
+	private ButtonActor continueActor;
+	private ButtonActor newGameActor;
+	private ButtonActor videoActor;
+	private ButtonActor audioActor;
+	private ButtonActor exitActor;
 	private ScrollingFontActor creditsActor;
 	private HudActor textBackgroundMenu;
 
@@ -102,6 +116,33 @@ public enum HudFactory {
 		this.font = font;
 	}
 
+	/**
+	 * Sets the {@link Audio}
+	 */
+	public void setAudio(final Audio audio) {
+		this.audio = audio;
+	}
+
+	/**
+	 * Sets the select {@link Sound}
+	 */
+	public void setSelectSound(final Sound selectSound) {
+		this.selectSound = selectSound;
+	}
+
+	/**
+	 * Sets the {@link Graphics}
+	 */
+	public void setGraphics(final Graphics graphics) {
+		this.graphics = graphics;
+	}
+
+	/**
+	 * Sets the {@link Application}
+	 */
+	public void setApplication(final Application app) {
+		this.app = app;
+	}
 	/**
 	 * Returns the fps {@link FontActor}
 	 */
@@ -164,9 +205,10 @@ public enum HudFactory {
 	 */
 	public MoneyActor getMoneyActor(final MoneyComponent money) {
 		if (moneyActor == null) {
-			moneyActor = new MoneyActor(hud, font, money);
+			moneyActor = new MoneyActor(hud, font);
 			moneyActor.setPosition(MONEY_X, MONEY_Y);
 		}
+		moneyActor.setMoney(money);
 		return moneyActor;
 	}
 
@@ -178,6 +220,7 @@ public enum HudFactory {
 			parcelActor = new ParcelActor(hud, mission);
 			parcelActor.setPosition(PARCEL_X, PARCEL_Y);
 		}
+		parcelActor.resetDelay();
 		return parcelActor;
 	}
 
@@ -221,6 +264,8 @@ public enum HudFactory {
 		if (continueActor == null) {
 			continueActor = new ButtonActor(menu, font, "Continue");
 		}
+		continueActor.clearListeners();
+		continueActor.addListener(new ButtonClickListener(continueActor, audio, selectSound));
 		return continueActor;
 	}
 
@@ -231,6 +276,8 @@ public enum HudFactory {
 		if (newGameActor == null) {
 			newGameActor = new ButtonActor(menu, font, "New Game");
 		}
+		newGameActor.clearListeners();
+		newGameActor.addListener(new ButtonClickListener(newGameActor, audio, selectSound));
 		return newGameActor;
 	}
 
@@ -238,6 +285,19 @@ public enum HudFactory {
 		if (videoActor == null) {
 			videoActor = new ButtonActor(menu, font, "Video");
 		}
+		videoActor.clearListeners();
+		videoActor.addListener(new ButtonClickListener(videoActor, audio, selectSound) {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if (graphics.isFullscreen()) {
+					graphics.setDisplayMode(SpaceFloatGame.WINDOW_WIDTH, SpaceFloatGame.WINDOW_HEIGHT, true);
+					graphics.setDisplayMode(SpaceFloatGame.WINDOW_WIDTH, SpaceFloatGame.WINDOW_HEIGHT, false);
+				} else {
+					graphics.setDisplayMode(graphics.getDesktopDisplayMode().width, graphics.getDesktopDisplayMode().height, false);
+					graphics.setDisplayMode(graphics.getWidth(), graphics.getHeight(), true);
+				}
+			}
+		});
 		return videoActor;
 	}
 
@@ -245,7 +305,28 @@ public enum HudFactory {
 		if (audioActor == null) {
 			audioActor = new ButtonActor(menu, font, "Audio");
 		}
+		audioActor.clearListeners();
+		audioActor.addListener(new ButtonClickListener(audioActor, audio, selectSound) {
+			@Override
+			public void clicked(final InputEvent event, final float x, final float y) {
+				audio.toggle();
+			}
+		});
 		return audioActor;
+	}
+
+	public HudActor getExitActor() {
+		if (exitActor == null) {
+			exitActor = new ButtonActor(menu, font, "Exit");
+		}
+		exitActor.clearListeners();
+		exitActor.addListener(new ButtonClickListener(exitActor, audio, selectSound) {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				app.exit();
+			}
+		});
+		return exitActor;
 	}
 
 	public void dispose() {

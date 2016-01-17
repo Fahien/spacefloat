@@ -12,10 +12,11 @@ import me.fahien.spacefloat.utils.JsonKey;
  * @author Fahien
  */
 public class EnergyComponent extends ParticleComponent {
-	protected static final float CHARGE_MAX_DEFAULT = 128f;
-	protected static final float CHARGE_MAX_LOWER_LIMIT = 1f;
-	protected static final float CHARGE_MIN = 0f;
-	public static float SHIELD_CONSUME = 16384;
+	protected static final float CHARGE_MAX_DEFAULT = 128.0f;
+	protected static final float CHARGE_MAX_LOWER_LIMIT = 1.0f;
+	protected static final float CHARGE_MIN = 0.0f;
+	public static float ENERGY_RECHARGE = 1024.0f;
+	public static float SHIELD_CONSUME = 32768.0f;
 
 	private float charge;
 	private float chargeMax;
@@ -61,9 +62,8 @@ public class EnergyComponent extends ParticleComponent {
 	 * Absorb an hurt according to velocity and collision normal
 	 */
 	public void hurt(final float impulse) {
-		float charge = - impulse / SHIELD_CONSUME;
-		if (charge > -2.0f) return;
-		addCharge(charge);
+		float charge = -impulse / SHIELD_CONSUME;
+		if (charge < -2.0f) addCharge(charge);
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class EnergyComponent extends ParticleComponent {
 	 * Recharges energy
 	 */
 	public void recharge(final float delta) {
-		addCharge(delta * SHIELD_CONSUME);
+		addCharge(delta * ENERGY_RECHARGE);
 	}
 
 	@Override

@@ -57,10 +57,13 @@ public class ParcelActor extends HudActor {
 		down = hud.findRegion(DOWN_HUD);
 		target = hud.findRegion(TARGET_HUD);
 		this.missionComponent = missionComponent;
-		delay = DELAY_MAX;
 	}
 
 	protected Mission m_mission;
+
+	public void resetDelay() {
+		delay = DELAY_MAX;
+	}
 
 	@Override
 	public void act(final float delta) {

@@ -21,11 +21,17 @@ public class MoneyActor extends HudActor {
 	private MoneyComponent money;
 	private StringBuilder stringBuilder;
 
-	public MoneyActor(final TextureAtlas hud, final BitmapFont font, final MoneyComponent money) {
+	public MoneyActor(final TextureAtlas hud, final BitmapFont font) {
 		super(hud.findRegion(MONEY_HUD));
 		this.font = font;
-		this.money = money;
 		stringBuilder = new StringBuilder();
+	}
+
+	/**
+	 * Sets the {@link MoneyComponent}
+	 */
+	public void setMoney(final MoneyComponent money) {
+		this.money = money;
 	}
 
 	@Override

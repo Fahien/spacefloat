@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 /**
  * The Button {@link HudActor}
@@ -21,8 +18,8 @@ public class ButtonActor extends HudActor {
 	private static final float MESSAGE_X_OFFSET = 26f;
 	private static final float MESSAGE_Y_OFFSET = -8f;
 
-	private static final Color COLOR_ON = Color.WHITE;
-	private static final Color COLOR_OFF = new Color(0x002030ff);
+	public static final Color COLOR_ON = Color.WHITE;
+	public static final Color COLOR_OFF = Color.GRAY;
 
 	private BitmapFont font;
 	private String text;
@@ -38,7 +35,27 @@ public class ButtonActor extends HudActor {
 		textColor = COLOR_OFF;
 		offRegion = getRegion();
 		onRegion = menu.findRegion(BUTTON_ON);
-		addListener(new ButtonClickListener());
+	}
+
+	/**
+	 * Returns the on {@link TextureRegion}
+	 */
+	public TextureRegion getOnRegion() {
+		return onRegion;
+	}
+
+	/**
+	 * Returns the off {@link TextureRegion}
+	 */
+	public TextureRegion getOffRegion() {
+		return offRegion;
+	}
+
+	/**
+	 * Sets the current text {@link Color}
+	 */
+	public void setTextColor(Color textColor) {
+		this.textColor = textColor;
 	}
 
 	@Override
@@ -63,26 +80,5 @@ public class ButtonActor extends HudActor {
 				getWidth() - MESSAGE_X_OFFSET,
 				FontActor.Halign.CENTER.getValue(),
 				true);
-	}
-
-	/**
-	 * The Button {@link ClickListener}
-	 *
-	 * @author Fahien
-	 */
-	public class ButtonClickListener extends ClickListener {
-		@Override
-		public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor)  {
-			super.enter(event, x, y, pointer, fromActor);
-			setRegion(onRegion);
-			textColor = COLOR_ON;
-		}
-
-		@Override
-		public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-			super.exit(event, x, y, pointer, toActor);
-			setRegion(offRegion);
-			textColor = COLOR_OFF;
-		}
 	}
 }

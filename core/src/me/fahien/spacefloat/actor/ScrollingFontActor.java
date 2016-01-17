@@ -30,7 +30,7 @@ public class ScrollingFontActor extends Actor {
 	@Override
 	public void act(float delta) {
 		super.act(delta);
-		position += delta * 4096 * 8;
+		position += delta * 65536.0f;
 		if (position > getHeight() * 2.4f) {
 			position = 0f;
 		}
@@ -39,7 +39,7 @@ public class ScrollingFontActor extends Actor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		font.setColor(Color.BLACK);
-		font.draw(batch, text, getX() + 1, getY() - 1 + position, getWidth(), 1, false);
+		font.draw(batch, text, getX() + 1.0f, getY() - 1.0f + position, getWidth(), 1, false);
 		font.setColor(Color.WHITE);
 		font.draw(batch, text, getX(), getY() + position, getWidth(), 1, false);
 	}

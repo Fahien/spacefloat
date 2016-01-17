@@ -1,6 +1,7 @@
 package me.fahien.spacefloat.screen;
 
 import com.badlogic.ashley.core.Engine;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
@@ -42,7 +43,7 @@ public class MainScreen extends SpaceFloatScreen {
 	private static final Vector3 CAMERA_LOOKAT_OFFSET = new Vector3(75f, 0f, 0f);
 	private static final String MENU_ATLAS = "system/menu.atlas";
 	private static final float BUTTON_X = 32f;
-	private static final float BUTTON_Y = 28f;
+	private static final float BUTTON_Y = 22f;
 	private static final float ROTATION_VELOCITY = 128f;
 
 	private Engine engine;
@@ -161,7 +162,6 @@ public class MainScreen extends SpaceFloatScreen {
 			HudActor continueActor = hudfactory.getContinueActor();
 			continueActor.setX(BUTTON_X);
 			continueActor.setY(HEIGHT - BUTTON_Y * i++);
-			continueActor.clearListeners();
 			continueActor.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent event, float x, float y) {
@@ -175,8 +175,7 @@ public class MainScreen extends SpaceFloatScreen {
 		// Create new button
 		HudActor newGameActor = hudfactory.getNewGameActor();
 		newGameActor.setX(BUTTON_X);
-		newGameActor.setY(HEIGHT - BUTTON_Y * i);
-		newGameActor.clearListeners();
+		newGameActor.setY(HEIGHT - BUTTON_Y * i++);
 		newGameActor.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -185,16 +184,22 @@ public class MainScreen extends SpaceFloatScreen {
 			}
 		});
 		stage.addActor(newGameActor);
-		/*
+
+		if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
 			HudActor videoActor = hudfactory.getVideoActor();
 			videoActor.setX(BUTTON_X);
 			videoActor.setY(HEIGHT - BUTTON_Y * i++);
 			stage.addActor(videoActor);
-			HudActor audioActor = hudfactory.getAudioActor();
-			audioActor.setX(BUTTON_X);
-			audioActor.setY(HEIGHT - BUTTON_Y * i);
-			stage.addActor(audioActor);
-		*/
+		}
+		HudActor audioActor = hudfactory.getAudioActor();
+		audioActor.setX(BUTTON_X);
+		audioActor.setY(HEIGHT - BUTTON_Y * i++);
+		stage.addActor(audioActor);
+
+		HudActor exitActor = hudfactory.getExitActor();
+		exitActor.setX(BUTTON_X);
+		exitActor.setY(HEIGHT - BUTTON_Y * i);
+		stage.addActor(exitActor);
 	}
 
 	private Quaternion quaternion = new Quaternion();

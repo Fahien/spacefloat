@@ -9,14 +9,11 @@ import me.fahien.spacefloat.game.SpaceFloatGame;
 public class DesktopLauncher {
 	private static final String WINDOW_TITLE = "SpaceFloat v" + SpaceFloatGame.VERSION;
 
-	private static final int WINDOW_WIDTH = 960;
-	private static final int WINDOW_HEIGHT = 540;
-
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = WINDOW_TITLE;
-		config.width = WINDOW_WIDTH;
-		config.height = WINDOW_HEIGHT;
+		config.width = SpaceFloatGame.WINDOW_WIDTH;
+		config.height = SpaceFloatGame.WINDOW_HEIGHT;
 		new LwjglApplication(SpaceFloat.GAME.getGame(), config);
 	}
 }

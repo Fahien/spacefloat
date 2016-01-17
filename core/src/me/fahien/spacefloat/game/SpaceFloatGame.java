@@ -2,11 +2,14 @@ package me.fahien.spacefloat.game;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -54,9 +57,12 @@ public class SpaceFloatGame extends Game {
 			"╚═╗├─┘├─┤│  ├┤ ╠╣ │  │ │├─┤ │ \n" +
 			"╚═╝┴  ┴ ┴└─┘└─┘╚  ┴─┘└─┘┴ ┴ ┴ ";
 
-	public static final String VERSION = "0.16";
+	public static final String VERSION = "0.18";
 
 	public static int LOGGER_LEVEL = Logger.DEBUG;
+
+	public static final int WINDOW_WIDTH = 960;
+	public static final int WINDOW_HEIGHT = 540;
 
 	public static boolean DEBUG_ALL = false;
 
@@ -70,7 +76,6 @@ public class SpaceFloatGame extends Game {
 	private AssetManager assetManager;
 	private Audio audio;
 
-	private Json json;
 	private GameObjectFactory gameObjectFactory;
 	private MissionFactory missionFactory;
 
@@ -118,25 +123,19 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Loads the cursor
 	 */
-	public void loadCursor(AssetManager assetManager) {
+	public void loadCursor(final AssetManager assetManager, final Graphics graphics) {
 		assetManager.load(CURSOR_IMAGE, Pixmap.class);
 		assetManager.finishLoading();
 		Pixmap cursor = assetManager.get(CURSOR_IMAGE, Pixmap.class);
-		Cursor customCursor = Gdx.graphics.newCursor(cursor, 1, 1);
+		Cursor customCursor = graphics.newCursor(cursor, 1, 1);
 		Gdx.graphics.setCursor(customCursor);
 	}
+
 	/**
 	 * Returns the {@link AssetManager}
 	 */
 	public AssetManager getAssetManager() {
 		return assetManager;
-	}
-
-	/**
-	 * Returns the {@link Audio}
-	 */
-	public Audio getAudio() {
-		return audio;
 	}
 
 	/**
@@ -149,21 +148,22 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Initializes the {@link Camera}
 	 */
-	public void initCamera() {
-		if (CameraSystem.CAMERA_TYPE.equals("perspective")) {
+	public Camera createCamera(final String cameraType) {
+		if (cameraType.equals("perspective")) {
 			camera = new MainPerspectiveCamera();
 		} else {
 			camera = new MainOrthographicCamera();
 		}
+		return camera;
 	}
 
 	/**
 	 * Loads the {@link BitmapFont}
 	 */
-	protected void loadFont(AssetManager assetManager) {
+	protected BitmapFont loadFont(final AssetManager assetManager) {
 		assetManager.load(SYSTEM_FONT, BitmapFont.class);
 		assetManager.finishLoading();
-		font = assetManager.get(SYSTEM_FONT);
+		return assetManager.get(SYSTEM_FONT, BitmapFont.class);
 	}
 
 	/**
@@ -176,10 +176,10 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Loads the HUD {@link TextureAtlas}
 	 */
-	public void loadHud(AssetManager assetManager) {
+	public TextureAtlas loadHud(final AssetManager assetManager) {
 		assetManager.load(SYSTEM_HUD, TextureAtlas.class);
 		assetManager.finishLoading();
-		this.hud = assetManager.get(SYSTEM_HUD);
+		return assetManager.get(SYSTEM_HUD, TextureAtlas.class);
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class SpaceFloatGame extends Game {
 		return hud;
 	}
 
-	public void initFactories() {
+	public void initFactories(final Json json) {
 		logger.debug("Initializing factories");
 		gameObjectFactory = GameObjectFactory.INSTANCE;
 		gameObjectFactory.setJson(json);
@@ -197,10 +197,38 @@ public class SpaceFloatGame extends Game {
 		missionFactory = MissionFactory.INSTANCE;
 		missionFactory.setJson(json);
 		missionFactory.setEngine(engine);
+	}
 
-		hudFactory = HudFactory.INSTANCE;
+	private Sound loadSelectSound(final AssetManager assetManager) {
+		assetManager.load(Audio.SOUNDS_DIR + Audio.SELECT_SOUND, Sound.class);
+		assetManager.finishLoading();
+		return assetManager.get(Audio.SOUNDS_DIR + Audio.SELECT_SOUND, Sound.class);
+	}
+
+	private HudFactory createHudFactory(final TextureAtlas hud,
+										final BitmapFont font,
+										final Audio audio,
+										final Sound selectSound,
+										final Graphics graphics,
+										final Application app) {
+		HudFactory hudFactory = HudFactory.INSTANCE;
 		hudFactory.setHud(hud);
 		hudFactory.setFont(font);
+		hudFactory.setAudio(audio);
+		hudFactory.setSelectSound(selectSound);
+		hudFactory.setGraphics(graphics);
+		hudFactory.setApplication(app);
+		return hudFactory;
+	}
+
+	/**
+	 * Initializes the {@link InputMultiplexer}
+	 */
+	private InputMultiplexer createInputMultiplexer(final Input input) {
+		logger.debug("Creating input multiplexer");
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		input.setInputProcessor(inputMultiplexer);
+		return inputMultiplexer;
 	}
 
 	/**
@@ -235,23 +263,14 @@ public class SpaceFloatGame extends Game {
 	/**
 	 * Initializes the {@link ParticleSystem}
 	 */
-	private void initParticleSystem() {
+	private ParticleSystem createParticleSystem(final Camera camera) {
 		logger.debug("Creating particle system");
 		particleSystem = ParticleSystem.get();
 		particleSystem.removeAll();
 		PointSpriteParticleBatch pointSpriteBatch = new PointSpriteParticleBatch();
 		pointSpriteBatch.setCamera(camera);
 		particleSystem.add(pointSpriteBatch);
-	}
-
-	/**
-	 * Initializes the {@link InputMultiplexer}
-	 */
-	private InputMultiplexer createInputMultiplexer() {
-		logger.debug("Creating input multiplexer");
-		InputMultiplexer inputMultiplexer = new InputMultiplexer();
-		Gdx.input.setInputProcessor(inputMultiplexer);
-		return inputMultiplexer;
+		return particleSystem;
 	}
 
 	/**
@@ -344,19 +363,22 @@ public class SpaceFloatGame extends Game {
 		logger.debug("Initializing asset manager");
 		assetManager = new AssetManager();
 		Texture.setAssetManager(assetManager);
-		loadCursor(assetManager);
-		loadFont(assetManager);
-		loadHud(assetManager);
+		loadCursor(assetManager, Gdx.graphics);
+		font = loadFont(assetManager);
+		hud = loadHud(assetManager);
+		Sound selectSound = loadSelectSound(assetManager);
+		logger.debug("Initializing hud factory");
+		hudFactory = createHudFactory(hud, font, audio, selectSound, Gdx.graphics, Gdx.app);
 		logger.debug("Initializing engine");
 		engine = new Engine();
-		json = new Json();
-		initCamera();
-		initParticleSystem();
-		inputMultiplexer = createInputMultiplexer();
+		camera = createCamera(CameraSystem.CAMERA_TYPE);
+		particleSystem = createParticleSystem(camera);
+		inputMultiplexer = createInputMultiplexer(Gdx.input);
 		initViewportAndStage(inputMultiplexer);
 		logger.debug("Initializing bullet");
 		Bullet.init();
-		initFactories();
+		Json json = new Json();
+		initFactories(json);
 		initSystems();
 		try {
 			setScreen(ScreenEnumerator.MAIN);

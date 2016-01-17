@@ -15,6 +15,7 @@ public enum Audio {
 	public static final String REACTOR_SOUND = "reactor.ogg";
 	public static final String RECHARGE_SOUND = "recharge.ogg";
 	public static final String COLLISION_SOUND = "collision.ogg";
+	public static final String SELECT_SOUND = "select.ogg";
 
 	private boolean mute;
 	private float volume;
