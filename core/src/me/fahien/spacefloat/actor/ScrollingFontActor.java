@@ -31,7 +31,7 @@ public class ScrollingFontActor extends Actor {
 	public void act(float delta) {
 		super.act(delta);
 		position += delta * 65536.0f;
-		if (position > getHeight() * 2.4f) {
+		if (position > getHeight() * 3.0f) {
 			position = 0f;
 		}
 	}

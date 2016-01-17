@@ -21,7 +21,7 @@ public class ControlMessageActor extends HudActor {
 	private static final String CONTROL_BORDER_HUD = "control-border";
 	private static final int BACKGROUND_REPEAT_COUNT = 32;
 	private static final float MESSAGE_X_OFFSET = 4f;
-	private static final float MESSAGE_Y_OFFSET = -8f;
+	private static final float MESSAGE_Y_OFFSET = -9f;
 
 	public static final InputListener ControlMessageInputListener = new InputListener() {
 		@Override

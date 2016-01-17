@@ -65,7 +65,9 @@ public enum HudFactory {
 			"Programming\n" +
 			"Antonio Caggiano\n\n" +
 			"Artwork\n" +
-			"Alberto Pastorato";
+			"Alberto Pastorato\n\n" +
+			"Sound\n" +
+			"freesound.org";
 
 	private TextureAtlas hud;
 	private TextureAtlas menu;

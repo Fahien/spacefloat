@@ -16,6 +16,9 @@ import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
+import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.game.SpaceFloatGame;
+import me.fahien.spacefloat.screen.ScreenEnumerator;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
@@ -30,6 +33,8 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  */
 public class ReactorController extends PlayerController {
 	private static final int REACTOR_PRIORITY = 2;
+	private static final String END_MESSAGE = "Goes bad, space courier. You've run out of energy charge. I'm sorry but you're fired.";
+	private static final float END_TIME_LIMIT = 0.003f;
 	private ParticleSystem particleSystem;
 	private Vector3 force;
 	private float rotation;
@@ -89,20 +94,32 @@ public class ReactorController extends PlayerController {
 
 	protected Quaternion m_quaternion = new Quaternion();
 	protected boolean m_error;
+	protected boolean endGame;
+	protected float endTime;
 
 	@Override
-	public void update(float delta) {
+	public void update(final float delta) {
 		if (energy != null) {
-			if (!energy.hasCharge()) {
-				reactor.stop(particleSystem);
-				audio.stop(reactorSound);
-			} else {
+			if (energy.hasCharge()) {
 				m_quaternion.setEulerAnglesRad(rotation, 0, 0);
 				rigidbody.rotate(m_quaternion);
 				if (reactor.isEmitting()) {
 					reactor.setTransform(rigidbody.getTransform());
 					energy.addCharge(-reactor.getConsume() * 64 * delta);
 					rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));
+				}
+			} else {
+				if (!endGame) {
+					reactor.stop(particleSystem);
+					audio.stop(reactorSound);
+					SpaceFloat.GAME.getGame().enqueueMessage(END_MESSAGE);
+					endGame = true;
+				}
+				endTime += delta;
+				if (endTime > END_TIME_LIMIT) {
+					SpaceFloatGame game = SpaceFloat.GAME.getGame();
+					game.getGameObjectFactory().dispose();
+					game.setScreen(ScreenEnumerator.MAIN);
 				}
 			}
 		} else {

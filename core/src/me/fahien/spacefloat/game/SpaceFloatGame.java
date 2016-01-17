@@ -451,4 +451,8 @@ public class SpaceFloatGame extends Game {
 	public void enqueueMessage(String message) {
 		stage.addActor(hudFactory.getMessageActor(message));
 	}
+
+	public GameObjectFactory getGameObjectFactory() {
+		return gameObjectFactory;
+	}
 }

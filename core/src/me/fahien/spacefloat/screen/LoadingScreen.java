@@ -25,7 +25,6 @@ import com.badlogic.gdx.utils.JsonReader;
 
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.audio.Audio;
-import me.fahien.spacefloat.component.ComponentMapperEnumerator;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ParticleComponent;
@@ -47,6 +46,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public class LoadingScreen extends SpaceFloatScreen {
+	private static final String WELCOME_MESSAGE = "Welcome, space courier! Do you want to earn some money? Follow the gray line to reach the station.";
 	private String LOADING_TEXT = " %";
 
 	private ComponentMapper<GraphicComponent> graphicMapper = ComponentMapper.getFor(GraphicComponent.class);
@@ -291,6 +291,9 @@ public class LoadingScreen extends SpaceFloatScreen {
 			}
 			loadMissions(MissionFactory.INSTANCE);
 			SpaceFloat.GAME.setScreen(ScreenEnumerator.GAME);
+			if (forceReload) {
+				getGame().enqueueMessage(WELCOME_MESSAGE);
+			}
 		}
 	}
 
