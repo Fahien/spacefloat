@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.ObjectSet;
 
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.component.CollisionComponent;
 import me.fahien.spacefloat.component.DestinationComponent;
 import me.fahien.spacefloat.component.EnergyComponent;
@@ -62,6 +64,10 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public class BulletSystem extends EntitySystem {
 	private static final int COLLISION_PRIORITY = 1;
 
+	private Audio audio;
+	private Sound rechargeSound;
+	private Sound collisionSound;
+
 	private ObjectSet<CollisionComponent> collisionComponents;
 	private ObjectSet<RigidbodyComponent> rigidbodyComponents;
 
@@ -87,8 +93,20 @@ public class BulletSystem extends EntitySystem {
 		rigidbodyComponents = new ObjectSet<>();
 	}
 
+	public void setAudio(final Audio audio) {
+		this.audio = audio;
+	}
+
+	public void setRechargeSound(final Sound rechargeSound) {
+		this.rechargeSound = rechargeSound;
+	}
+
+	public void setCollisionSound(final Sound collisionSound) {
+		this.collisionSound = collisionSound;
+	}
+
 	@Override
-	public void addedToEngine(Engine engine) {
+	public void addedToEngine(final Engine engine) {
 		super.addedToEngine(engine);
 
 		collisionEntities = engine.getEntitiesFor(all(GraphicComponent.class, CollisionComponent.class).get());
@@ -130,7 +148,7 @@ public class BulletSystem extends EntitySystem {
 	/**
 	 * Initialize every {@link CollisionComponent}
 	 */
-	protected void createCollisionObjects(ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
+	protected void createCollisionObjects(final ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
 		logger.debug("Creating collision objects for " + collisionType.getSimpleName());
 		for (Entity entity : entities) {
 			// Get the collision component
@@ -149,7 +167,7 @@ public class BulletSystem extends EntitySystem {
 	/**
 	 * Initializes every {@link RigidbodyComponent}
 	 */
-	protected void createRigidbodies(ImmutableArray<Entity> entities, Class<? extends RigidbodyComponent> rigidbodyType) {
+	protected void createRigidbodies(final ImmutableArray<Entity> entities, Class<? extends RigidbodyComponent> rigidbodyType) {
 		logger.debug("Creating rigidbodies for " + rigidbodyType.getSimpleName());
 		for (Entity entity : entities) {
 			// Get the graphic component
@@ -177,7 +195,7 @@ public class BulletSystem extends EntitySystem {
 	/**
 	 * Adds {@link btCollisionObject}s to the {@link btDynamicsWorld}
 	 */
-	private void addCollisionObjectsToDynamicsWorld(ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
+	private void addCollisionObjectsToDynamicsWorld(final ImmutableArray<Entity> entities, Class<? extends CollisionComponent> collisionType) {
 		for (Entity entity : entities) {
 			CollisionComponent collisionComponent = entity.getComponent(collisionType);
 			collisionComponents.add(collisionComponent);
@@ -188,7 +206,7 @@ public class BulletSystem extends EntitySystem {
 	/**
 	 * Adds {@link btRigidBody}s to the {@link btDynamicsWorld}
 	 */
-	private void addRigidbodiesToDynamicsWorld(ImmutableArray<Entity> entities, Class<? extends RigidbodyComponent> rigidbodyType) {
+	private void addRigidbodiesToDynamicsWorld(final ImmutableArray<Entity> entities, Class<? extends RigidbodyComponent> rigidbodyType) {
 		for (Entity entity : entities) {
 			RigidbodyComponent rigidbodyComponent = entity.getComponent(rigidbodyType);
 			rigidbodyComponents.add(rigidbodyComponent);
@@ -199,7 +217,7 @@ public class BulletSystem extends EntitySystem {
 	protected float m_delta;
 
 	@Override
-	public void update(float delta) {
+	public void update(final float delta) {
 		m_delta = delta;
 
 		for (Entity entity : collisionEntities) {
@@ -249,12 +267,12 @@ public class BulletSystem extends EntitySystem {
 	/**
 	 * Updates {@link btCollisionObject}s transform
 	 */
-	protected void updateCollisionObjects(CollisionComponent collision, GraphicComponent graphic) {
+	protected void updateCollisionObjects(final CollisionComponent collision, final GraphicComponent graphic) {
 		collision.setTransform(graphic.getTransform());
 	}
 
 	@Override
-	public void removedFromEngine(Engine engine) {
+	public void removedFromEngine(final Engine engine) {
 		if (dynamicsWorld != null) {
 			for (CollisionComponent collision : collisionComponents) {
 				logger.debug("Removing collision: " + ((GameObject) collision.getCollisionObject().userData).getName());
@@ -321,44 +339,96 @@ public class BulletSystem extends EntitySystem {
 	 */
 	class SpaceFloatContactListener extends ContactListener {
 
-		private GameObject m_source;
-		private GameObject m_target;
-		private MissionComponent m_mission;
+		@Override
+		public void onContactStarted(btCollisionObject collision0, btCollisionObject collision1) {
+			GameObject source = (GameObject) collision0.userData;
+			GameObject target = (GameObject) collision1.userData;
+
+			triggerRechargeSound(collision0, source, target);
+			triggerCollisionSound(collision0, source, target);
+			triggerCollisionSound(collision1, target, source);
+			triggerMissionSound(collision0, source, target);
+		}
+
+		private void triggerMissionSound(final btCollisionObject collision,
+										 final GameObject source,
+										 final GameObject target) {
+			MissionComponent mission = missionMapper.get(source);
+			if (mission != null && mission.getCollisionObject() == collision) {
+				audio.play(rechargeSound);
+				return;
+			}
+			mission = missionMapper.get(target);
+			if (mission != null && mission.getCollisionObject() == collision) {
+				audio.play(rechargeSound);
+			}
+		}
+
+		private void triggerCollisionSound(final btCollisionObject collision,
+										   final GameObject source,
+										   final GameObject target) {
+
+				EnergyComponent energy = energyMapper.get(target);
+				// Do nothing if energy is null;
+				if (energy == null) return;
+
+				CollisionComponent collisionComponent = collisionMapper.get(source);
+				if (collisionComponent != null && collisionComponent.getCollisionObject() == collision) {
+					audio.play(collisionSound);
+					return;
+				}
+				RigidbodyComponent rigidbodyComponent = planetMapper.get(source);
+				if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
+					audio.play(collisionSound);
+					return;
+				}
+				rigidbodyComponent = rigidMapper.get(source);
+				if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
+					audio.play(collisionSound);
+				}
+		}
+
+		private void triggerRechargeSound(final btCollisionObject collision,
+										  final GameObject source,
+										  final GameObject target) {
+			EnergyComponent energy = energyMapper.get(target);
+			if (energy == null) return;
+
+			RechargeComponent recharge = rechargeMapper.get(source);
+			if (recharge != null && recharge.getCollisionObject() == collision) {
+				energy.recharge();
+				audio.play(rechargeSound);
+			}
+		}
 
 		@Override
-		public boolean onContactAdded(btManifoldPoint collisionPoint, btCollisionObject collision0, int partId0, int index0, btCollisionObject collision1, int partId1, int index1) {
+		public boolean onContactAdded(btManifoldPoint collisionPoint,
+									  btCollisionObject collision0, int partId0, int index0,
+									  btCollisionObject collision1, int partId1, int index1) {
 			try {
-				m_source = (GameObject) collision0.userData;
-				m_target = (GameObject) collision1.userData;
+				GameObject source = (GameObject) collision0.userData;
+				GameObject target = (GameObject) collision1.userData;
 
-				// Energy shield
-				CollisionComponent collision = collisionMapper.get(m_source);
-				EnergyComponent energy = energyMapper.get(m_target);
-				if (collision != null && collision.getCollisionObject() == collision0) {
-					triggerShield(collisionPoint, collision, energy);
-				}
+				triggerEnergyShield(collisionPoint, collision0, source, target);
+				triggerEnergyShield(collisionPoint, collision1, target, source);
 
-				// Energy recharge
-				RechargeComponent recharge = rechargeMapper.get(m_source);
-				if (recharge != null && recharge.getCollisionObject() == collision0) {
-					triggerRecharge(recharge, energy);
-				}
+				triggerRecharge(collision0, source, target);
 
 				// Gravity attraction
-				GravityComponent gravity = gravityMapper.get(m_source);
-				RigidbodyComponent rigidbody = rigidMapper.get(m_target);
+				GravityComponent gravity = gravityMapper.get(source);
+				RigidbodyComponent rigidbody = rigidMapper.get(target);
 				if (gravity != null && gravity.getCollisionObject() == collision0) {
 					triggerGravity(gravity, rigidbody);
 				}
 
 				// Mission logic
-				m_mission = missionMapper.get(m_source);
-				if (m_mission != null && m_mission.getCollisionObject() == collision0) {
-					triggerMission(m_mission, m_source, m_target);
+				MissionComponent mission = missionMapper.get(source);
+				if (mission != null && mission.getCollisionObject() == collision0) {
+					triggerMission(mission, source, target);
 				}
-				m_mission = missionMapper.get(m_target);
-				if (m_mission != null && m_mission.getCollisionObject() == collision1) {
-					triggerMission(m_mission, m_target, m_source);
+				mission = missionMapper.get(target);
+				if (mission != null && mission.getCollisionObject() == collision1) {
+					triggerMission(mission, target, source);
 				}
 			} catch (Exception e) {
 				logger.error("Error during collision callback: " + e.getMessage() + "\n\t" + e.getCause());
@@ -368,19 +438,45 @@ public class BulletSystem extends EntitySystem {
 			return true;
 		}
 
+		/**
+		 * Triggers the energy shield
+		 */
+		private void triggerEnergyShield(final btManifoldPoint point,
+										 final btCollisionObject collision,
+										 final GameObject source,
+										 final GameObject target) {
+			EnergyComponent energy = energyMapper.get(target);
+			// Do nothing if energy is null;
+			if (energy == null) return;
+
+			CollisionComponent collisionComponent = collisionMapper.get(source);
+			if (collisionComponent != null && collisionComponent.getCollisionObject() == collision) {
+				triggerShield(point, energy);
+			}
+			RigidbodyComponent rigidbodyComponent = planetMapper.get(source);
+			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
+				triggerShield(point, energy);
+			}
+			rigidbodyComponent = rigidMapper.get(source);
+			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
+				triggerShield(point, energy);
+			}
+		}
+
 		@Override
-		public void onContactEnded(final btCollisionObject collision0, final btCollisionObject collision1) {
+		public void onContactEnded(final btCollisionObject collision0,
+								   final btCollisionObject collision1) {
 			try {
-				m_source = (GameObject) collision0.userData;
-				m_target = (GameObject) collision1.userData;
+				GameObject source = (GameObject) collision0.userData;
+				GameObject target = (GameObject) collision1.userData;
 				// Mission logic
-				m_mission = missionMapper.get(m_source);
-				if (m_mission != null && m_mission.getCollisionObject() == collision0) {
-					endMission(m_mission);
+				MissionComponent mission = missionMapper.get(source);
+				if (mission != null && mission.getCollisionObject() == collision0) {
+					endMission(mission);
 				}
-				m_mission = missionMapper.get(m_target);
-				if (m_mission != null && m_mission.getCollisionObject() == collision1) {
-					endMission(m_mission);
+				mission = missionMapper.get(target);
+				if (mission != null && mission.getCollisionObject() == collision1) {
+					endMission(mission);
 				}
 
 			} catch (Exception e) {
@@ -389,14 +485,16 @@ public class BulletSystem extends EntitySystem {
 			}
 		}
 
-		private void endMission(MissionComponent mission) {
+		private void endMission(final MissionComponent mission) {
 			mission.setCollecting(false);
 			mission.setDelivering(false);
 			logger.debug("Resetting handling time");
 			mission.resetHandlingTime();
 		}
 
-		private void triggerMission(MissionComponent missionComponent, GameObject source, GameObject target) {
+		private void triggerMission(final MissionComponent missionComponent,
+									final GameObject source,
+									final GameObject target) {
 			Mission mission = missionComponent.getMission();
 			// If is not collected and collide with Player
 			if (!mission.isCollected() && target.isPlayer()) {
@@ -424,20 +522,12 @@ public class BulletSystem extends EntitySystem {
 							if (planet != null) {
 								planet.getPosition(position);
 								missionComponent.setDestinationPosition(position);
-								// Set the destination
-								//DestinationComponent destinationComponent = destinationMapper.get(target);
-								//destinationComponent.setPosition(position);
-								//destinationComponent.setName(mission.getDestination());
 							} else {
 								logger.debug("Destination is not a planet, trying with collision");
 								CollisionComponent collision = collisionMapper.get(entity);
 								if (collision != null) {
 									collision.getPosition(position);
 									missionComponent.setDestinationPosition(position);
-									// Set the destination
-									//DestinationComponent destinationComponent = destinationMapper.get(target);
-									//destinationComponent.setPosition(position);
-									//destinationComponent.setName(mission.getDestination());
 								} else {
 									logger.error("Destination has no position");
 								}
@@ -486,7 +576,7 @@ public class BulletSystem extends EntitySystem {
 		protected Vector3 m_gravityPosition = new Vector3();
 		protected Vector3 m_rigidbodyPosition = new Vector3();
 
-		private void triggerGravity(GravityComponent gravity, RigidbodyComponent rigidbody) {
+		private void triggerGravity(final GravityComponent gravity, final RigidbodyComponent rigidbody) {
 			if (rigidbody != null) {
 				// Set gravity vector equal to this collision object position
 				gravity.getPosition(m_gravityPosition);
@@ -499,14 +589,20 @@ public class BulletSystem extends EntitySystem {
 			}
 		}
 
-		private void triggerRecharge(RechargeComponent recharge, EnergyComponent energy) {
-			if (recharge != null && energy != null) {
+		private void triggerRecharge(final btCollisionObject collision,
+									 final GameObject source,
+									 final GameObject target) {
+			EnergyComponent energy = energyMapper.get(target);
+			if (energy == null) return;
+
+			RechargeComponent recharge = rechargeMapper.get(source);
+			if (recharge != null && recharge.getCollisionObject() == collision) {
 				energy.recharge();
 			}
 		}
 
-		private void triggerShield(btManifoldPoint point, CollisionComponent collision, EnergyComponent energy) {
-			if (collision != null && energy != null) {
+		private void triggerShield(final btManifoldPoint point, final EnergyComponent energy) {
+			if (energy != null) {
 				energy.hurt(point.getAppliedImpulse());
 			}
 		}

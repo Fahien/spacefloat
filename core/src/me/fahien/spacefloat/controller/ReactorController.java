@@ -3,20 +3,19 @@ package me.fahien.spacefloat.controller;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
-import me.fahien.spacefloat.game.SpaceFloat;
-import me.fahien.spacefloat.screen.ScreenEnumerator;
 
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.component.ComponentMapperEnumerator.graphicMapper;
@@ -42,10 +41,30 @@ public class ReactorController extends PlayerController {
 	private GraphicComponent graphic;
 	private RigidbodyComponent rigidbody;
 
+	private Audio audio;
+	private Sound reactorSound;
+
 	public ReactorController() {
 		super(REACTOR_PRIORITY);
 	}
 
+	/**
+	 * Sets the {@link Audio}
+	 */
+	public void setAudio(Audio audio) {
+		this.audio = audio;
+	}
+
+	/**
+	 * Sets the reactor {@link Sound}
+	 */
+	public void setReactorSound(Sound reactorSound) {
+		this.reactorSound = reactorSound;
+	}
+
+	/**
+	 * Sets the {@link ParticleSystem}
+	 */
 	public void setParticleSystem(ParticleSystem particleSystem) {
 		this.particleSystem = particleSystem;
 	}
@@ -76,6 +95,7 @@ public class ReactorController extends PlayerController {
 		if (energy != null) {
 			if (!energy.hasCharge()) {
 				reactor.stop(particleSystem);
+				audio.stop(reactorSound);
 			} else {
 				m_quaternion.setEulerAnglesRad(rotation, 0, 0);
 				rigidbody.rotate(m_quaternion);
@@ -95,7 +115,7 @@ public class ReactorController extends PlayerController {
 
 
 	@Override
-	public void removedFromEngine(Engine engine) {
+	public void removedFromEngine(final Engine engine) {
 		getInputMultiplexer().removeProcessor(reactorInputAdapter);
 	}
 
@@ -116,6 +136,7 @@ public class ReactorController extends PlayerController {
 		public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 			if (energy.hasCharge()) {
 				reactor.start(particleSystem, graphic.getTransform());
+				audio.loop(reactorSound);
 				return true;
 			}
 			return false;
@@ -124,6 +145,7 @@ public class ReactorController extends PlayerController {
 		@Override
 		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 			reactor.stop(particleSystem);
+			audio.stop(reactorSound);
 			return true;
 		}
 

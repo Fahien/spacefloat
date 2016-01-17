@@ -2,10 +2,12 @@ package me.fahien.spacefloat.screen;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.MoneyComponent;
@@ -58,8 +60,18 @@ public class GameScreen extends SpaceFloatScreen {
 		renderSystem.setCamera(mainCamera);
 		logger.debug("Injecting input multiplexer into reactor controller");
 		reactorController.setInputMultiplexer(getInputMultiplexer());
+		logger.debug("Injecting audio and sounds into reactor contorller");
+		reactorController.setAudio(getAudio());
+		Sound reactorSound = getAssetManager().get(Audio.SOUNDS_DIR + Audio.REACTOR_SOUND, Sound.class);
+		reactorController.setReactorSound(reactorSound);
 		logger.debug("Injecting particle system into reactor controller");
 		reactorController.setParticleSystem(getParticleSystem());
+		logger.debug("Injecting audio and sounds in bullet system");
+		bulletSystem.setAudio(getAudio());
+		Sound rechargeSound = getAssetManager().get(Audio.SOUNDS_DIR +  Audio.RECHARGE_SOUND, Sound.class);
+		bulletSystem.setRechargeSound(rechargeSound);
+		Sound collisionSound = getAssetManager().get(Audio.SOUNDS_DIR + Audio.COLLISION_SOUND, Sound.class);
+		bulletSystem.setCollisionSound(collisionSound);
 		logger.debug("Injecting particle system into render system");
 		renderSystem.setParticleSystem(getParticleSystem());
 	}

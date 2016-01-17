@@ -5,10 +5,12 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
@@ -22,6 +24,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.JsonReader;
 
 import me.fahien.spacefloat.actor.FontActor;
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.entity.GameObject;
@@ -78,8 +81,9 @@ public class LoadingScreen extends SpaceFloatScreen {
 		localResolver = new LocalFileHandleResolver();
 		internalResolver = new InternalFileHandleResolver();
 		Engine engine = getEngine();
-		loadObjects(engine);
-		loadModels(engine);
+		loadObjects(engine, getGameObjectFactory());
+		loadModels(engine, getAssetManager(), localResolver);
+		loadSounds(getAssetManager(), internalResolver);
 	}
 
 	/**
@@ -93,8 +97,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 	/**
 	 * Loads the {@link GameObject}s
 	 */
-	protected void loadObjects(Engine engine) {
-		GameObjectFactory factory = getGameObjectFactory();
+	protected void loadObjects(final Engine engine, final GameObjectFactory factory) {
 		Array<GameObject> objects;
 		/*
 		if (loadInternal) {
@@ -119,24 +122,36 @@ public class LoadingScreen extends SpaceFloatScreen {
 	/**
 	 * Loads the {@link Model}s
 	 */
-	protected void loadModels(Engine engine) {
+	protected void loadModels(final Engine engine, final AssetManager assetManager, final FileHandleResolver resolver) {
 		Family family = all(GraphicComponent.class).get();
 		entities = engine.getEntitiesFor(family);
-		G3dModelLoader loader = new G3dModelLoader(new JsonReader(), localResolver);
-		m_assetManager.setLoader(Model.class, loader);
+		G3dModelLoader loader = new G3dModelLoader(new JsonReader(), resolver);
+		assetManager.setLoader(Model.class, loader);
 		for (Entity entity : entities) {
 			GraphicComponent graphic = graphicMapper.get(entity);
 			if(graphic.getInstance() == null) {
 				String name = graphic.getName();
 				if (name != null) {
-					m_assetManager.load(GraphicComponent.MODELS_DIR + name, Model.class);
+					assetManager.load(GraphicComponent.MODELS_DIR + name, Model.class);
 				} else {
 					logger.error("Error loading models: a graphic has no name");
 				}
 			}
 		}
 		// Load parcel model
-		m_assetManager.load(GraphicComponent.MODELS_DIR + MissionFactory.PARCEL_GRAPHIC, Model.class);
+		assetManager.load(GraphicComponent.MODELS_DIR + MissionFactory.PARCEL_GRAPHIC, Model.class);
+	}
+
+	/**
+	 * Loads {@link Sound}s
+	 */
+	private void loadSounds(final AssetManager assetManager, final FileHandleResolver resolver) {
+		SoundLoader loader = new SoundLoader(resolver);
+		assetManager.setLoader(Sound.class, loader);
+		assetManager.load(Audio.SOUNDS_DIR + Audio.REACTOR_SOUND, Sound.class);
+		assetManager.load(Audio.SOUNDS_DIR + Audio.RECHARGE_SOUND, Sound.class);
+		assetManager.load(Audio.SOUNDS_DIR + Audio.COLLISION_SOUND, Sound.class);
+		assetManager.finishLoading();
 	}
 
 	/**

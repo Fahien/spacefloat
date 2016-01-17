@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.controller.ReactorController;
 import me.fahien.spacefloat.factory.GameObjectFactory;
 import me.fahien.spacefloat.factory.HudFactory;
@@ -61,6 +62,7 @@ public class SpaceFloatScreen implements Screen {
 	private RenderSystem renderSystem;
 	private DestinationSystem destinationSystem;
 	private MissionSystem missionSystem;
+	private Audio audio;
 
 	/**
 	 * Tests whether is initialized
@@ -95,6 +97,20 @@ public class SpaceFloatScreen implements Screen {
 	 */
 	public AssetManager getAssetManager() {
 		return assetManager;
+	}
+
+	/**
+	 * Returns the {@link Audio}
+	 */
+	public Audio getAudio() {
+		return audio;
+	}
+
+	/**
+	 * Sets the {@link Audio}
+	 */
+	public void setAudio(Audio audio) {
+		this.audio = audio;
 	}
 
 	/**

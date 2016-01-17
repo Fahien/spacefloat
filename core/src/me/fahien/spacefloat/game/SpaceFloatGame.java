@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import me.fahien.spacefloat.actor.ControlMessageActor;
+import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.camera.MainOrthographicCamera;
 import me.fahien.spacefloat.camera.MainPerspectiveCamera;
 import me.fahien.spacefloat.controller.ReactorController;
@@ -66,6 +67,7 @@ public class SpaceFloatGame extends Game {
 	public static Logger logger = new Logger(SpaceFloatGame.class.getSimpleName(), LOGGER_LEVEL);
 
 	private AssetManager assetManager;
+	private Audio audio;
 
 	private Json json;
 	private GameObjectFactory gameObjectFactory;
@@ -126,6 +128,13 @@ public class SpaceFloatGame extends Game {
 	 */
 	public AssetManager getAssetManager() {
 		return assetManager;
+	}
+
+	/**
+	 * Returns the {@link Audio}
+	 */
+	public Audio getAudio() {
+		return audio;
 	}
 
 	/**
@@ -298,6 +307,7 @@ public class SpaceFloatGame extends Game {
 	 */
 	private void injectDependencies(SpaceFloatScreen screen) {
 		screen.setAssetManager(assetManager);
+		screen.setAudio(audio);
 		screen.setGameObejctFactory(gameObjectFactory);
 		screen.setFont(font);
 		screen.setHud(hud);
@@ -324,6 +334,8 @@ public class SpaceFloatGame extends Game {
 		logger.info(logo);
 		loadPreferences();
 		initLogger();
+		logger.debug("Initializing audio");
+		audio = Audio.INSTANCE;
 		logger.debug("Initializing asset manager");
 		assetManager = new AssetManager();
 		Texture.setAssetManager(assetManager);
