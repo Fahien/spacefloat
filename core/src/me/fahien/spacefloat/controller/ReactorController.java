@@ -99,7 +99,7 @@ public class ReactorController extends PlayerController {
 			} else {
 				m_quaternion.setEulerAnglesRad(rotation, 0, 0);
 				rigidbody.rotate(m_quaternion);
-				if (reactor.isBurning()) {
+				if (reactor.isEmitting()) {
 					reactor.setTransform(rigidbody.getTransform());
 					energy.addCharge(-reactor.getConsume() * 64 * delta);
 					rigidbody.applyCentralForce(force.nor().scl(reactor.getPower() * 4096 * 4096));

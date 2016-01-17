@@ -22,6 +22,7 @@ import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.DestinationSystem;
+import me.fahien.spacefloat.system.EmissionSystem;
 import me.fahien.spacefloat.system.MissionSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
@@ -62,6 +63,8 @@ public class SpaceFloatScreen implements Screen {
 	private RenderSystem renderSystem;
 	private DestinationSystem destinationSystem;
 	private MissionSystem missionSystem;
+	private EmissionSystem emissionSystem;
+
 	private Audio audio;
 
 	/**
@@ -345,6 +348,20 @@ public class SpaceFloatScreen implements Screen {
 	}
 
 	/**
+	 * Sets the {@link EmissionSystem}
+	 */
+	public EmissionSystem getEmissionSystem() {
+		return emissionSystem;
+	}
+
+	/**
+	 * Returns the {@link EmissionSystem}
+	 */
+	public void setEmissionSystem(final EmissionSystem emissionSystem) {
+		this.emissionSystem = emissionSystem;
+	}
+
+	/**
 	 * Populates the {@link Stage}
 	 */
 	public void populate(final Stage stage) {}
@@ -417,6 +434,7 @@ public class SpaceFloatScreen implements Screen {
 		renderSystem = null;
 		destinationSystem = null;
 		missionSystem = null;
+		emissionSystem = null;
 		initialized = false;
 	}
 }

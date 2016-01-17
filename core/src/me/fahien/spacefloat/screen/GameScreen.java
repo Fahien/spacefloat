@@ -18,6 +18,7 @@ import me.fahien.spacefloat.factory.MissionFactory;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.DestinationSystem;
+import me.fahien.spacefloat.system.EmissionSystem;
 import me.fahien.spacefloat.system.MissionSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 
@@ -40,6 +41,7 @@ public class GameScreen extends SpaceFloatScreen {
 	private DestinationSystem destinationSystem;
 	private MissionSystem missionSystem;
 	private ReactorController reactorController;
+	private EmissionSystem emissionSystem;
 
 	private void initSystems() {
 		cameraSystem = getCameraSystem();
@@ -50,6 +52,7 @@ public class GameScreen extends SpaceFloatScreen {
 		reactorController = getReactorController();
 		destinationSystem = getDestinationSystem();
 		missionSystem = getMissionSystem();
+		emissionSystem = getEmissionSystem();
 	}
 
 	private void injectSystemsDependencies() {
@@ -72,8 +75,12 @@ public class GameScreen extends SpaceFloatScreen {
 		bulletSystem.setRechargeSound(rechargeSound);
 		Sound collisionSound = getAssetManager().get(Audio.SOUNDS_DIR + Audio.COLLISION_SOUND, Sound.class);
 		bulletSystem.setCollisionSound(collisionSound);
+		logger.debug("Injecting particle system into bullet system");
+		bulletSystem.setParticleSystem(getParticleSystem());
 		logger.debug("Injecting particle system into render system");
 		renderSystem.setParticleSystem(getParticleSystem());
+		logger.debug("Injecting particle system into emission system");
+		emissionSystem.setParticleSystem(getParticleSystem());
 	}
 
 	private void addSystemsToEngine(Engine engine) {
@@ -90,6 +97,8 @@ public class GameScreen extends SpaceFloatScreen {
 		engine.addSystem(destinationSystem);
 		logger.debug("Adding mission system to the engine");
 		engine.addSystem(missionSystem);
+		logger.debug("Adding emission system to the engine");
+		engine.addSystem(emissionSystem);
 	}
 
 	@Override
@@ -150,6 +159,7 @@ public class GameScreen extends SpaceFloatScreen {
 			engine.removeSystem(destinationSystem);
 			engine.removeSystem(missionSystem);
 			engine.removeSystem(reactorController);
+			engine.removeSystem(emissionSystem);
 			engine.removeAllEntities();
 		}
 	}

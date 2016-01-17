@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
@@ -68,6 +69,8 @@ public class BulletSystem extends EntitySystem {
 	private Sound rechargeSound;
 	private Sound collisionSound;
 
+	private ParticleSystem particleSystem;
+
 	private ObjectSet<CollisionComponent> collisionComponents;
 	private ObjectSet<RigidbodyComponent> rigidbodyComponents;
 
@@ -103,6 +106,10 @@ public class BulletSystem extends EntitySystem {
 
 	public void setCollisionSound(final Sound collisionSound) {
 		this.collisionSound = collisionSound;
+	}
+
+	public void setParticleSystem(final ParticleSystem particleSystem) {
+		this.particleSystem = particleSystem;
 	}
 
 	@Override
@@ -368,24 +375,28 @@ public class BulletSystem extends EntitySystem {
 										   final GameObject source,
 										   final GameObject target) {
 
-				EnergyComponent energy = energyMapper.get(target);
-				// Do nothing if energy is null;
-				if (energy == null) return;
+			EnergyComponent energy = energyMapper.get(target);
+			RigidbodyComponent rigidbody = rigidMapper.get(target);
+			// Do nothing if energy is null;
+			if (energy == null) return;
 
-				CollisionComponent collisionComponent = collisionMapper.get(source);
-				if (collisionComponent != null && collisionComponent.getCollisionObject() == collision) {
-					audio.play(collisionSound);
-					return;
-				}
-				RigidbodyComponent rigidbodyComponent = planetMapper.get(source);
-				if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
-					audio.play(collisionSound);
-					return;
-				}
-				rigidbodyComponent = rigidMapper.get(source);
-				if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
-					audio.play(collisionSound);
-				}
+			CollisionComponent collisionComponent = collisionMapper.get(source);
+			if (collisionComponent != null && collisionComponent.getCollisionObject() == collision) {
+				audio.play(collisionSound);
+				energy.start(particleSystem, rigidbody.getTransform());
+				return;
+			}
+			RigidbodyComponent rigidbodyComponent = planetMapper.get(source);
+			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
+				audio.play(collisionSound);
+				energy.start(particleSystem, rigidbody.getTransform());
+				return;
+			}
+			rigidbodyComponent = rigidMapper.get(source);
+			if (rigidbodyComponent != null && rigidbodyComponent.getRigidbody() == collision) {
+				audio.play(collisionSound);
+				energy.start(particleSystem, rigidbody.getTransform());
+			}
 		}
 
 		private void triggerRechargeSound(final btCollisionObject collision,
@@ -396,7 +407,6 @@ public class BulletSystem extends EntitySystem {
 
 			RechargeComponent recharge = rechargeMapper.get(source);
 			if (recharge != null && recharge.getCollisionObject() == collision) {
-				energy.recharge();
 				audio.play(rechargeSound);
 			}
 		}
@@ -597,7 +607,7 @@ public class BulletSystem extends EntitySystem {
 
 			RechargeComponent recharge = rechargeMapper.get(source);
 			if (recharge != null && recharge.getCollisionObject() == collision) {
-				energy.recharge();
+				energy.recharge(m_delta);
 			}
 		}
 

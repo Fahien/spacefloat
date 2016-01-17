@@ -38,6 +38,7 @@ import me.fahien.spacefloat.screen.SpaceFloatScreen;
 import me.fahien.spacefloat.system.BulletSystem;
 import me.fahien.spacefloat.system.CameraSystem;
 import me.fahien.spacefloat.system.DestinationSystem;
+import me.fahien.spacefloat.system.EmissionSystem;
 import me.fahien.spacefloat.system.MissionSystem;
 import me.fahien.spacefloat.system.RenderSystem;
 import me.fahien.spacefloat.utils.SpaceFloatPreferences;
@@ -92,6 +93,7 @@ public class SpaceFloatGame extends Game {
 	private BulletSystem bulletSystem;
 	private DestinationSystem destinationSystem;
 	private MissionSystem missionSystem;
+	private EmissionSystem emissionSystem;
 
 	private GameObject player;
 
@@ -268,6 +270,8 @@ public class SpaceFloatGame extends Game {
 		missionSystem = new MissionSystem();
 		logger.debug("Creating reactor controller");
 		reactorController = new ReactorController();
+		logger.debug("Creating emission system");
+		emissionSystem = new EmissionSystem();
 	}
 
 	/**
@@ -321,6 +325,7 @@ public class SpaceFloatGame extends Game {
 		screen.setRenderSystem(renderSystem);
 		screen.setDestinationSystem(destinationSystem);
 		screen.setMissionSystem(missionSystem);
+		screen.setEmissionSystem(emissionSystem);
 		screen.setInputMultiplexer(inputMultiplexer);
 		screen.setViewport(viewport);
 		screen.setStage(stage);
@@ -408,6 +413,10 @@ public class SpaceFloatGame extends Game {
 		if (renderSystem != null) {
 			logger.debug("Disposing render");
 			renderSystem.dispose();
+		}
+		if (emissionSystem != null) {
+			logger.debug("Disposing emission");
+			emissionSystem.dispose();
 		}
 		logger.debug("Disposing asset manager");
 		assetManager.dispose();

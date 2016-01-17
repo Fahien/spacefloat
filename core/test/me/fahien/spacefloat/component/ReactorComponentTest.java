@@ -25,7 +25,7 @@ public class ReactorComponentTest {
 		reactorComponent.setName("reactor.pfx");
 		reactorComponent.setConsume(64f);
 		reactorComponent.setPower(64f);
-		reactorComponent.setReactor(new ParticleEffect());
+		reactorComponent.setEffect(new ParticleEffect());
 	}
 
 	@After

@@ -25,7 +25,10 @@ import com.badlogic.gdx.utils.JsonReader;
 
 import me.fahien.spacefloat.actor.FontActor;
 import me.fahien.spacefloat.audio.Audio;
+import me.fahien.spacefloat.component.ComponentMapperEnumerator;
+import me.fahien.spacefloat.component.EnergyComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
+import me.fahien.spacefloat.component.ParticleComponent;
 import me.fahien.spacefloat.component.ReactorComponent;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.factory.GameObjectFactory;
@@ -34,6 +37,8 @@ import me.fahien.spacefloat.game.SpaceFloat;
 import me.fahien.spacefloat.mission.Mission;
 
 import static com.badlogic.ashley.core.Family.all;
+import static com.badlogic.ashley.core.Family.one;
+import static me.fahien.spacefloat.component.ComponentMapperEnumerator.energyMapper;
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 
 /**
@@ -159,10 +164,10 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 *
 	 * @see <a href="https://github.com/libgdx/libgdx/wiki/3D-Particle-Effects">3D Particle Effects</a>
 	 */
-	protected void loadParticles(Engine engine, ParticleSystem particleSystem) {
+	protected void loadParticles(Engine engine, ParticleSystem particleSystem, final AssetManager assetManager) {
 		logger.debug("Loading reactor particle effects");
 		// Get all entities with a reactor component
-		entities = engine.getEntitiesFor(all(ReactorComponent.class).get());
+		entities = engine.getEntitiesFor(one(ReactorComponent.class, EnergyComponent.class).get());
 		// Initialize loaders
 		ParticleEffectLoader localLoader = new ParticleEffectLoader(localResolver);
 		ParticleEffectLoader internalLoader = new ParticleEffectLoader(internalResolver);
@@ -171,31 +176,41 @@ public class LoadingScreen extends SpaceFloatScreen {
 			throw new GdxRuntimeException("Particle Batches are null");
 		}
 		ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(batches);
-		m_assetManager.setLoader(ParticleEffect.class, localLoader);
+		assetManager.setLoader(ParticleEffect.class, localLoader);
 		for (Entity entity : entities) {
-			ReactorComponent reactorComponent = reactorMapper.get(entity);
-			if(reactorComponent.getReactor() == null) {
-				String name = reactorComponent.getName();
-				if (name != null) {
-					try {
-						m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
-						m_assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
-					} catch (GdxRuntimeException e) {
-						m_assetManager.setLoader(ParticleEffect.class, internalLoader);
-						m_assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
-						try {
-							m_assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
-						} catch (GdxRuntimeException ex) {
-							logger.error("Could not load " + ReactorComponent.PARTICLES_DIR + name + ": " + e.getMessage() + "\n\t" + e.getCause());
-						}
-						m_assetManager.setLoader(ParticleEffect.class, localLoader);
-					}
-				} else {
-					logger.error("Error loading particle effects: a reactor has no name");
-				}
-			}
+			ParticleComponent particleComponent = reactorMapper.get(entity);
+			loadParticle(particleComponent, assetManager, loadParam, localLoader, internalLoader);
+			particleComponent = energyMapper.get(entity);
+			loadParticle(particleComponent, assetManager, loadParam, localLoader, internalLoader);
 		}
 		logger.info("Loaded " + entities.size() + " reactor particle effects");
+	}
+
+	private void loadParticle(final ParticleComponent particleComponent,
+							  final AssetManager assetManager,
+							  final ParticleEffectLoader.ParticleEffectLoadParameter loadParam,
+							  final ParticleEffectLoader localLoader,
+							  final ParticleEffectLoader internalLoader) {
+		if(particleComponent != null && particleComponent.getEffect() == null) {
+			String name = particleComponent.getName();
+			if (name != null) {
+				try {
+					assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+					assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
+				} catch (GdxRuntimeException e) {
+					assetManager.setLoader(ParticleEffect.class, internalLoader);
+					assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+					try {
+						assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
+					} catch (GdxRuntimeException ex) {
+						logger.error("Could not load " + ReactorComponent.PARTICLES_DIR + name + ": " + e.getMessage() + "\n\t" + e.getCause());
+					}
+					assetManager.setLoader(ParticleEffect.class, localLoader);
+				}
+			} else {
+				logger.error("Error loading particle effects: a reactor has no name");
+			}
+		}
 	}
 
 	/**
@@ -220,15 +235,21 @@ public class LoadingScreen extends SpaceFloatScreen {
 	/**
 	 * Injects a {@link ParticleEffect} in every {@link ReactorComponent}
 	 */
-	protected void injectReactors(ImmutableArray<Entity> entities) {
+	protected void injectReactors(final ImmutableArray<Entity> entities, final AssetManager assetManager) {
 		logger.debug("Injecting reactors into entities");
 		for (Entity entity : entities) {
-			ReactorComponent reactor = reactorMapper.get(entity);
-			if (reactor.getReactor() == null) {
-				String particleName = ReactorComponent.PARTICLES_DIR + reactor.getName();
-				ParticleEffect particleEffect = m_assetManager.get(particleName, ParticleEffect.class);
-				reactor.setReactor(particleEffect);
-			}
+			ParticleComponent particle = reactorMapper.get(entity);
+			injectEffect(particle, assetManager);
+			particle = energyMapper.get(entity);
+			injectEffect(particle, assetManager);
+		}
+	}
+
+	private void injectEffect(final ParticleComponent particle, final AssetManager assetManager) {
+		if (particle != null && particle.getEffect() == null) {
+			String particleName = ReactorComponent.PARTICLES_DIR + particle.getName();
+			ParticleEffect particleEffect = assetManager.get(particleName, ParticleEffect.class);
+			particle.setEffect(particleEffect);
 		}
 	}
 
@@ -261,8 +282,9 @@ public class LoadingScreen extends SpaceFloatScreen {
 			try {
 				injectGraphics(entities);
 				Engine engine = getEngine();
-				loadParticles(engine, getParticleSystem());
-				injectReactors(engine.getEntitiesFor(all(ReactorComponent.class).get()));
+				loadParticles(engine, getParticleSystem(), getAssetManager());
+				ImmutableArray<Entity> particleEntities = engine.getEntitiesFor(one(ReactorComponent.class, EnergyComponent.class).get());
+				injectReactors(particleEntities, getAssetManager());
 			} catch (GdxRuntimeException e) {
 				logger.error("Could not inject reactors: " + e.getMessage());
 				m_loadingActor.setText("Could not inject reactors, please restart SpaceFloat");

@@ -1,7 +1,6 @@
 package me.fahien.spacefloat.component;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -12,11 +11,11 @@ import me.fahien.spacefloat.utils.JsonKey;
  *
  * @author Fahien
  */
-public class EnergyComponent implements Component, Json.Serializable {
+public class EnergyComponent extends ParticleComponent {
 	protected static final float CHARGE_MAX_DEFAULT = 128f;
 	protected static final float CHARGE_MAX_LOWER_LIMIT = 1f;
 	protected static final float CHARGE_MIN = 0f;
-	public static float SHIELD_CONSUME = 32768;
+	public static float SHIELD_CONSUME = 16384;
 
 	private float charge;
 	private float chargeMax;
@@ -25,7 +24,7 @@ public class EnergyComponent implements Component, Json.Serializable {
 		this(CHARGE_MAX_DEFAULT);
 	}
 
-	public EnergyComponent(float chargeMax) {
+	public EnergyComponent(final float chargeMax) {
 		this.chargeMax = chargeMax;
 		charge = chargeMax;
 	}
@@ -40,7 +39,7 @@ public class EnergyComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the charge
 	 */
-	public void setCharge(float charge) {
+	public void setCharge(final float charge) {
 		if (charge < CHARGE_MIN) {
 			this.charge = CHARGE_MIN;
 		} else if (charge > chargeMax) {
@@ -61,7 +60,7 @@ public class EnergyComponent implements Component, Json.Serializable {
 	/**
 	 * Absorb an hurt according to velocity and collision normal
 	 */
-	public void hurt(float impulse) {
+	public void hurt(final float impulse) {
 		float charge = - impulse / SHIELD_CONSUME;
 		if (charge > -2.0f) return;
 		addCharge(charge);
@@ -84,25 +83,27 @@ public class EnergyComponent implements Component, Json.Serializable {
 	/**
 	 * Sets the charge upper limit
 	 */
-	public void setChargeMax(float chargeMax) {
+	public void setChargeMax(final float chargeMax) {
 		this.chargeMax = (chargeMax < CHARGE_MAX_LOWER_LIMIT) ? CHARGE_MAX_LOWER_LIMIT : chargeMax;
 	}
 
 	/**
 	 * Recharges energy
 	 */
-	public void recharge() {
-		addCharge(Gdx.graphics.getDeltaTime());
+	public void recharge(final float delta) {
+		addCharge(delta * SHIELD_CONSUME);
 	}
 
 	@Override
-	public void write(Json json) {
+	public void write(final Json json) {
+		super.write(json);
 		json.writeValue(JsonKey.CHARGEMAX, chargeMax);
 		json.writeValue(JsonKey.CHARGE, charge);
 	}
 
 	@Override
-	public void read(Json json, JsonValue jsonData) {
+	public void read(final Json json, final JsonValue jsonData) {
+		super.read(json, jsonData);
 		chargeMax = jsonData.getInt(JsonKey.CHARGEMAX);
 		charge = jsonData.getFloat(JsonKey.CHARGE);
 	}
