@@ -46,6 +46,8 @@ public class MainScreen extends SpaceFloatScreen {
 	private static final float BUTTON_Y = 22f;
 	private static final float ROTATION_VELOCITY = 128f;
 
+	private Camera mainCamera;
+
 	private Engine engine;
 
 	private CameraSystem cameraSystem;
@@ -57,6 +59,7 @@ public class MainScreen extends SpaceFloatScreen {
 	private Matrix4 transformGraphic;
 
 	public MainScreen() {
+		mainCamera = new MainPerspectiveCamera();
 		cargo = new GameObject(CARGO_NAME);
 		cargo.add(new TransformComponent());
 		cargo.add(new PlayerComponent());
@@ -73,7 +76,6 @@ public class MainScreen extends SpaceFloatScreen {
 	}
 
 	private void injectSystemsDependencies() {
-		Camera mainCamera = new MainPerspectiveCamera();
 		logger.debug("Injecting camera into camera system");
 		cameraSystem.setCamera(mainCamera);
 		logger.debug("Injecting camera into render system");
@@ -100,13 +102,17 @@ public class MainScreen extends SpaceFloatScreen {
 		super.show();
 	}
 
-	private void loadTheCargoModel(AssetManager assetManager) {
-		assetManager.load(MODELS_DIR + CARGO_MODEL, Model.class);
-		assetManager.finishLoading();
-		Model cargoModel = assetManager.get(MODELS_DIR + CARGO_MODEL, Model.class);
-		ModelInstance cargoInstance = new ModelInstance(cargoModel);
-		cargoGraphic.setInstance(cargoInstance);
-		transformGraphic = cargoInstance.transform;
+	private void loadTheCargoModel(final AssetManager assetManager) {
+		if (cargoGraphic.getInstance() == null) {
+			if (!assetManager.isLoaded(MODELS_DIR + CARGO_MODEL)) {
+				assetManager.load(MODELS_DIR + CARGO_MODEL, Model.class);
+				assetManager.finishLoading();
+			}
+			Model cargoModel = assetManager.get(MODELS_DIR + CARGO_MODEL, Model.class);
+			ModelInstance cargoInstance = new ModelInstance(cargoModel);
+			cargoGraphic.setInstance(cargoInstance);
+			transformGraphic = cargoInstance.transform;
+		}
 	}
 
 	@Override
@@ -139,25 +145,7 @@ public class MainScreen extends SpaceFloatScreen {
 
 		int i = 2;
 
-		// Create continue button
-		/*
-			FileHandle localObjectsDirectory = Gdx.files.local("objects/");
-			if (localObjectsDirectory != null && localObjectsDirectory.isDirectory()) {
-				HudActor continueActor = hudfactory.getContinueActor();
-				continueActor.setX(BUTTON_X);
-				continueActor.setY(HEIGHT - BUTTON_Y * i++);
-				continueActor.addListener(new ClickListener() {
-					@Override
-					public void clicked(InputEvent event, float x, float y) {
-						((LoadingScreen) ScreenEnumerator.LOADING.getScreen()).setLoadInternal(false);
-						SpaceFloat.GAME.setScreen(ScreenEnumerator.LOADING);
-					}
-				});
-				stage.addActor(continueActor);
-			}
-		*/
-
-		// Temp continue button
+		// Continue button
 		if (getGameObjectFactory().hasObjects()) {
 			HudActor continueActor = hudfactory.getContinueActor();
 			continueActor.setX(BUTTON_X);
@@ -208,15 +196,17 @@ public class MainScreen extends SpaceFloatScreen {
 	@Override
 	public void update(float delta) {
 		super.update(delta);
+
+		rotation += delta * ROTATION_VELOCITY;
+		quaternion.setEulerAnglesRad(-rotation, 0, 0);
+		transformGraphic.set(quaternion);
+
 		if (engine != null) {
 			engine.update(delta);
 		} else {
 			logger.error("Engine is null");
 			Gdx.app.exit();
 		}
-		rotation += delta * ROTATION_VELOCITY;
-		quaternion.setEulerAnglesRad(-rotation, 0, 0);
-		transformGraphic.set(quaternion);
 	}
 
 	@Override

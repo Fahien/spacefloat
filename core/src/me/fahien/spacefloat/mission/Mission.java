@@ -12,7 +12,7 @@ import me.fahien.spacefloat.utils.JsonKey;
  *
  * @author Fahien
  */
-public class Mission implements Json.Serializable {
+public class Mission implements Json.Serializable, Comparable<Mission> {
 
 	private String name;
 
@@ -179,5 +179,10 @@ public class Mission implements Json.Serializable {
 		messageInitial = jsonData.getString(JsonKey.MESSAGE_INITIAL);
 		messageEnding = jsonData.getString(JsonKey.MESSAGE_ENDING);
 		setReward(jsonData.getInt(JsonKey.REWARD));
+	}
+
+	@Override
+	public int compareTo(Mission mission) {
+		return name.compareTo(mission.getName());
 	}
 }

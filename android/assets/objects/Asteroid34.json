@@ -1,0 +1,5 @@
+{name:Asteroid34,components:{array:[
+  {class:me.fahien.spacefloat.component.GraphicComponent,name:asteroid2.g3db},
+  {class:me.fahien.spacefloat.component.TransformComponent,x:3050,y:0,z:-1600,yaw:2,pitch:0.5,roll:0},
+  {class:me.fahien.spacefloat.component.VelocityComponent,x:1000000,y:0,z:0,yaw:-512,pitch:64,roll:64},
+  {class:me.fahien.spacefloat.component.RigidbodyComponent,mass:1,radius:80,group:2,mask:7}],iterable:null}}

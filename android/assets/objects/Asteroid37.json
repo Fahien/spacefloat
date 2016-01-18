@@ -1,0 +1,5 @@
+{name:Asteroid37,components:{array:[
+  {class:me.fahien.spacefloat.component.GraphicComponent,name:asteroid1.g3db},
+  {class:me.fahien.spacefloat.component.TransformComponent,x:4220,y:0,z:-1670,yaw:2,pitch:0.5,roll:0},
+  {class:me.fahien.spacefloat.component.VelocityComponent,x:1000000,y:0,z:0,yaw:512,pitch:-128,roll:1024},
+  {class:me.fahien.spacefloat.component.RigidbodyComponent,mass:1,radius:80,group:2,mask:7}],iterable:null}}

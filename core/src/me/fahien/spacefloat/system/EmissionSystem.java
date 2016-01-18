@@ -60,6 +60,12 @@ public class EmissionSystem extends IteratingSystem {
 		}
 	}
 
+	@Override
+	public void removedFromEngine(Engine engine) {
+		super.removedFromEngine(engine);
+		energy.stop(particleSystem);
+	}
+
 	public void dispose() {
 		if (energy != null) energy.dispose();
 	}

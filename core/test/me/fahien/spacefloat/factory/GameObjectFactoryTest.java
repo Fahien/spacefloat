@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Json;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import me.fahien.spacefloat.component.AccelerationComponent;
 import me.fahien.spacefloat.component.DestinationComponent;
@@ -22,6 +23,7 @@ import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.component.VelocityComponent;
 import me.fahien.spacefloat.entity.GameObject;
+import me.fahien.spacefloat.game.GdxTestRunner;
 import me.fahien.spacefloat.utils.JsonKey;
 
 import static org.junit.Assert.assertEquals;
@@ -33,6 +35,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Fahien
  */
+@RunWith(GdxTestRunner.class)
 public class GameObjectFactoryTest {
 	private static final String SPACESHIP_NAME = "Spaceship";
 	private static final String SPACESHIP_GRAPHIC = "cargo.g3db";
@@ -57,7 +60,6 @@ public class GameObjectFactoryTest {
 		gameObjectFactory.setJson(new Json());
 	}
 
-	@Test
 	public void couldSaveTheSpaceship() {
 		// Create the spaceship
 		GameObject spaceship = new GameObject(SPACESHIP_NAME);
@@ -91,7 +93,7 @@ public class GameObjectFactoryTest {
 		spaceship.add(rigidbody);
 
 		// Create a reactor component
-		ReactorComponent reactorComponent = new ReactorComponent(SPACESHIP_REACTOR);
+		ReactorComponent reactorComponent = new ReactorComponent();
 		spaceship.add(reactorComponent);
 
 		// Create an energy component
@@ -111,7 +113,6 @@ public class GameObjectFactoryTest {
 		gameObjectFactory.save(spaceship);
 	}
 
-	@Test
 	public void couldSaveTheEnergyStation() {
 		// Create the energy station
 		GameObject energyStation = new GameObject(ENERGY_STATION_NAME);
@@ -161,9 +162,6 @@ public class GameObjectFactoryTest {
 
 		PlayerComponent player = spaceship.getComponent(PlayerComponent.class);
 		assertNotNull("The spaceship has no player component", player);
-
-		AccelerationComponent acceleration = spaceship.getComponent(AccelerationComponent.class);
-		assertNotNull("The spaceship has no acceleration component", acceleration);
 
 		RigidbodyComponent rigidbody = spaceship.getComponent(RigidbodyComponent.class);
 		assertNotNull("The spaceship has no rigid component", rigidbody);
@@ -224,17 +222,16 @@ public class GameObjectFactoryTest {
 	@Test
 	public void couldLoadAllObjects() {
 		createObjectList();
-		Array<GameObject> objects = gameObjectFactory.loadObjects();
+		Array<GameObject> objects = gameObjectFactory.loadObjects(true);
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}
 
-	@Test
 	public void couldSaveAllObjects() {
 		createObjectList();
-		Array<GameObject> objects = gameObjectFactory.loadObjects();
+		Array<GameObject> objects = gameObjectFactory.loadObjects(true);
 		gameObjectFactory.saveObjects(objects);
-		objects = gameObjectFactory.loadObjects();
+		objects = gameObjectFactory.loadObjects(true);
 		assertNotNull("Objects array is null", objects);
 		assertTrue("The array does not contain any object", objects.size > 0);
 	}

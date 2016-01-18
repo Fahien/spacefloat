@@ -1,1 +1,5 @@
-{name:Asteroid41,components:{array:[{class:me.fahien.spacefloat.component.GraphicComponent,name:asteroid1.g3db},{class:me.fahien.spacefloat.component.TransformComponent,x:-994.02106,y:0,z:-3105.8818,yaw:2,pitch:0.5,roll:0},{class:me.fahien.spacefloat.component.VelocityComponent,x:497.41623,y:0,z:-397.94022,yaw:-0.0060424805,pitch:-0.0014038086,roll:1027.1736},{class:me.fahien.spacefloat.component.RigidbodyComponent,mass:1,radius:80,group:2,mask:7}],iterable:null}}
+{name:Asteroid41,components:{array:[
+  {class:me.fahien.spacefloat.component.GraphicComponent,name:asteroid1.g3db},
+  {class:me.fahien.spacefloat.component.TransformComponent,x:-1000,y:0,z:-3100.0,yaw:2,pitch:0.5,roll:0},
+  {class:me.fahien.spacefloat.component.VelocityComponent,x:500,y:0,z:-400,yaw:0,pitch:0,roll:1024},
+  {class:me.fahien.spacefloat.component.RigidbodyComponent,mass:1,radius:80,group:2,mask:7}],iterable:null}}

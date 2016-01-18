@@ -10,6 +10,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import me.fahien.spacefloat.audio.Audio;
 import me.fahien.spacefloat.component.EnergyComponent;
@@ -34,7 +36,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
 public class ReactorController extends PlayerController {
 	private static final int REACTOR_PRIORITY = 2;
 	private static final String END_MESSAGE = "Goes bad, space courier. You've run out of energy charge. I'm sorry but you're fired.";
-	private static final float END_TIME_LIMIT = 0.003f;
+
 	private ParticleSystem particleSystem;
 	private Vector3 force;
 	private float rotation;
@@ -95,7 +97,6 @@ public class ReactorController extends PlayerController {
 	protected Quaternion m_quaternion = new Quaternion();
 	protected boolean m_error;
 	protected boolean endGame;
-	protected float endTime;
 
 	@Override
 	public void update(final float delta) {
@@ -114,12 +115,15 @@ public class ReactorController extends PlayerController {
 					audio.stop(reactorSound);
 					SpaceFloat.GAME.getGame().enqueueMessage(END_MESSAGE);
 					endGame = true;
-				}
-				endTime += delta;
-				if (endTime > END_TIME_LIMIT) {
-					SpaceFloatGame game = SpaceFloat.GAME.getGame();
-					game.getGameObjectFactory().dispose();
-					game.setScreen(ScreenEnumerator.MAIN);
+					final SpaceFloatGame game = SpaceFloat.GAME.getGame();
+					game.getStage().getRoot().addAction(Actions.delay(0.003f, new Action() {
+						@Override
+						public boolean act(float delta) {
+							game.getGameObjectFactory().dispose();
+							game.setScreen(ScreenEnumerator.MAIN);
+							return true;
+						}
+					}));
 				}
 			}
 		} else {
@@ -133,7 +137,13 @@ public class ReactorController extends PlayerController {
 
 	@Override
 	public void removedFromEngine(final Engine engine) {
+		super.removedFromEngine(engine);
+		// Remove input processor
 		getInputMultiplexer().removeProcessor(reactorInputAdapter);
+		// Stop reactors if emitting
+		reactor.stop(particleSystem);
+		// Stop audio if playing
+		audio.stop(reactorSound);
 	}
 
 	public void dispose() {

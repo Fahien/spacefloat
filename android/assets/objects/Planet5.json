@@ -1,1 +1,6 @@
-{name:Planet5,components:{array:[{class:me.fahien.spacefloat.component.GraphicComponent,name:planet3u.g3db},{class:me.fahien.spacefloat.component.TransformComponent,x:-500,y:0,z:-3500,yaw:0,pitch:0,roll:0},{class:me.fahien.spacefloat.component.VelocityComponent,x:0,y:0,z:0,yaw:512,pitch:-256,roll:-1024},{class:me.fahien.spacefloat.component.PlanetComponent,mass:256,radius:150,group:4,mask:7},{class:me.fahien.spacefloat.component.GravityComponent,radius:512,group:4,mask:3,mass:4}],iterable:null}}
+{name:Planet5,components:{array:[
+  {class:me.fahien.spacefloat.component.GraphicComponent,name:planet3u.g3db},
+  {class:me.fahien.spacefloat.component.TransformComponent,x:-500,y:0,z:-3500,yaw:0,pitch:0,roll:0},
+  {class:me.fahien.spacefloat.component.VelocityComponent,x:0,y:0,z:0,yaw:512,pitch:-256,roll:-1024},
+  {class:me.fahien.spacefloat.component.PlanetComponent,mass:256,radius:150,group:4,mask:7},
+  {class:me.fahien.spacefloat.component.GravityComponent,radius:512,group:4,mask:3,mass:4}],iterable:null}}

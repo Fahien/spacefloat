@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,15 +27,19 @@ public class LoadingScreenTest {
 
 	private LoadingScreen screen;
 	private Engine engine;
+	private GameObjectFactory factory;
+	private AssetManager assetManager;
 
 	@Before
 	public void before() {
 		screen = (LoadingScreen) ScreenEnumerator.LOADING.getScreen();
-		AssetManager assetManager = new AssetManager();
+		assetManager = new AssetManager();
 		screen.setAssetManager(assetManager);
 		screen.setGameObejctFactory(GameObjectFactory.INSTANCE);
 		engine = new Engine();
+		factory = GameObjectFactory.INSTANCE;
 		screen.setEngine(engine);
+		screen.setGameObejctFactory(factory);
 		try {
 			screen.show();
 		} catch (IllegalArgumentException|NullPointerException e) {
@@ -49,14 +54,14 @@ public class LoadingScreenTest {
 
 	@Test
 	public void canLoadObjects() {
-		screen.loadObjects(engine);
+		screen.loadObjects(engine, factory);
 		assertTrue("The engine has no entities", engine.getEntities().size() > 0);
 	}
 
 	@Test
 	public void canInjectModels() {
-		screen.loadObjects(engine);
-		screen.loadModels(engine);
+		screen.loadObjects(engine, factory);
+		screen.loadModels(engine, assetManager, new InternalFileHandleResolver());
 		screen.getAssetManager().finishLoading();
 		screen.injectGraphics(engine.getEntities());
 		Family family = Family.all(GraphicComponent.class).get();

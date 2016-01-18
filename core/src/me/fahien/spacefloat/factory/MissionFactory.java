@@ -4,6 +4,8 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
@@ -12,7 +14,9 @@ import me.fahien.spacefloat.component.MissionComponent;
 import me.fahien.spacefloat.component.TransformComponent;
 import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.game.SpaceFloat;
+import me.fahien.spacefloat.game.SpaceFloatGame;
 import me.fahien.spacefloat.mission.Mission;
+import me.fahien.spacefloat.screen.ScreenEnumerator;
 import me.fahien.spacefloat.utils.JsonKey;
 
 import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
@@ -95,6 +99,15 @@ public enum MissionFactory {
 			}
 		}
 		player.remove(MissionComponent.class);
+		final SpaceFloatGame game = SpaceFloat.GAME.getGame();
+		game.getStage().addAction(Actions.delay(0.003f, new Action() {
+			@Override
+			public boolean act(float delta) {
+				game.getGameObjectFactory().dispose();
+				game.setScreen(ScreenEnumerator.MAIN);
+				return true;
+			}
+		}));
 	}
 
 	/**
@@ -114,7 +127,7 @@ public enum MissionFactory {
 	/**
 	 * Creates the mission list
 	 */
-	private void createLocalMissionList() {
+	protected void createLocalMissionList() {
 		String missionList = "";
 		FileHandle[] files = Gdx.files.local(MISSIONS_DIR).list();
 		for (FileHandle file : files) {
@@ -153,7 +166,7 @@ public enum MissionFactory {
 	/**
 	 * Loads an internal {@link Mission}
 	 */
-	public Mission loadInternal(String missionName) {
+	public Mission loadInternal(final String missionName) {
 		return json.fromJson(Mission.class, Gdx.files.internal(MISSIONS_DIR + missionName + JsonKey.JSON_EXT));
 	}
 
@@ -218,6 +231,10 @@ public enum MissionFactory {
 			}
 		}
 		else {
+			if (missions != null) {
+				missions.clear();
+				missions = null;
+			}
 			logger.debug("Reloading local missions");
 			loadLocalMissions();
 		}
@@ -225,6 +242,7 @@ public enum MissionFactory {
 			logger.error("No missions found in the local directory: " + MISSIONS_DIR);
 			loadInternalMissions();
 		}
+		missions.sort();
 	}
 
 	/**

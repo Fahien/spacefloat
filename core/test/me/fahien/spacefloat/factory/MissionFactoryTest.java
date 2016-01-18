@@ -7,7 +7,9 @@ import com.badlogic.gdx.utils.Json;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import me.fahien.spacefloat.game.GdxTestRunner;
 import me.fahien.spacefloat.mission.Mission;
 
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * The {@link MissionFactory} Test Case
  */
+@RunWith(GdxTestRunner.class)
 public class MissionFactoryTest {
 
 	private MissionFactory missionFactory;
@@ -25,9 +28,10 @@ public class MissionFactoryTest {
 		missionFactory = MissionFactory.INSTANCE;
 		missionFactory.setJson(new Json());
 		missionFactory.setEngine(new Engine());
+		missionFactory.createLocalMissionList();
 	}
 
-	@Test
+
 	public void couldSaveAMission() {
 		Mission mission = new Mission();
 		mission.setName("FirstMission");

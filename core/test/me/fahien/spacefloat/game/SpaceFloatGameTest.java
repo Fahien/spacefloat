@@ -79,7 +79,7 @@ public class SpaceFloatGameTest {
 	public void canInjectDependenciesInScreens() {
 		game.loadFont(assetManager);
 		game.loadHud(assetManager);
-		game.createCamera();
+		game.createCamera("perspective");
 		for (ScreenEnumerator screenEnum : ScreenEnumerator.values()) {
 			try {
 				game.setScreen(screenEnum);
@@ -99,7 +99,7 @@ public class SpaceFloatGameTest {
 	@Test
 	public void shouldDisposeProperlyAScreenOnChangingIt() {
 		SpaceFloatScreen mainScreen = ScreenEnumerator.SHOWCASE.getScreen();
-		game.createCamera();
+		game.createCamera("perspective");
 		try {
 			game.setScreen(ScreenEnumerator.SHOWCASE);
 		} catch (GdxRuntimeException|IllegalArgumentException e) {

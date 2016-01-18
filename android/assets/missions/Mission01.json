@@ -1,0 +1,1 @@
+{name:Mission01,x:1750,y:-100,z:2320,destination:PlatformEarth,collected:false,delivered:false,messageInitial:This is your first Mission! Delivery the parcel to the Earth platform!,messageEnding:"Well done, space courier! Come back to the Control Station for the next delivery.",reward:100}
