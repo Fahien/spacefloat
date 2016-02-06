@@ -41,6 +41,8 @@ public class ReactorController extends PlayerController {
 	private Vector3 force;
 	private float rotation;
 
+	protected boolean endGame;
+
 	private ReactorInputAdapter reactorInputAdapter;
 
 	private ReactorComponent reactor;
@@ -88,6 +90,8 @@ public class ReactorController extends PlayerController {
 			rigidbody = rigidMapper.get(player);
 		}
 
+		endGame = false;
+
 		reactorInputAdapter = new ReactorInputAdapter();
 		getInputMultiplexer().addProcessor(reactorInputAdapter);
 
@@ -96,7 +100,6 @@ public class ReactorController extends PlayerController {
 
 	protected Quaternion m_quaternion = new Quaternion();
 	protected boolean m_error;
-	protected boolean endGame;
 
 	@Override
 	public void update(final float delta) {

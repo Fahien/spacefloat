@@ -201,10 +201,11 @@ public class MainScreen extends SpaceFloatScreen {
 		quaternion.setEulerAnglesRad(-rotation, 0, 0);
 		transformGraphic.set(quaternion);
 
-		if (engine != null) {
+		try {
 			engine.update(delta);
-		} else {
-			logger.error("Engine is null");
+		} catch (Exception e) {
+			logger.error("Something gone wrong: " + e.getMessage());
+			e.printStackTrace();
 			Gdx.app.exit();
 		}
 	}
@@ -217,6 +218,7 @@ public class MainScreen extends SpaceFloatScreen {
 			engine.removeSystem(bulletSystem);
 			engine.removeSystem(renderSystem);
 			engine.removeEntity(cargo);
+			cargoGraphic.setInstance(null);
 		}
 	}
 }

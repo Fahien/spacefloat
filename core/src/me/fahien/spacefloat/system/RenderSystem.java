@@ -20,6 +20,7 @@ import me.fahien.spacefloat.component.DestinationComponent;
 import me.fahien.spacefloat.component.GraphicComponent;
 import me.fahien.spacefloat.component.RigidbodyComponent;
 import me.fahien.spacefloat.component.TransformComponent;
+import me.fahien.spacefloat.entity.GameObject;
 import me.fahien.spacefloat.utils.ShapeRenderer;
 import me.fahien.spacefloat.utils.SpaceFloatShapeRenderer;
 
@@ -130,6 +131,7 @@ public class RenderSystem extends EntitySystem {
 
 		// Render the model instances
 		for (Entity entity : entities) {
+			logger.debug("Rendering " + ((GameObject)entity).getName());
 			m_graphicComponent = graphicMapper.get(entity);
 			// Render models
 			m_modelInstance = m_graphicComponent.getInstance();
@@ -245,8 +247,14 @@ public class RenderSystem extends EntitySystem {
 	 */
 	public void dispose() {
 		// Dispose the model batch
-		if (batch != null) batch.dispose();
+		if (batch != null) {
+			batch.dispose();
+			batch = null;
+		}
 		// Dispose the shape renderer
-		if (shapeRenderer != null) shapeRenderer.dispose();
+		if (shapeRenderer != null) {
+			shapeRenderer.dispose();
+			shapeRenderer = null;
+		}
 	}
 }

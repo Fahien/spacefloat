@@ -63,7 +63,7 @@ public class GameScreen extends SpaceFloatScreen {
 		renderSystem.setCamera(mainCamera);
 		logger.debug("Injecting input multiplexer into reactor controller");
 		reactorController.setInputMultiplexer(getInputMultiplexer());
-		logger.debug("Injecting audio and sounds into reactor contorller");
+		logger.debug("Injecting audio and sounds into reactor controller");
 		reactorController.setAudio(getAudio());
 		Sound reactorSound = getAssetManager().get(Audio.SOUNDS_DIR + Audio.REACTOR_SOUND, Sound.class);
 		reactorController.setReactorSound(reactorSound);

@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
+import java.awt.DisplayMode;
+
 import me.fahien.spacefloat.actor.ButtonActor;
 import me.fahien.spacefloat.actor.ButtonClickListener;
 import me.fahien.spacefloat.actor.ControlMessageActor;
@@ -165,16 +167,14 @@ public enum HudFactory {
 	 * Returns the velocity {@link FontActor}
 	 */
 	public FontActor getVelocityActor(final Vector3 velocity) {
-		if (velocityActor == null) {
-			velocityActor = new FontActor(font, VEL_TXT + velocity) {
-				@Override
-				public void act(float delta) {
-					setText(VEL_TXT + (int)(velocity.len()));
-				}
-			};
-			velocityActor.setPosition(VEL_X, VEL_Y);
-			velocityActor.setHalign(FontActor.Halign.RIGHT);
-		}
+		velocityActor = new FontActor(font, VEL_TXT + velocity) {
+			@Override
+			public void act(final float delta) {
+				setText(VEL_TXT + (int) (velocity.len()));
+			}
+		};
+		velocityActor.setPosition(VEL_X, VEL_Y);
+		velocityActor.setHalign(FontActor.Halign.RIGHT);
 		return velocityActor;
 	}
 
@@ -292,11 +292,10 @@ public enum HudFactory {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				if (graphics.isFullscreen()) {
-					graphics.setDisplayMode(SpaceFloatGame.WINDOW_WIDTH, SpaceFloatGame.WINDOW_HEIGHT, true);
-					graphics.setDisplayMode(SpaceFloatGame.WINDOW_WIDTH, SpaceFloatGame.WINDOW_HEIGHT, false);
+					graphics.setWindowedMode(SpaceFloatGame.WINDOW_WIDTH, SpaceFloatGame.WINDOW_HEIGHT);
 				} else {
-					graphics.setDisplayMode(graphics.getDesktopDisplayMode().width, graphics.getDesktopDisplayMode().height, false);
-					graphics.setDisplayMode(graphics.getWidth(), graphics.getHeight(), true);
+					Graphics.DisplayMode displayMode = graphics.getDisplayMode();
+					graphics.setFullscreenMode(displayMode);
 				}
 			}
 		});
@@ -318,9 +317,7 @@ public enum HudFactory {
 	}
 
 	public HudActor getExitActor() {
-		if (exitActor == null) {
-			exitActor = new ButtonActor(menu, font, "Exit");
-		}
+		exitActor = new ButtonActor(menu, font, "Exit");
 		exitActor.clearListeners();
 		exitActor.addListener(new ButtonClickListener(exitActor, audio, selectSound) {
 			@Override

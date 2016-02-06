@@ -228,6 +228,7 @@ public class SpaceFloatGame extends Game {
 		logger.debug("Creating input multiplexer");
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		input.setInputProcessor(inputMultiplexer);
+		input.setCatchBackKey(true);
 		return inputMultiplexer;
 	}
 
@@ -243,10 +244,20 @@ public class SpaceFloatGame extends Game {
 		stage.getRoot().addListener(new InputListener() {
 			@Override
 			public boolean keyDown(InputEvent event, int keycode) {
-				if (keycode == Input.Keys.ESCAPE && getScreen() == ScreenEnumerator.GAME.getScreen()) {
-					setScreen(ScreenEnumerator.MAIN);
+				if (keycode == Input.Keys.ESCAPE) {
+					if (getScreen() == ScreenEnumerator.GAME.getScreen()) {
+						setScreen(ScreenEnumerator.MAIN);
+						return true;
+					}
+				}
+				if (keycode == Input.Keys.BACK) {
 					return true;
 				}
+				return false;
+			}
+
+			@Override
+			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Input.Keys.BACK) {
 					if (getScreen() == ScreenEnumerator.GAME.getScreen()) {
 						setScreen(ScreenEnumerator.MAIN);
@@ -257,7 +268,6 @@ public class SpaceFloatGame extends Game {
 			}
 		});
 		inputMultiplexer.addProcessor(stage);
-		Gdx.input.setCatchBackKey(true);
 	}
 
 	/**
