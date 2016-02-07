@@ -131,7 +131,7 @@ public class RenderSystem extends EntitySystem {
 
 		// Render the model instances
 		for (Entity entity : entities) {
-			logger.debug("Rendering " + ((GameObject)entity).getName());
+			//logger.debug("Rendering " + ((GameObject)entity).getName());
 			m_graphicComponent = graphicMapper.get(entity);
 			// Render models
 			m_modelInstance = m_graphicComponent.getInstance();

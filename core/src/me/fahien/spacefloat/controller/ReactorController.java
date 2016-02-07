@@ -151,6 +151,7 @@ public class ReactorController extends PlayerController {
 
 	public void dispose() {
 		if (reactor != null) reactor.dispose();
+		if (energy != null) energy.dispose();
 	}
 
 	/**

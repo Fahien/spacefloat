@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
+import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -277,6 +278,7 @@ public class SpaceFloatGame extends Game {
 		logger.debug("Creating particle system");
 		particleSystem = ParticleSystem.get();
 		particleSystem.removeAll();
+		particleSystem.getBatches().clear();
 		PointSpriteParticleBatch pointSpriteBatch = new PointSpriteParticleBatch();
 		pointSpriteBatch.setCamera(camera);
 		particleSystem.add(pointSpriteBatch);
@@ -450,8 +452,10 @@ public class SpaceFloatGame extends Game {
 			logger.debug("Disposing emission");
 			emissionSystem.dispose();
 		}
-		logger.debug("Disposing asset manager");
+		particleSystem = null;
+		logger.debug("Disposing " + assetManager.getLoadedAssets() + " assets");
 		assetManager.dispose();
+		logger.debug("Disposed " + assetManager.getLoadedAssets() + " assets");
 		logger.debug("Game disposed");
 	}
 

@@ -12,7 +12,6 @@ import me.fahien.spacefloat.utils.JsonKey;
  * @author Fahien
  */
 public class ReactorComponent extends ParticleComponent {
-	public static final String PARTICLES_DIR = "particles/";
 	public static float DEFAULT_CONSUME = 32f;
 	public static float DEFAULT_POWER = 128f;
 

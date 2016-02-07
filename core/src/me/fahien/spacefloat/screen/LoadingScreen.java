@@ -11,6 +11,7 @@ import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.LocalFileHandleResolver;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
@@ -165,6 +166,8 @@ public class LoadingScreen extends SpaceFloatScreen {
 	 * @see <a href="https://github.com/libgdx/libgdx/wiki/3D-Particle-Effects">3D Particle Effects</a>
 	 */
 	protected void loadParticles(Engine engine, ParticleSystem particleSystem, final AssetManager assetManager) {
+		assetManager.load(ParticleComponent.PARTICLES_DIR + "pre_particle.png", Texture.class);
+		assetManager.finishLoadingAsset(ParticleComponent.PARTICLES_DIR + "pre_particle.png");
 		logger.debug("Loading reactor particle effects");
 		// Get all entities with a reactor component
 		entities = engine.getEntitiesFor(one(ReactorComponent.class, EnergyComponent.class).get());
@@ -195,15 +198,16 @@ public class LoadingScreen extends SpaceFloatScreen {
 			String name = particleComponent.getName();
 			if (name != null) {
 				try {
-					assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
-					assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
+					assetManager.load(ParticleComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+					assetManager.finishLoadingAsset(ParticleComponent.PARTICLES_DIR + name);
 				} catch (GdxRuntimeException e) {
 					assetManager.setLoader(ParticleEffect.class, internalLoader);
-					assetManager.load(ReactorComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
+					assetManager.load(ParticleComponent.PARTICLES_DIR + name, ParticleEffect.class, loadParam);
 					try {
-						assetManager.finishLoadingAsset(ReactorComponent.PARTICLES_DIR + name);
+						assetManager.finishLoadingAsset(ParticleComponent.PARTICLES_DIR + name);
 					} catch (GdxRuntimeException ex) {
-						logger.error("Could not load " + ReactorComponent.PARTICLES_DIR + name + ": " + e.getMessage() + "\n\t" + e.getCause());
+						logger.error("Could not load " + ParticleComponent.PARTICLES_DIR + name + ": " + ex.getMessage());
+						ex.printStackTrace();
 					}
 					assetManager.setLoader(ParticleEffect.class, localLoader);
 				}
@@ -247,7 +251,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 
 	private void injectEffect(final ParticleComponent particle, final AssetManager assetManager) {
 		if (particle != null && particle.getEffect() == null) {
-			String particleName = ReactorComponent.PARTICLES_DIR + particle.getName();
+			String particleName = ParticleComponent.PARTICLES_DIR + particle.getName();
 			ParticleEffect particleEffect = assetManager.get(particleName, ParticleEffect.class);
 			particle.setEffect(particleEffect);
 		}
@@ -287,6 +291,7 @@ public class LoadingScreen extends SpaceFloatScreen {
 				injectReactors(particleEntities, getAssetManager());
 			} catch (GdxRuntimeException e) {
 				logger.error("Could not inject reactors: " + e.getMessage());
+				e.printStackTrace();
 				m_loadingActor.setText("Could not inject reactors, please restart SpaceFloat");
 			}
 			loadMissions(MissionFactory.INSTANCE);

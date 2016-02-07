@@ -17,7 +17,7 @@ import static me.fahien.spacefloat.game.SpaceFloatGame.logger;
  * @author Fahien
  */
 public abstract class ParticleComponent implements Component, Json.Serializable{
-
+	public static final String PARTICLES_DIR = "particles/";
 	private String name;
 
 	private ParticleEffect effect;
